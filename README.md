@@ -1,2 +1,2 @@
 # polytop
-Python library for constructing polymer toplogies
+Python library for constructing polymer toplogies.
