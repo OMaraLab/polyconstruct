@@ -1,0 +1,704 @@
+molecule_type.py
+-----------------------------
+class MoleculeType:
+    def __init__(self, name: str, nrexcl: int):
+        self.name = name
+        self.nrexcl = nrexcl
+
+    @classmethod
+    def from_line(cls, line: str) -> "MoleculeType":
+        parts = line.split()
+        name = parts[0]
+        nrexcl = int(parts[1])
+        return cls(name, nrexcl)
+
+    def __str__(self) -> str:
+        return f"{self.name:5} {self.nrexcl:5}"
+-----------------------------
+atoms.py 
+-----------------------------
+import re
+from typing import Any, List, Optional
+from polytop.exclusions import Exclusion
+from .bonds import Bond
+from .pairs import Pair
+
+
+class Atom:
+    """
+    Represents an atom with its properties in a molecular system.
+
+    Attributes
+    ----------
+    atom_id : int
+        The unique identifier of the atom.
+    atom_type : str
+        The type of the atom, usually based on its element.
+    residue_id : int
+        The unique identifier of the residue containing the atom.
+    residue_name : str
+        The name of the residue containing the atom.
+    atom_name : str
+        The name of the atom, often based on its position within the residue.
+    charge_group_num : int
+        The charge group the atom belongs to.
+    partial_charge : float
+        The partial charge of the atom.
+    mass : float
+        The mass of the atom.
+
+    """
+    def __init__(
+        self,
+        atom_id: int,
+        atom_type: str,
+        residue_id: int,
+        residue_name: str,
+        atom_name: str,
+        charge_group_num: int,
+        partial_charge: float,
+        mass: float,
+        x: float = 0.0,
+        y: float = 0.0,
+        z: float = 0.0,
+    ) -> None:
+        self.atom_id = atom_id
+        self.atom_type = atom_type
+        self.residue_id = residue_id
+        self.residue_name = residue_name
+        self.atom_name = atom_name
+        self.charge_group_num = charge_group_num
+        self.partial_charge = partial_charge
+        self.mass = mass
+        self.bonds = set()
+        self.pairs = set()
+        self.exclusions = set()
+        self.x = x
+        self.y = y
+        self.z = z
+        self.visited = False
+
+    @property
+    def element(self):
+        return re.sub("[^a-zA-Z]", "", self.atom_name)
+    
+    @property
+    def is_virtual(self):
+        return self.element == "X"
+    
+    def virtualize(self):
+        self.atom_type = "X"
+        self.atom_name = "X"
+        self.mass = 0.0
+        self.partial_charge = 0.0
+    
+    @classmethod
+    def from_line(cls, line: str) -> "Atom":
+        parts = line.split()
+        atom_id = int(parts[0])
+        atom_type = parts[1]
+        residue_id = int(parts[2])
+        residue_name = parts[3]
+        atom_name = parts[4]
+        charge_group_num = int(parts[5])
+        partial_charge = float(parts[6])
+        mass = float(parts[7])
+        return cls(
+            atom_id,
+            atom_type,
+            residue_id,
+            residue_name,
+            atom_name,
+            charge_group_num,
+            partial_charge,
+            mass,
+        )
+
+    def __str__(self):
+        return f"{self.atom_id:5} {self.atom_type:5} {self.residue_id:5} {self.residue_name:5} {self.atom_name:5} {self.charge_group_num:5} {self.partial_charge:9.3f} {self.mass:9.4f}"
+
+    def __repr__(self) -> str:
+        return f"Atom({self.atom_id}{self.element})->[{','.join([str(bond.other_atom(self).atom_id) for bond in self.bonds])}]"
+
+    def remove(self):
+        while self.bonds:
+            self.bonds.pop().remove()
+        while self.pairs:
+            self.pairs.pop().remove()
+        while self.exclusions:
+            self.exclusions.pop().remove()
+            
+    def bond_neighbor(self, bond: Bond = None):
+        if not bond:
+            if len(self.bonds) != 1:
+                raise ValueError(
+                    f"Can't infer a neighbour from an atom with {len(self.bonds)} bonds"
+                )
+            bond = self.bonds[0]
+        return bond.other_atom(self)
+
+    def bond_neighbours(self) -> set["Atom"]:
+        return {bond.other_atom(self) for bond in self.bonds}
+
+    def angle_neighbours(self) -> set["Atom"]:
+        neighbours = set()
+        for bond in self.bonds:
+            for angle in bond.angles:
+                neighbours.add(angle.atom_a)
+                neighbours.add(angle.atom_b)
+                neighbours.add(angle.atom_c)
+        neighbours.remove(self)
+        return neighbours
+
+    def dihedral_neighbours(self) -> set["Atom"]:
+        neighbours = set()
+        for bond in self.bonds:
+            for angle in bond.angles:
+                for dihedral in angle.dihedrals:
+                    neighbours.add(dihedral.atom_a)
+                    neighbours.add(dihedral.atom_b)
+                    neighbours.add(dihedral.atom_c)
+                    neighbours.add(dihedral.atom_d)
+        if self in neighbours:
+            neighbours.remove(self)
+        return neighbours
+-----------------------------
+bonds.py
+-----------------------------
+from __future__ import annotations
+
+from typing import List
+
+
+class Atom:
+    ...
+
+
+class Bond:
+    """
+    Represents a bond between two atoms in a molecular system.
+
+    Attributes
+    ----------
+    atom_a : Atom
+        The first atom involved in the bond.
+    atom_b : Atom
+        The second atom involved in the bond.
+    bond_type : str
+        The type of the bond (e.g., single, double, triple).
+    bond_length : float
+        The length of the bond.
+    force_constant : float
+        The force constant associated with the bond.
+    bond_order : int, optional
+        The bond order, default is 1 (single bond).
+
+    """
+    def __init__(
+        self,
+        atom_a: Atom,
+        atom_b: Atom,
+        bond_type: int,
+        bond_length: float,
+        force_constant: float,
+        order: int = 1,
+    ) -> None:
+        self.atom_a = atom_a
+        self.atom_b = atom_b
+        if self.atom_a.atom_id > self.atom_b.atom_id:  # keep atom order ascending
+            self.atom_a, self.atom_b = self.atom_b, self.atom_a
+        self.bond_type = bond_type
+        self.bond_length = bond_length
+        self.force_constant = force_constant
+        atom_a.bonds.add(self)
+        atom_b.bonds.add(self)
+        self.order = order
+        self.angles = set()
+
+    @classmethod
+    def from_line(cls, line: str, atoms: List["Atom"]):
+        parts = line.split()
+        atom_a = atoms[int(parts[0]) - 1]
+        atom_b = atoms[int(parts[1]) - 1]
+        bond_type = int(parts[2])
+        bond_length = float(parts[3])
+        force_constant = float(parts[4])
+
+        return cls(atom_a, atom_b, bond_type, bond_length, force_constant)
+
+    @staticmethod
+    def from_atoms(atom_a: Atom, atom_b: Atom):
+        if atom_a is None or atom_b is None:
+            return None
+        return next(
+            (
+                bond
+                for bond in atom_a.bonds
+                if bond.atom_b == atom_b or bond.atom_a == atom_b
+            ),
+            None,
+        )
+
+    def references_atom(self, atom: Atom) -> bool:
+        return atom in [self.atom_a, self.atom_b]
+
+    def other_atom(self, atom: Atom)-> Atom:
+        if atom == self.atom_a:
+            return self.atom_b
+        elif atom == self.atom_b:
+            return self.atom_a
+        else:
+            raise ValueError(f"Atom {atom} is not in bond {self}")
+    
+    def LHS(self) -> set['Atom']:
+        # list all atoms in the LHS of the bond
+        LHS_atoms = set()
+        def traverse(atom: Atom):
+            if atom != self.atom_b:
+                LHS_atoms.add(atom)
+                neighbours = atom.bond_neighbours()
+                for neighbour in list(neighbours):
+                    if neighbour not in LHS_atoms and neighbour != self.atom_b:
+                        traverse(neighbour)
+
+        traverse(self.atom_a)
+        return LHS_atoms
+    
+    def RHS(self) -> set['Atom']:
+        # list all atoms in the RHS of the bond
+        RHS_atoms = set()
+        def traverse(atom: Atom):
+            if atom != self.atom_a:
+                RHS_atoms.add(atom)
+                neighbours = atom.bond_neighbours()
+                for neighbour in list(neighbours):
+                    if neighbour not in RHS_atoms and neighbour != self.atom_a:
+                        traverse(neighbour)
+        traverse(self.atom_b)
+        return RHS_atoms
+        
+    def remove(self):
+        while self.angles:
+            self.angles.pop().remove()
+        if self in self.atom_a.bonds:
+            self.atom_a.bonds.remove(self)
+        if self in self.atom_b.bonds:
+            self.atom_b.bonds.remove(self)
+                
+    def __str__(self):
+        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5} {self.bond_length:>10.4f} {self.force_constant:.4e}"
+
+    def __repr__(self) -> str:
+        return f"Bond({self.atom_a.atom_id} {'-' if self.order == 1 else '='} {self.atom_b.atom_id})"
+-----------------------------
+angles.py
+-----------------------------
+from __future__ import annotations
+from typing import List, Tuple
+
+import warnings
+
+from polytop.bonds import Bond
+
+
+class Atom:
+    ...
+
+
+class Angle:
+    """
+    Represents an angle between three atoms in a molecular system.
+
+    Attributes
+    ----------
+    atom_a : Atom
+        The first atom involved in the angle.
+    atom_b : Atom
+        The central atom in the angle.
+    atom_c : Atom
+        The third atom involved in the angle.
+    angle_type : str
+        The type of the angle.
+    angle_value : float
+        The value of the angle in degrees.
+    force_constant : float
+        The force constant associated with the angle.
+
+    """
+    def __init__(
+        self,
+        atom_a: Atom,
+        atom_b: Atom,
+        atom_c: Atom,
+        angle_type: int,
+        angle_value: float,
+        force_constant: float,
+    ) -> None:
+        self.atom_a = atom_a
+        self.atom_b = atom_b
+        self.atom_c = atom_c
+        if self.atom_a.atom_id > self.atom_c.atom_id:  # keep atom order ascending
+            self.atom_a, self.atom_c = self.atom_c, self.atom_a
+        self.angle_type = angle_type
+        self.angle_value = angle_value
+        self.force_constant = force_constant
+        self.bond_ab, self.bond_bc = Angle.find_bonds(atom_a, atom_b, atom_c)
+        if self.bond_ab is None or self.bond_bc is None:
+            raise ValueError(f"Could not find bonds for angle: {self}")
+        self.bond_ab.angles.add(self)
+        self.bond_bc.angles.add(self)
+        self.dihedrals = set()
+
+    @classmethod
+    def from_line(cls, line: str, atoms):
+        parts = line.split()
+        atom_a = atoms[int(parts[0]) - 1]
+        atom_b = atoms[int(parts[1]) - 1]
+        atom_c = atoms[int(parts[2]) - 1]
+        angle_type = int(parts[3])
+        angle_value = float(parts[4])
+        force_constant = float(parts[5])
+        return cls(atom_a, atom_b, atom_c, angle_type, angle_value, force_constant)
+
+    @staticmethod
+    def find_bonds(atom_a: Atom, atom_b: Atom, atom_c: Atom):
+        bond_ab = Bond.from_atoms(atom_a, atom_b)
+        bond_bc = Bond.from_atoms(atom_b, atom_c)
+        return bond_ab, bond_bc
+
+    @staticmethod
+    def from_atoms(atom_a: Atom, atom_b: Atom, atom_c: Atom):
+        bond_a, bond_b = Angle.find_bonds(atom_a, atom_b, atom_c)
+        if bond_a is None or bond_b is None:
+            warnings.warn(
+                f"Could not find bonds for angle: ({atom_a.atom_id} {atom_b.atom_id} {atom_c.atom_id})"
+            )
+            return None
+        return next((angle for angle in bond_a.angles if angle in bond_b.angles), None)
+
+    def references_atom(self, atom: Atom) -> bool:
+        return atom in [self.atom_a, self.atom_b, self.atom_c]
+
+    def other_atom(self, atom: Atom) -> List[Atom]:
+        result = [self.atom_a, self.atom_b, self.atom_c]
+        if atom not in result:
+            raise ValueError(f"Atom {atom} is not in angle {self}")
+        result.remove(atom)
+        return result
+
+    def remove(self):
+        while self.dihedrals:
+            self.dihedrals.pop().remove()
+        if self in self.bond_ab.angles:
+            self.bond_ab.angles.remove(self)
+        if self in self.bond_bc.angles:
+            self.bond_bc.angles.remove(self)
+
+    def __str__(self):
+        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5} {self.angle_value:>10.4f} {self.force_constant:.4e}"
+
+    def __repr__(self) -> str:
+        return f"Angle({self.atom_a.atom_id}, {self.atom_b.atom_id}, {self.atom_c.atom_id})"
+
+    def to_dict(self):
+        data = {
+            'atom_a': self.atom_a.atom_id,
+            'atom_b': self.atom_b.atom_id,
+            'atom_c': self.atom_c.atom_id,
+            'angle_type': self.angle_type,
+            'angle_value': self.angle_value,
+            'force_constant': self.force_constant,
+        }
+        return data
+
+    @classmethod
+    def from_dict(cls, data, atoms):
+        atom_a = atoms[data['atom_a']]
+        atom_b = atoms[data['atom_b']]
+        atom_c = atoms[data['atom_c']]
+        angle_type = data['angle_type']
+
+        return cls(atom_a, atom_b, atom_c, atom_d, dihedral_type, phase_angle, force_constant, multiplicity)
+-----------------------------
+dihedrals.py
+-----------------------------
+from __future__ import annotations
+
+import warnings
+from enum import IntEnum
+from typing import List
+
+from polytop.angles import Angle
+
+
+class Atom:
+    ...
+
+
+class Dihedral_type(IntEnum):
+    proper = 1  # The two angles are A-B-C and B-C-D
+    improper = 2  # The two angles are C-A-D and B-A-C
+
+
+class Dihedral:
+    """
+    Represents a dihedral angle formed by four atoms in a molecular system.
+
+    Attributes
+    ----------
+    atom_a : Atom
+        The first atom involved in the dihedral angle.
+    atom_b : Atom
+        The second atom involved in the dihedral angle.
+    atom_c : Atom
+        The third atom involved in the dihedral angle.
+    atom_d : Atom
+        The fourth atom involved in the dihedral angle.
+    dihedral_type : Dihedral_type
+        The type of the dihedral angle (e.g., proper, improper).
+    phase_angle : float
+        The phase angle of the dihedral angle in degrees.
+    force_constant : float
+        The force constant associated with the dihedral angle.
+    multiplicity : int
+        The multiplicity of the dihedral angle.
+
+    """
+    def __init__(
+        self,
+        atom_a: Atom,
+        atom_b: Atom,
+        atom_c: Atom,
+        atom_d: Atom,
+        dihedral_type: int,
+        phase_angle: float,
+        force_constant: float,
+        multiplicity: int,
+    ) -> None:
+        self.atom_a = atom_a
+        self.atom_b = atom_b
+        self.atom_c = atom_c
+        self.atom_d = atom_d
+        self.dihedral_type = dihedral_type
+        self.phase_angle = phase_angle
+        self.force_constant = force_constant
+        self.multiplicity = multiplicity
+        if self.dihedral_type == Dihedral_type.proper.value:
+            if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
+                angle_abc.dihedrals.add(self)
+                self.angle_a = angle_abc
+            else:
+                raise ValueError(f"Could not find angle for dihedral: {self}")
+            if angle_bcd := Angle.from_atoms(atom_b, atom_c, atom_d):
+                angle_bcd.dihedrals.add(self)
+                self.angle_b = angle_bcd
+            else:
+                raise ValueError(f"Could not find angle for dihedral: {self}")
+        elif self.dihedral_type == Dihedral_type.improper.value:
+            if angle_cad := Angle.from_atoms(atom_c, atom_a, atom_d):
+                angle_cad.dihedrals.add(self)
+                self.angle_a = angle_cad
+            else:
+                raise ValueError(f"Could not find angle for dihedral: {self}")
+            if angle_bac := Angle.from_atoms(atom_b, atom_a, atom_c):
+                angle_bac.dihedrals.add(self)
+                self.angle_b = angle_bac
+            else:
+                raise ValueError(f"Could not find angle for dihedral: {self}")
+
+    @classmethod
+    def from_line(cls, line: str, atoms):
+        parts = line.split()
+        atom_a = atoms[int(parts[0]) - 1]
+        atom_b = atoms[int(parts[1]) - 1]
+        atom_c = atoms[int(parts[2]) - 1]
+        atom_d = atoms[int(parts[3]) - 1]
+        dihedral_type = int(parts[4])
+        phase_angle = float(parts[5])
+        force_constant = float(parts[6])
+        if dihedral_type == Dihedral_type.proper.value:
+            multiplicity = int(parts[7])
+        elif dihedral_type == Dihedral_type.improper.value:
+            multiplicity = None
+        else:
+            warnings.warn(f"Unknown dihedral type: {dihedral_type}")
+
+        return cls(
+            atom_a,
+            atom_b,
+            atom_c,
+            atom_d,
+            dihedral_type,
+            phase_angle,
+            force_constant,
+            multiplicity,
+        )
+
+    @staticmethod
+    def find_angles(
+        atom_a: Atom,
+        atom_b: Atom,
+        atom_c: Atom,
+        atom_d: Atom,
+    ):
+        angle_abc = Angle.from_atoms(atom_a, atom_b, atom_c)
+        angle_bcd = Angle.from_atoms(atom_b, atom_c, atom_d)
+
+        angle_cad = Angle.from_atoms(atom_c, atom_a, atom_d)
+        angle_bac = Angle.from_atoms(atom_b, atom_a, atom_c)
+
+        if (
+            angle_abc and angle_bcd and angle_abc.dihedrals & angle_bcd.dihedrals
+        ):  # proper dihedral
+            return angle_abc, angle_bcd
+        if (
+            angle_cad and angle_bac and angle_cad.dihedrals & angle_bac.dihedrals
+        ):  # improper dihedral
+            return angle_cad, angle_bac
+        return None, None
+
+    def references_atom(self, atom: Atom) -> bool:
+        return atom in [self.atom_a, self.atom_b, self.atom_c, self.atom_d]
+    
+    def other_atoms(self, atom: Atom) -> List[Atom]:
+        result = [self.atom_a, self.atom_b, self.atom_c, self.atom_d]
+        if atom not in result:
+            raise ValueError(f"Atom {atom} is not in dihedral {self}")
+        result.remove(atom)
+        return result
+    
+    def remove(self):
+        if self in self.angle_a.dihedrals:
+            self.angle_a.dihedrals.remove(self)
+        if self in self.angle_b.dihedrals:
+            self.angle_b.dihedrals.remove(self)
+
+    @staticmethod
+    def from_atoms(
+        atom_a: Atom,
+        atom_b: Atom,
+        atom_c: Atom,
+        atom_d: Atom,
+    ):
+        angle_a, angle_b = Dihedral.find_angles(atom_a, atom_b, atom_c, atom_d)
+        if angle_a is None or angle_b is None:
+            warnings.warn(
+                f"Could not find angles for dihedral: ({atom_a.atom_id} {atom_b.atom_id} {atom_c.atom_id} {atom_d.atom_id})"
+            )
+            return None
+        common_dihedrals = angle_a.dihedrals & angle_b.dihedrals
+        return next(iter(common_dihedrals), None)
+
+    def __str__(self):
+        if self.dihedral_type == Dihedral_type.proper:
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e} {self.multiplicity:>5}"
+        elif self.dihedral_type == Dihedral_type.improper:
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e}"
+
+    def __repr__(self) -> str:
+        return f"Dihedral({self.atom_a.atom_id}, {self.atom_b.atom_id}, {self.atom_c.atom_id}, {self.atom_d.atom_id})"
+
+    def to_dict(self):
+        data = {
+            'atom_a': self.atom_a.atom_id,
+            'atom_b': self.atom_b.atom_id,
+            'atom_c': self.atom_c.atom_id,
+            'atom_d': self.atom_d.atom_id,
+            'dihedral_type': self.dihedral_type,
+            'phase_angle': self.phase_angle,
+            'force_constant': self.force_constant,
+            'multiplicity': self.multiplicity,
+        }
+        return data
+
+    @classmethod
+    def from_dict(cls, data, atoms):
+        atom_a = atoms[data['atom_a']]
+        atom_b = atoms[data['atom_b']]
+        atom_c = atoms[data['atom_c']]
+        atom_d = atoms[data['atom_d']]
+        dihedral_type = data['dihedral_type']
+        phase_angle = data['phase_angle']
+        force_constant = data['force_constant']
+        multiplicity = data['multiplicity']
+
+        return cls(atom_a, atom_b, atom_c, atom_d, dihedral_type, phase_angle, force_constant, multiplicity)
+-----------------------------
+pairs.py
+-----------------------------
+from __future__ import annotations
+
+from typing import List
+
+
+class Atom:
+    ...
+
+
+class Pair:
+    def __init__(self, atom_a: Atom, atom_b: Atom, pair_type: int):
+        self.atom_a = atom_a
+        self.atom_b = atom_b
+        self.pair_type = pair_type
+        atom_a.pairs.add(self)
+        atom_b.pairs.add(self)
+
+    @classmethod
+    def from_line(cls, line: str, atoms: List[Atom]):
+        parts = line.split()
+        atom_a = atoms[int(parts[0]) - 1]
+        atom_b = atoms[int(parts[1]) - 1]
+        pair_type = int(parts[2])
+        return cls(atom_a, atom_b, pair_type)
+
+    def remove(self):
+        if self in self.atom_a.pairs:
+            self.atom_a.pairs.remove(self)
+        if self in self.atom_b.pairs:
+            self.atom_b.pairs.remove(self)
+
+    def __str__(self):
+        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.pair_type:>5}"
+
+    def __repr__(self) -> str:
+        return f"Pair({self.atom_a.atom_id}, {self.atom_b.atom_id})"
+-----------------------------
+exclusions.py
+-----------------------------
+from __future__ import annotations
+
+from typing import List
+
+
+class Atom:
+    ...
+
+
+class Exclusion:
+    def __init__(self, atom_a: Atom, atom_b: Atom, exclusion_type: int):
+        self.atom_a = atom_a
+        self.atom_b = atom_b
+        self.exclusion_type = exclusion_type
+        atom_a.pairs.add(self)
+        atom_b.pairs.add(self)
+
+    @classmethod
+    def from_line(cls, line: str, atoms: List[Atom]):
+        parts = line.split()
+        atom_a = atoms[int(parts[0]) - 1]
+        atom_b = atoms[int(parts[1]) - 1]
+        exclusion_type = int(parts[2])
+        return cls(atom_a, atom_b, exclusion_type)
+
+    def remove(self):
+        if self in self.atom_a.exclusions:
+            self.atom_a.exclusions.remove(self)
+        if self in self.atom_b.exclusions:
+            self.atom_b.exclusions.remove(self)
+
+    def __str__(self):
+        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.exclusion_type:>5}"
+
+    def __repr__(self) -> str:
+        return f"Pair({self.atom_a.atom_id}, {self.atom_b.atom_id})"
+-----------------------------

@@ -1,0 +1,389 @@
+..\tests\test_atoms.py
+-----------------------------
+from polytop.atoms import Atom
+from polytop.topology import Topology
+
+
+def test_atom_creation()->None:
+    atom = Atom(
+        atom_id=26,
+        atom_type="N3",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="NH2",
+        charge_group_num=26,
+        partial_charge=-0.940000,
+        mass=14.0067,
+    )
+    assert atom.atom_id == 26
+    assert atom.atom_type == "N3"
+    assert atom.residue_id == 1
+    assert atom.residue_name == "ARG"
+    assert atom.atom_name == "NH2"
+    assert atom.charge_group_num == 26
+    assert atom.partial_charge == -0.940000
+    assert atom.mass == 14.0067
+
+def test_repr():
+    arg=Topology.from_ITP("tests/samples/arginine.itp")
+    assert arg.atoms[0].__repr__()=='Atom(1H)->[2]'
+    
+def test_pseudoatoms():
+    atom = Atom(
+        atom_id=1,
+        atom_type="X",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="X1",
+        charge_group_num=26,
+        partial_charge=-0.940000,
+        mass=14.0067,
+    )
+    assert atom.is_virtual-----------------------------
+..\tests\test_bonds.py
+-----------------------------
+from polytop.atoms import Atom
+from polytop.bonds import Bond
+from polytop.topology import Topology
+
+
+def test_bond_creation()->None:
+    atom_a = Atom(
+        atom_id=20,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C20",
+        charge_group_num=20,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_b = Atom(
+        atom_id=22,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C22",
+        charge_group_num=22,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    bond = Bond(
+        atom_a, atom_b, bond_type="1", bond_length=0.147, force_constant=265265.0
+    )
+    assert bond.atom_a.atom_id == 20
+    assert bond.atom_b.atom_id == 22
+    assert bond.bond_type == "1"
+    assert bond.bond_length == 0.147
+    assert bond.force_constant == 265265.0
+
+def test_traversal():
+    arg = Topology.from_ITP("tests/samples/arginine.itp")
+    bond = arg.get_bond(12, 15)
+    assert bond.atom_a.atom_id == 12
+    assert bond.atom_b.atom_id == 15
+    LHS = bond.LHS()
+    RHS = bond.RHS()
+    assert len(LHS) == 14
+    assert len(RHS) == 12
+    allatoms = set(arg.atoms)
+    assert allatoms == LHS | RHS
+    assert LHS & RHS == set()
+    -----------------------------
+..\tests\test_angles.py
+-----------------------------
+from polytop.angles import Angle
+from polytop.atoms import Atom
+from polytop.bonds import Bond
+
+
+def test_angle_creation()->None:
+    atom_a = Atom(
+        atom_id=9,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C9",
+        charge_group_num=9,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_b = Atom(
+        atom_id=12,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C12",
+        charge_group_num=12,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_c = Atom(
+        atom_id=15,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C15",
+        charge_group_num=15,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    bond_ab = Bond(atom_a, atom_b, bond_type="1", bond_length=1.5, force_constant=1000)
+    bond_bc = Bond(atom_b, atom_c, bond_type="1", bond_length=1.5, force_constant=1000)
+    
+    angle = Angle(
+        atom_a,
+        atom_b,
+        atom_c,
+        angle_type="1",
+        angle_value=109.5,
+        force_constant=29288.0,
+    )
+    assert angle.atom_a.atom_id == 9
+    assert angle.atom_b.atom_id == 12
+    assert angle.atom_c.atom_id == 15
+    assert angle.angle_type == "1"
+    assert angle.angle_value == 109.5
+    assert angle.force_constant == 29288.0
+-----------------------------
+..\tests\test_dihedrals.py
+-----------------------------
+from polytop.angles import Angle
+from polytop.atoms import Atom
+from polytop.dihedrals import Dihedral, Dihedral_type
+from polytop.bonds import Bond
+from polytop.topology import Topology
+
+
+def test_proper_dihedral_creation()->None:
+    atom_a = Atom(
+        atom_id=2,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C2",
+        charge_group_num=2,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_b = Atom(
+        atom_id=4,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C4",
+        charge_group_num=4,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_c = Atom(
+        atom_id=8,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C8",
+        charge_group_num=8,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_d = Atom(
+        atom_id=9,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C9",
+        charge_group_num=9,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+
+    Bond(atom_a, atom_b, bond_type="1", bond_length=1.5, force_constant=1000)
+    Bond(atom_b, atom_c, bond_type="1", bond_length=1.5, force_constant=1000)
+    Bond(atom_c, atom_d, bond_type="1", bond_length=1.5, force_constant=1000)
+
+    Angle(atom_a, atom_b, atom_c, angle_type="1", angle_value=120.0, force_constant=200)
+    Angle(atom_b, atom_c, atom_d, angle_type="1", angle_value=120.0, force_constant=200)
+
+    dihedral = Dihedral(
+        atom_a,
+        atom_b,
+        atom_c,
+        atom_d,
+        dihedral_type=Dihedral_type.proper,
+        phase_angle=180.0,
+        force_constant=25.10400,
+        multiplicity=3,
+    )
+
+    assert dihedral.atom_a.atom_id == 2
+    assert dihedral.atom_b.atom_id == 4
+    assert dihedral.atom_c.atom_id == 8
+    assert dihedral.atom_d.atom_id == 9
+    assert dihedral.dihedral_type == Dihedral_type.proper
+    assert dihedral.phase_angle == 180.0
+    assert dihedral.force_constant == 25.10400
+    assert dihedral.multiplicity == 3
+
+
+def test_improper_dihedrals_creation()->None:
+    atom_a = Atom(
+        atom_id=1,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C1",
+        charge_group_num=1,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_b = Atom(
+        atom_id=2,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C2",
+        charge_group_num=2,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_c = Atom(
+        atom_id=3,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C3",
+        charge_group_num=3,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_d = Atom(
+        atom_id=4,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C4",
+        charge_group_num=4,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    
+    Bond(atom_a, atom_b, bond_type="1", bond_length=1.5, force_constant=1000)
+    Bond(atom_a, atom_d, bond_type="1", bond_length=1.5, force_constant=1000)
+    Bond(atom_a, atom_c, bond_type="1", bond_length=1.5, force_constant=1000)
+    Bond(atom_a, atom_d, bond_type="1", bond_length=1.5, force_constant=1000)
+
+    Angle(atom_c, atom_a, atom_d, angle_type="1", angle_value=120.0, force_constant=200)
+    Angle(atom_b, atom_a, atom_c, angle_type="1", angle_value=120.0, force_constant=200)
+
+    dihedral = Dihedral(
+        atom_a,
+        atom_b,
+        atom_c,
+        atom_d,
+        dihedral_type=Dihedral_type.improper,
+        phase_angle=180.0,
+        force_constant=10.5,
+        multiplicity=2,
+    )
+
+    assert dihedral.atom_a.atom_id == 1
+    assert dihedral.atom_b.atom_id == 2
+    assert dihedral.atom_c.atom_id == 3
+    assert dihedral.atom_d.atom_id == 4
+    assert dihedral.dihedral_type == Dihedral_type.improper
+    assert dihedral.phase_angle == 180.0
+    assert dihedral.force_constant == 10.5
+    assert dihedral.multiplicity == 2
+
+
+def test_dihedrals_storage()->None:
+    atom_a = Atom(
+        atom_id=1,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C1",
+        charge_group_num=1,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_b = Atom(
+        atom_id=2,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C2",
+        charge_group_num=2,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_c = Atom(
+        atom_id=3,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C3",
+        charge_group_num=3,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom_d = Atom(
+        atom_id=4,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C4",
+        charge_group_num=4,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+
+    topology = Topology()
+    topology.add_atom(atom_a)
+    topology.add_atom(atom_b)
+    topology.add_atom(atom_c)
+    topology.add_atom(atom_d)
+
+    bond_ab = Bond(atom_a, atom_b, bond_type="1", bond_length=1.5, force_constant=1000)
+    bond_bc = Bond(atom_b, atom_c, bond_type="1", bond_length=1.5, force_constant=1000)
+    bond_cd = Bond(atom_c, atom_d, bond_type="1", bond_length=1.5, force_constant=1000)
+    
+    angle_abc = Angle(
+        atom_a, atom_b, atom_c, angle_type="1", angle_value=120.0, force_constant=200
+    )
+    angle_bcd = Angle(
+        atom_b, atom_c, atom_d, angle_type="1", angle_value=120.0, force_constant=200
+    )
+
+    dihedral_abcd = Dihedral(
+        atom_a,
+        atom_b,
+        atom_c,
+        atom_d,
+        dihedral_type=Dihedral_type.proper,
+        phase_angle=180.0,
+        force_constant=10.5,
+        multiplicity=2,
+    )
+
+    assert topology.get_bond(1, 2) is not None
+    assert topology.get_bond(2, 3) is not None
+    assert topology.get_bond(3, 4) is not None
+    assert topology.get_angle(1, 2, 3) is not None
+    assert topology.get_angle(2, 3, 4) is not None
+    dihedral = topology.get_dihedral(1, 2, 3, 4)
+    assert dihedral is not None
+    assert dihedral.dihedral_type == Dihedral_type.proper
+
+    assert angle_abc in bond_ab.angles
+    assert angle_abc in bond_bc.angles
+    assert angle_bcd in bond_bc.angles
+    assert angle_bcd in bond_cd.angles
+
+    assert dihedral_abcd in angle_abc.dihedrals
+    assert dihedral_abcd in angle_bcd.dihedrals
+-----------------------------
+..\tests\test_topology.py
+-----------------------------
+-----------------------------
+-----------------------------
