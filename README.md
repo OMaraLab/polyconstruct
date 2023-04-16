@@ -1,6 +1,6 @@
 # Polytop Library Demonstration
 
-This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomer instances, and display a 3D representation of molecules.
+This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomers from molecules, create polymers from monomers and a distribution, and to display 2D and 3D representation of the toplogies.
 
 ## Importing the Library
 
