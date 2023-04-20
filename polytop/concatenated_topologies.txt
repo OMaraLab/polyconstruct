@@ -220,6 +220,11 @@ class Topology:
         atom_b = self.get_atom(atom_b_id)
         return Bond.from_atoms(atom_a, atom_b)
 
+    def get_bond_by_name(self, atom_a_name: int, atom_b_name: int) -> Bond:
+        atom_a = next((atom for atom in self.atoms if atom.atom_name == atom_a_name), None)
+        atom_b = next((atom for atom in self.atoms if atom.atom_name == atom_b_name), None)
+        return Bond.from_atoms(atom_a, atom_b)
+
     def get_angle(self, atom_a_id: int, atom_b_id: int, atom_c_id: int) -> Angle:
         atom_a = self.get_atom(atom_a_id)
         atom_b = self.get_atom(atom_b_id)
@@ -252,6 +257,8 @@ class Topology:
             "dihedrals": [dihedral.to_dict() for dihedral in self.dihedrals],
             "pairs": [pair.to_dict() for pair in self.pairs],
             "exclusions": [exclusion.to_dict() for exclusion in self.exclusions],
+            "preamble": self.preamble,
+            "moleculetype": self.molecule_type.to_dict(),
         }
 
     @classmethod
@@ -263,24 +270,24 @@ class Topology:
             topology.add_atom(atom)
 
         for bond_data in data["bonds"]:
-            bond = Bond.from_dict(bond_data)
-            topology.add_bond(bond)
+            Bond.from_dict(bond_data,topology.atoms)
 
         for angle_data in data["angles"]:
-            angle = Angle.from_dict(angle_data)
-            topology.add_angle(angle)
+            Angle.from_dict(angle_data,topology.atoms)
 
         for dihedral_data in data["dihedrals"]:
-            dihedral = Dihedral.from_dict(dihedral_data)
-            topology.add_dihedral(dihedral)
+            Dihedral.from_dict(dihedral_data,topology.atoms)
 
         for pair_data in data["pairs"]:
-            pair = Pair.from_dict(pair_data)
-            topology.add_pair(pair)
+            Pair.from_dict(pair_data,topology.atoms)
 
         for exclusion_data in data["exclusions"]:
-            exclusion = Exclusion.from_dict(exclusion_data)
-            topology.add_exclusion(exclusion)
+            Exclusion.from_dict(exclusion_data,topology.atoms)
+        
+        for preamble_line in data["preamble"]:
+            topology.preamble.append(preamble_line)
+
+        topology.molecule_type = MoleculeType.from_dict(data["moleculetype"])
 
         return topology
 
@@ -304,29 +311,29 @@ class Topology:
         lhs_atom, rhs_atom = bond.atom_a, bond.atom_b
         if lhs_atom.atom_id > rhs_atom.atom_id:
             lhs_atom, rhs_atom = rhs_atom, lhs_atom
-        lhs_atom_idx, rhs_atom_idx = lhs_atom.atom_id - 1, rhs_atom.atom_id - 1
 
+        lhs_atom_name = lhs_atom.atom_name # store the atom names so that we can find them in the fragments
+        rhs_atom_name = rhs_atom.atom_name            
+            
         # Create deep copies of the topology
         LHS, RHS = copy.deepcopy(self), copy.deepcopy(self)
 
-        # Replace the respective atoms with virtual atoms
-        LHS.atoms[rhs_atom_idx].virtualize()  ########HERE
-        RHS.atoms[lhs_atom_idx].virtualize()
-
-        RHS_bond = LHS.get_bond(lhs_atom_idx+1, rhs_atom_idx+1)
-        LHS_bond = RHS.get_bond(lhs_atom_idx+1, rhs_atom_idx+1)
+        LHS_bond = LHS.get_bond_by_name(lhs_atom_name, rhs_atom_name)
+        RHS_bond = RHS.get_bond_by_name(lhs_atom_name, rhs_atom_name)
 
         # Remove atoms before lhs_atom_idx and after rhs_atom_idx
-        LHS_atoms_to_remove = list(RHS_bond.RHS())
+        LHS_atoms_to_remove = list(LHS_bond.RHS())
         for atom in LHS_atoms_to_remove:
-            if atom != RHS_bond.atom_b:
+            if atom != LHS_bond.atom_b:
                 LHS.remove_atom(atom)
-
-        RHS_atoms_to_remove = list(LHS_bond.LHS())
+        # Replace the respective atoms with virtual atoms
+        LHS_bond.atom_b.virtualize()
+        
+        RHS_atoms_to_remove = list(RHS_bond.LHS())
         for atom in RHS_atoms_to_remove:
-            if atom != LHS_bond.atom_a:
+            if atom != RHS_bond.atom_a:
                 RHS.remove_atom(atom)
-
+        RHS_bond.atom_a.virtualize()                
         return LHS, RHS
 
     def first_virtual_atom() -> Atom:
@@ -355,168 +362,6 @@ class Topology:
         next_bond = next(next_atom.bonds[0], None)  # bond forwards into the extension
         next_angle = next(next_bond.angles, None)  # angle forward into the extension
         
------------------------------
-monomer.py
------------------------------
-import json
-from typing import Tuple
 
-from .bonds import Bond
-from .topology import Topology
-
-from enum import Enum
-class SubTopologyType(Enum):
-    LHS = "LHS"
-    LINK = "LINK"
-    RHS = "RHS"
-    
-class Monomer:
-    def __init__(self, topology: Topology, bond_a: Bond, bond_b: Bond):
-        self.topology = topology
-        self.bond_a = bond_a
-        self.bond_b = bond_b
-        self.LHS, self.link, self.RHS = self.build_monomer()
-
-    def build_monomer(self) -> Tuple[Topology, Topology, Topology]:
-        # build 3 sub-topologies before (LHS) and after (RHS) and between (link) the 2 bonds
-        # create 3 topologies LHS (before bond_b), RHS (after bond_a) and link (between bonds a and b)
-        # distribute lost charges in each topology
-        # return a tuple of 3 topologies
-        return self.topology, self.topology, self.topology
-
-    def save(self, file_path):
-        data = {
-            "topology": self.topology.to_dict(),
-            "bond_a": self.bond_a,
-            "bond_b": self.bond_b,
-        }
-
-        with open(file_path, "w") as f:
-            json.dump(data, f)
-
-    @classmethod
-    def load(cls, file_path):
-        with open(file_path, "r") as f:
-            data = json.load(f)
-
-        topology = Topology.from_dict(data["topology"])
-        bond_a = data["bond_a"]
-        bond_b = data["bond_b"]
-
-        return cls(topology, bond_a, bond_b)
------------------------------
-polymer.py
------------------------------
-from __future__ import annotations
-
-import json
-import random
-import re
-from typing import Dict, List, Optional, Tuple, Union
-
-from .monomer import Monomer
-from .topology import Topology
-
-
-class Polymer:
-    def __init__(
-        self,
-        monomers: List[Monomer],
-        distribution: List[float],
-        num_monomers: int,
-        seed: Optional[int] = None,
-        start_monomer: Optional[Monomer] = None,
-        end_monomer: Optional[Monomer] = None,
-    ):
-        self.monomers = monomers
-        self.distribution = distribution
-        self.seed = seed
-        self.num_monomers = num_monomers
-        self.start_monomer = start_monomer
-        self.end_monomer = end_monomer
-
-    def build_polymer(self) -> Topology:
-        polymer_topology = Topology()
-        if self.seed:
-            random.seed(self.seed)
-        else:
-            random.seed = random.randint  # unseeded randomization
-        # TODO implement build polymer
-        monomers_remaining = self.num_monomers
-
-        if self.start_monomer:
-            polymer_topology.extend_with_topology(self.start_monomer.LHS)
-            monomers_remaining -= 1
-
-        monomers_remaining -= 1
-
-        for _ in range(monomers_remaining):
-            chosen_monomer = random.choices(self.monomers, weights=self.distribution)[0]
-            # polymer_topology.extend_with_topology(chosen_monomer.link)
-
-        if self.end_monomer:
-            polymer_topology.extend_with_topology(self.end_monomer.RHS)
-        else:
-            chosen_monomer = random.choices(self.monomers, weights=self.distribution)[0]
-            polymer_topology.extend_with_topology(chosen_monomer.RHS)
-
-        return polymer_topology
-
-    def save_to_file(self, filename: str) -> None:
-        with open(filename, "w") as f:
-            json.dump(self.to_dict(), f)
-
-    def load_from_file(self, filename: str) -> None:
-        with open(filename, "r") as f:
-            data = json.load(f)
-        self.from_dict(data)
-
-    def to_dict(
-        self,
-    ) -> Dict[
-        str,
-        Union[
-            List[Dict[str, Union[float, int]]],
-            int,
-            Optional[Dict[str, Union[float, int]]],
-        ],
-    ]:
-        return {
-            "monomers": [monomer.to_dict() for monomer in self.monomers],
-            "distribution": self.distribution,
-            "num_monomers": self.num_monomers,
-            "seed": self.seed,
-            "start_monomer": self.start_monomer.to_dict()
-            if self.start_monomer
-            else None,
-            "end_monomer": self.end_monomer.to_dict() if self.end_monomer else None,
-        }
-
-    @classmethod
-    def from_dict(
-        cls,
-        data: Dict[
-            str,
-            Union[
-                List[Dict[str, Union[float, int]]],
-                int,
-                Optional[Dict[str, Union[float, int]]],
-            ],
-        ],
-    ) -> Polymer:
-        monomers = [
-            Monomer.from_dict(monomer_data) for monomer_data in data["monomers"]
-        ]
-        distribution = data["distribution"]
-        num_monomers = data["num_monomers"]
-        seed = data["seed"]
-        start_monomer_data = data.get("start_monomer")
-        start_monomer = (
-            Monomer.from_dict(start_monomer_data) if start_monomer_data else None
-        )
-        end_monomer_data = data.get("end_monomer")
-        end_monomer = Monomer.from_dict(end_monomer_data) if end_monomer_data else None
-        return cls(
-            monomers, distribution, seed, num_monomers, start_monomer, end_monomer
-        )
------------------------------
+    def contains_bond(self, candidate: Bond) -> bool:
+        return any(bond for bond in self.bonds if bond == candidate)

@@ -305,7 +305,7 @@ class Topology:
         reversed_atoms = copied_atoms[::-1]
         return Topology(reversed_atoms, self.preamble, self.molecule_type) 
     
-    def split(self, bond: Bond) -> Tuple["Topology", "Topology"]:
+    def split(self, bond: Bond, index: int) -> Tuple["Topology", "Topology"]:
         lhs_atom, rhs_atom = bond.atom_a, bond.atom_b
         if lhs_atom.atom_id > rhs_atom.atom_id:
             lhs_atom, rhs_atom = rhs_atom, lhs_atom
@@ -325,13 +325,13 @@ class Topology:
             if atom != LHS_bond.atom_b:
                 LHS.remove_atom(atom)
         # Replace the respective atoms with virtual atoms
-        LHS_bond.atom_b.virtualize()
+        LHS_bond.atom_b.virtualize(index)
         
         RHS_atoms_to_remove = list(RHS_bond.LHS())
         for atom in RHS_atoms_to_remove:
             if atom != RHS_bond.atom_a:
                 RHS.remove_atom(atom)
-        RHS_bond.atom_a.virtualize()                
+        RHS_bond.atom_a.virtualize(index)                
         return LHS, RHS
 
     def first_virtual_atom() -> Atom:

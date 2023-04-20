@@ -69,8 +69,9 @@ class Atom:
     def is_virtual(self):
         return self.atom_type == "X"
     
-    def virtualize(self):
+    def virtualize(self, index: int):
         self.atom_type = "X"
+        self.atom_name = f"X{index}"
         self.mass = 0.0
         self.partial_charge = 0.0
     

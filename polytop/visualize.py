@@ -24,6 +24,7 @@ class Visualize:
             "S": 2,
             "N": 3,  # this can also be 2,4,5 depending on the oxidation state of elements it's bonded to
             "C": 4,
+            "X": 1,
         }
 
     def infer_bond_orders(self) -> "Visualize":
@@ -73,8 +74,8 @@ class Visualize:
 
         for atom in self.topology.atoms:
             atom_name = atom.atom_name
-            # Extract the element symbol from the atom type
-            element = re.sub("[^a-zA-Z]", "", atom_name)
+            # if the atom is a virtual atom (X), then set the element to H for rdKit 
+            element = "H" if atom.atom_type == "X" else re.sub("[^a-zA-Z]", "", atom_name)
             new_atom = Chem.Atom(element)
             atom_mapping[atom.atom_id] = mol.AddAtom(new_atom)
 
@@ -93,23 +94,23 @@ class Visualize:
                 )
             except KeyError as e:
                 print(f"KeyError for bond: {bond}, KeyError: {e}")
-                
+
+        # Sanitize the molecule without virtual atoms
+        Chem.SanitizeMol(mol)
+
+        # Re-label virtual atoms as element "X"
         for atom in self.topology.pseudoatoms:
             pseudoatom = mol.GetAtomWithIdx(atom_mapping[atom.atom_id])
             pseudoatom.SetAtomicNum(0)
             pseudoatom.SetProp("RDKIT_ATOM_SYMBOL", "X")
             pseudoatom.SetFormalCharge(0)
 
-        Chem.SanitizeMol(mol)
-
-            
-
         return mol
 
     def create_py3Dmol_view(self, view=None, show_hydrogens=False):
         # render display presentation of glutamine
         mol = self.to_rdKit_Chem_mol()  # Removed the MolToMolBlock conversion
-        Chem.SanitizeMol(mol)
+        # Chem.SanitizeMol(mol)
         AllChem.EmbedMolecule(mol)
         AllChem.MMFFOptimizeMolecule(mol)
         view.addModel(Chem.MolToMolBlock(mol), "mol")  # Convert to MolBlock for py3Dmol
