@@ -123,15 +123,22 @@ arg_monomer.save('tests/samples/arginine_monomer.json')
 glu=Topology.from_ITP('tests/samples/glutamine.itp')
 start = glu.get_bond(7,8)
 end = glu.get_bond(2,3)
-glu_monomer = Monomer(glu,start,end).save('tests/samples/glutamine_monomer.json')
+glu_monomer = Monomer(glu,start,end)
+glu_monomer.save('tests/samples/glutamine_monomer.json')
 
 Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(400,200))
 Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(400,200))
 Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(400,200))
 Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(400,200))
+
+Visualize(glu).infer_bond_orders().create_2D_image('tests/samples/glutamine.png',(400,200))
+Visualize(glu_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/glutamine_LHS.png',(400,200))
+Visualize(glu_monomer.link).infer_bond_orders().create_2D_image('tests/samples/glutamine_link.png',(400,200))
+Visualize(glu_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/glutamine_RHS.png',(400,200))
+
 from IPython.display import Image
 from IPython.core.display import HTML
-html = ''
+html = '<h1>Arginine</h1>'
 html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure>'
 
 arginines = ['arginine_LHS.png','arginine_link.png', 'arginine_RHS.png']
@@ -139,12 +146,22 @@ html += '<div style="display:flex">'
 for image in arginines:
     html += f'<div style="display:inline-flex"><figure><img src="tests/samples/{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
 html += '</div>'
+
+html += '<h1>Glutamine</h1>'
+html += f'<figure><img src="tests/samples/glutamine.png" style="margin:0 10px" width="300"><figcaption>Glutamine molecule</figcaption></figure>'
+
+glutamines = ['glutamine_LHS.png','glutamine_link.png', 'glutamine_RHS.png']
+html += '<div style="display:flex">'
+for image in glutamines:
+    html += f'<div style="display:inline-flex"><figure><img src="tests/samples/{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
+html += '</div>'
+
 display(HTML(html))
 
 ```
 
 
-<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="300"><figcaption>arginine_LHS.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="300"><figcaption>arginine_link.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="300"><figcaption>arginine_RHS.png</figcaption></figure></div></div>
+<h1>Arginine</h1><figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="300"><figcaption>arginine_LHS.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="300"><figcaption>arginine_link.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="300"><figcaption>arginine_RHS.png</figcaption></figure></div></div><h1>Glutamine</h1><figure><img src="tests/samples/glutamine.png" style="margin:0 10px" width="300"><figcaption>Glutamine molecule</figcaption></figure><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/samples/glutamine_LHS.png" style="margin:0 10px" width="300"><figcaption>glutamine_LHS.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/glutamine_link.png" style="margin:0 10px" width="300"><figcaption>glutamine_link.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/glutamine_RHS.png" style="margin:0 10px" width="300"><figcaption>glutamine_RHS.png</figcaption></figure></div></div>
 
 
 # Convert monomers + distribution to a Polymer
