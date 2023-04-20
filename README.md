@@ -199,14 +199,14 @@ html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" wi
 arginines = ['arginine_LHS.png','arginine_link.png', 'arginine_RHS.png']
 html += '<div style="display:flex">'
 for image in arginines:
-    html += f'<figure><img src="tests/samples/{image}" style="margin:0 10px" width="200"><figcaption>{image}</figcaption></figure>'
+    html += f'<div><figure><img src="tests/samples/{image}" style="margin:0 10px" width="200"><figcaption>{image}</figcaption></figure></div>'
 html += '</div>'
 display(HTML(html))
 
 ```
 
 
-<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="200"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="200"><figcaption>arginine_LHS.png</figcaption></figure><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="200"><figcaption>arginine_link.png</figcaption></figure><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="200"><figcaption>arginine_RHS.png</figcaption></figure></div>
+<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="200"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><div><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="200"><figcaption>arginine_LHS.png</figcaption></figure></div><div><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="200"><figcaption>arginine_link.png</figcaption></figure></div><div><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="200"><figcaption>arginine_RHS.png</figcaption></figure></div></div>
 
 
 # Convert monomers + distribution to a Polymer
