@@ -5,8 +5,8 @@ from polytop.visualize import Visualize
 
 def test_2D_monomer():
     arg = Topology.from_ITP('tests/samples/arginine.itp')
-    start = arg.get_bond_by_name('N3','H20')
-    end = arg.get_bond_by_name('C11','O1')
+    start = arg.get_bond('N3','H20')
+    end = arg.get_bond('C11','O1')
     arg_monomer = Monomer(arg,start,end)
     arg_monomer.save('tests/samples/arginine_monomer.json')
 

@@ -153,14 +153,14 @@ def test_remove():
 
 def test_split():
     arg = Topology.from_ITP("tests/samples/arginine.itp")
-    first_polymerization_bond = arg.get_bond_by_name('N3','H20') # H20 replaced with X)
+    first_polymerization_bond = arg.get_bond('N3','H20') # H20 replaced with X)
     LHS,RHS = arg.split(first_polymerization_bond,0)
     assert len(LHS.atoms) == 26
     assert len(RHS.atoms) == 2
     assert LHS.atoms[21-1].is_virtual
     assert RHS.atoms[0].is_virtual
     arg = Topology.from_ITP("tests/samples/arginine.itp")
-    second_polymerization_bond = arg.get_bond_by_name('C11','O1') # O1 replaced with X)
+    second_polymerization_bond = arg.get_bond('C11','O1') # O1 replaced with X)
     LHS,RHS = arg.split(second_polymerization_bond,0)
     assert len(LHS.atoms) == 25
     assert len(RHS.atoms) == 3

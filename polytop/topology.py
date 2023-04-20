@@ -1,4 +1,5 @@
 import copy
+from functools import singledispatchmethod
 import re
 import warnings
 from typing import List, Optional, Tuple
@@ -210,38 +211,56 @@ class Topology:
             for exclusion in self.exclusions:
                 f.write(str(exclusion) + "\n")
 
+    @singledispatchmethod
     def get_atom(self, atom_id: int) -> Atom:
         return next((atom for atom in self.atoms if atom.atom_id == atom_id), None)
+    
+    @get_atom.register
+    def _(self, atom_name: str) -> Atom:
+        return next((atom for atom in self.atoms if atom.atom_name == atom_name), None)
 
+    @singledispatchmethod
     def get_bond(self, atom_a_id: int, atom_b_id: int) -> Bond:
         atom_a = self.get_atom(atom_a_id)
         atom_b = self.get_atom(atom_b_id)
         return Bond.from_atoms(atom_a, atom_b)
 
-    def get_bond_by_name(self, atom_a_name: int, atom_b_name: int) -> Bond:
-        atom_a = next((atom for atom in self.atoms if atom.atom_name == atom_a_name), None)
-        atom_b = next((atom for atom in self.atoms if atom.atom_name == atom_b_name), None)
+    @get_bond.register
+    def _(self, atom_a_name: str, atom_b_name: str) -> Bond:
+        atom_a = self.get_atom(atom_a_name)
+        atom_b = self.get_atom(atom_b_name)
         return Bond.from_atoms(atom_a, atom_b)
 
+    @singledispatchmethod
     def get_angle(self, atom_a_id: int, atom_b_id: int, atom_c_id: int) -> Angle:
         atom_a = self.get_atom(atom_a_id)
         atom_b = self.get_atom(atom_b_id)
         atom_c = self.get_atom(atom_c_id)
         return Angle.from_atoms(atom_a, atom_b, atom_c)
 
-    def get_angle(self, atom_a_id: int, atom_b_id: int, atom_c_id: int) -> Angle:
-        atom_a = self.get_atom(atom_a_id)
-        atom_b = self.get_atom(atom_b_id)
-        atom_c = self.get_atom(atom_c_id)
+    @get_angle.register
+    def _(self, atom_a_name: str, atom_b_name: str, atom_c_name: str) -> Angle:
+        atom_a = self.get_atom(atom_a_name)
+        atom_b = self.get_atom(atom_b_name)
+        atom_c = self.get_atom(atom_c_name)
         return Angle.from_atoms(atom_a, atom_b, atom_c)
 
+    @singledispatchmethod
     def get_dihedral(
         self, atom_a_id: int, atom_b_id: int, atom_c_id: int, atom_d_id: int
-    ) -> Optional[Dihedral]:
+    ) -> Dihedral:
         atom_a = self.get_atom(atom_a_id)
         atom_b = self.get_atom(atom_b_id)
         atom_c = self.get_atom(atom_c_id)
         atom_d = self.get_atom(atom_d_id)
+        return Dihedral.from_atoms(atom_a, atom_b, atom_c, atom_d)
+
+    @get_dihedral.register
+    def _(self, atom_a_name: str, atom_b_name: str, atom_c_name: str, atom_d_name: str) -> Dihedral:
+        atom_a = self.get_atom(atom_a_name)
+        atom_b = self.get_atom(atom_b_name)
+        atom_c = self.get_atom(atom_c_name)
+        atom_d = self.get_atom(atom_d_name)
         return Dihedral.from_atoms(atom_a, atom_b, atom_c, atom_d)
 
     def add_atom(self, atom: Atom):
@@ -316,8 +335,8 @@ class Topology:
         # Create deep copies of the topology
         LHS, RHS = copy.deepcopy(self), copy.deepcopy(self)
 
-        LHS_bond = LHS.get_bond_by_name(lhs_atom_name, rhs_atom_name)
-        RHS_bond = RHS.get_bond_by_name(lhs_atom_name, rhs_atom_name)
+        LHS_bond = LHS.get_bond(lhs_atom_name, rhs_atom_name)
+        RHS_bond = RHS.get_bond(lhs_atom_name, rhs_atom_name)
 
         # Remove atoms before lhs_atom_idx and after rhs_atom_idx
         LHS_atoms_to_remove = list(LHS_bond.RHS())
