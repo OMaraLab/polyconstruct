@@ -51,8 +51,8 @@ NB: ITP topologies do not contain information about bond ordering.  We can manua
 
 
 ```python
-arg.get_bond(23,24).order = 2 # ITP files do not include bond orders
-arg.get_bond(4,8).order = 2
+arg.get_bond('C11','O2').order = 2 # ITP files do not include bond orders
+arg.get_bond('C12','N4').order = 2
 Visualize(arg).create_2D_image('README_files/arginine.png',(400,200))
 from IPython.display import Image
 Image(filename='README_files/arginine.png')
@@ -173,6 +173,15 @@ Once you have multiple molecules configured as monomers you can then polymerize 
 
 from polytop.polymer import Polymer
 
+arg = Topology.from_ITP('tests/samples/arginine.itp')
+start = arg.get_bond(21,20)
+end = arg.get_bond(23,25)
+arg_monomer = Monomer(arg,start,end)
+
+glu=Topology.from_ITP('tests/samples/glutamine.itp')
+start = glu.get_bond(7,8)
+end = glu.get_bond(2,3)
+glu_monomer = Monomer(glu,start,end)
 
 polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
 polymer.save_to_file('tests/samples/polymer.json')
@@ -186,61 +195,33 @@ Image(filename='README_files/polymer.png')
 
     ---------------------------------------------------------------------------
 
-    AttributeError                            Traceback (most recent call last)
+    TypeError                                 Traceback (most recent call last)
 
-    c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\README.ipynb Cell 18 in <cell line: 5>()
-          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=0'>1</a> from polytop.polymer import Polymer
-          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=3'>4</a> polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
-    ----> <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=4'>5</a> polymer.save_to_file('tests/samples/polymer.json')
-          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=5'>6</a> polymer_topology = polymer.get_topology()
-          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=7'>8</a> Visualize(polymer_topology).infer_bond_orders().create_2D_image('tests/samples/polymer.png',(400,200))
+    c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\README.ipynb Cell 16 in <cell line: 15>()
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=12'>13</a> polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=13'>14</a> polymer.save_to_file('tests/samples/polymer.json')
+    ---> <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=14'>15</a> polymer_topology = polymer.get_topology()
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=16'>17</a> Visualize(polymer_topology).infer_bond_orders().create_2D_image('tests/samples/polymer.png',(400,200))
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=17'>18</a> from IPython.display import Image
     
 
-    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:58, in Polymer.save_to_file(self, filename)
-         56 def save_to_file(self, filename: str) -> None:
-         57     with open(filename, "w") as f:
-    ---> 58         json.dump(self.to_dict(), f)
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:39, in Polymer.get_topology(self)
+         36 monomers_remaining = self.num_monomers
+         38 if self.start_monomer:
+    ---> 39     polymer_topology.extend_with_topology(self.start_monomer.LHS)
+         40     monomers_remaining -= 1
+         42 monomers_remaining -= 1
     
 
-    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:76, in Polymer.to_dict(self)
-         65 def to_dict(
-         66     self,
-         67 ) -> Dict[
-       (...)
-         73     ],
-         74 ]:
-         75     return {
-    ---> 76         "monomers": [monomer.to_dict() for monomer in self.monomers],
-         77         "distribution": self.distribution,
-         78         "num_monomers": self.num_monomers,
-         79         "seed": self.seed,
-         80         "start_monomer": self.start_monomer.to_dict()
-         81         if self.start_monomer
-         82         else None,
-         83         "end_monomer": self.end_monomer.to_dict() if self.end_monomer else None,
-         84     }
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\topology.py:369, in Topology.extend_with_topology(self, extension)
+        367 def extend_with_topology(self, extension: "Topology"):
+        368     # TODO extend_with_topology
+    --> 369     end_virtual = self.last_virtual_atom()
+        370     if not end_virtual:
+        371         raise Exception("No virtual atoms in base topology")
     
 
-    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:76, in <listcomp>(.0)
-         65 def to_dict(
-         66     self,
-         67 ) -> Dict[
-       (...)
-         73     ],
-         74 ]:
-         75     return {
-    ---> 76         "monomers": [monomer.to_dict() for monomer in self.monomers],
-         77         "distribution": self.distribution,
-         78         "num_monomers": self.num_monomers,
-         79         "seed": self.seed,
-         80         "start_monomer": self.start_monomer.to_dict()
-         81         if self.start_monomer
-         82         else None,
-         83         "end_monomer": self.end_monomer.to_dict() if self.end_monomer else None,
-         84     }
-    
-
-    AttributeError: 'NoneType' object has no attribute 'to_dict'
+    TypeError: Topology.last_virtual_atom() takes 0 positional arguments but 1 was given
 
 
 To convert this notebook to markdown, run the following command: 

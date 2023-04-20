@@ -82,4 +82,16 @@ def test_bond_serialization():
     assert new_bond.bond_length == bond.bond_length
     assert new_bond.force_constant == bond.force_constant
 
-        
+def test_arg_double_bonds():
+    arg = Topology.from_ITP("tests/samples/arginine.itp")
+    double_bond_1 = arg.get_bond('C11','O2')
+    assert double_bond_1.order == 1
+    assert double_bond_1
+    double_bond_1.order = 2 # ITP files do not include bond orders
+    assert double_bond_1.order == 2
+
+    double_bond_2 = arg.get_bond('C12','N4')
+    assert double_bond_2.order == 1
+    assert double_bond_2
+    double_bond_2.order = 2 # ITP files do not include bond orders
+    assert double_bond_2.order == 2
