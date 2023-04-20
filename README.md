@@ -1,6 +1,6 @@
 # Polytop Library Demonstration
 
-This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomers from molecules, create polymers from monomers and a distribution, and to display 2D and 3D representation of the toplogies.
+This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomer instances, and display a 3D representation of molecules.
 
 ## Importing the Library
 
@@ -121,8 +121,8 @@ viewer.show()
 ```
 
 
-<div id="3dmolviewer_16816845087131624"  style="position: relative; width: 800px; height: 400px">
-        <p id="3dmolwarning_16816845087131624" style="background-color:#ffcccc;color:black">You appear to be running in JupyterLab (or JavaScript failed to load for some other reason).  You need to install the 3dmol extension: <br>
+<div id="3dmolviewer_16820058569475915"  style="position: relative; width: 800px; height: 400px">
+        <p id="3dmolwarning_16820058569475915" style="background-color:#ffcccc;color:black">You appear to be running in JupyterLab (or JavaScript failed to load for some other reason).  You need to install the 3dmol extension: <br>
         <tt>jupyter labextension install jupyterlab_3dmol</tt></p>
         </div>
 <script>
@@ -154,18 +154,18 @@ $3Dmolpromise = null;
   $3Dmolpromise = loadScriptAsync('https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js');
 }
 
-var viewer_16816845087131624 = null;
-var warn = document.getElementById("3dmolwarning_16816845087131624");
+var viewer_16820058569475915 = null;
+var warn = document.getElementById("3dmolwarning_16820058569475915");
 if(warn) {
     warn.parentNode.removeChild(warn);
 }
 $3Dmolpromise.then(function() {
-viewer_16816845087131624 = $3Dmol.createViewer(document.getElementById("3dmolviewer_16816845087131624"),{backgroundColor:"white"});
-viewer_16816845087131624.zoomTo();
-	viewer_16816845087131624.addModel("\n     RDKit          3D\n\n 26 25  0  0  0  0  0  0  0  0999 V2000\n   -4.4272    2.1021   -0.0189 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.5795    1.8672    0.4829 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.8884    2.6032    0.3676 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.0563    0.6917    0.0745 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -4.0211   -0.2526    0.0277 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.6719   -1.2007   -0.0223 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -4.6859   -0.1533    0.7866 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.8120    0.6113   -0.2054 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2844   -0.6689   -0.6641 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.3722   -1.4299    0.1203 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.8342   -1.0136   -1.5481 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1861   -0.4915   -1.0472 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2779    0.3088   -1.7917 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.5275   -1.4179   -1.5216 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.0692   -0.1685    0.1649 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.0064   -0.9882    0.8930 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6740    0.7185    0.6768 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5354    0.0937   -0.2054 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6019    0.8495   -0.9960 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2308   -1.1212   -0.6857 N   0  0  0  0  0  0  0  0  0  0  0  0\n    3.3496   -1.7465    0.1149 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6518   -1.6134   -1.3602 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2597    0.6597    1.0215 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.3988    1.8397    1.3031 O   0  0  0  0  0  0  0  0  0  0  0  0\n    3.7152   -0.2977    1.8646 O   0  0  0  0  0  0  0  0  0  0  0  0\n    4.1491    0.2188    2.5749 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  4  1  0\n  2  3  1  0\n  4  5  1  0\n  4  8  2  3\n  5  7  1  0\n  5  6  1  0\n  8  9  1  0\n  9 10  1  0\n  9 12  1  0\n  9 11  1  0\n 12 15  1  0\n 12 13  1  0\n 12 14  1  0\n 15 18  1  0\n 15 17  1  0\n 15 16  1  0\n 18 20  1  0\n 18 23  1  0\n 18 19  1  0\n 20 21  1  0\n 20 22  1  0\n 23 25  1  0\n 23 24  2  0\n 25 26  1  0\nM  END\n","mol");
-	viewer_16816845087131624.setStyle({"stick": {}});
-	viewer_16816845087131624.zoomTo();
-viewer_16816845087131624.render();
+viewer_16820058569475915 = $3Dmol.createViewer(document.getElementById("3dmolviewer_16820058569475915"),{backgroundColor:"white"});
+viewer_16820058569475915.zoomTo();
+	viewer_16820058569475915.addModel("\n     RDKit          3D\n\n 26 25  0  0  0  0  0  0  0  0999 V2000\n   -4.9951    1.5338   -0.6108 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -4.2088    1.7752   -0.0201 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.7249    2.5864   -0.3951 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.3359    0.7532    0.1060 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.9971   -0.3852    0.4094 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.4059   -1.1235    0.7680 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -4.7767   -0.2138    1.0344 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.0865    0.9576   -0.0677 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1740   -0.1737    0.0520 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1766   -0.5585    1.0788 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4668   -0.9819   -0.6289 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2313    0.3102   -0.3067 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.5103    1.1334    0.3618 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2291    0.7174   -1.3256 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2538   -0.8255   -0.2055 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9192   -1.6527   -0.8452 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2689   -1.2056    0.8244 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6622   -0.3908   -0.6317 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6439    0.0593   -1.6301 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.5625   -1.5671   -0.6878 N   0  0  0  0  0  0  0  0  0  0  0  0\n    3.7368   -1.8712    0.2733 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.0918   -2.3381   -1.1566 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2357    0.6437    0.3439 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2668    1.8537    0.1864 O   0  0  0  0  0  0  0  0  0  0  0  0\n    3.6983    0.0947    1.4923 O   0  0  0  0  0  0  0  0  0  0  0  0\n    4.0376    0.8691    1.9878 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  4  1  0\n  2  3  1  0\n  4  8  2  3\n  4  5  1  0\n  5  7  1  0\n  5  6  1  0\n  8  9  1  0\n  9 12  1  0\n  9 11  1  0\n  9 10  1  0\n 12 14  1  0\n 12 13  1  0\n 12 15  1  0\n 15 17  1  0\n 15 18  1  0\n 15 16  1  0\n 18 23  1  0\n 18 19  1  0\n 18 20  1  0\n 20 22  1  0\n 20 21  1  0\n 23 25  1  0\n 23 24  2  0\n 25 26  1  0\nM  END\n","mol");
+	viewer_16820058569475915.setStyle({"stick": {}});
+	viewer_16820058569475915.zoomTo();
+viewer_16820058569475915.render();
 });
 </script>
 
@@ -187,19 +187,27 @@ start = glu.get_bond(7,8)
 end = glu.get_bond(2,3)
 glu_monomer = Monomer(glu,start,end).save('tests/samples/glutamine_monomer.json')
 
+Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(400,200))
 Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(400,200))
 Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(400,200))
 Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(400,200))
 from IPython.display import Image
 from IPython.core.display import HTML
+html = ''
+html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure>'
+
 arginines = ['arginine_LHS.png','arginine_link.png', 'arginine_RHS.png']
-html = '<div style="display:flex">'
+html += '<div style="display:flex">'
 for image in arginines:
     html += f'<figure><img src="tests/samples/{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure>'
 html += '</div>'
 display(HTML(html))
 
 ```
+
+
+<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="300"><figcaption>arginine_LHS.png</figcaption></figure><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="300"><figcaption>arginine_link.png</figcaption></figure><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="300"><figcaption>arginine_RHS.png</figcaption></figure></div>
+
 
 # Convert monomers + distribution to a Polymer
 
@@ -219,6 +227,66 @@ Visualize(polymer_topology).infer_bond_orders().create_2D_image('tests/samples/p
 from IPython.display import Image
 Image(filename='README_files/polymer.png')
 ```
+
+
+    ---------------------------------------------------------------------------
+
+    AttributeError                            Traceback (most recent call last)
+
+    c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\README.ipynb Cell 18 in <cell line: 5>()
+          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=0'>1</a> from polytop.polymer import Polymer
+          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=3'>4</a> polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
+    ----> <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=4'>5</a> polymer.save_to_file('tests/samples/polymer.json')
+          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=5'>6</a> polymer_topology = polymer.get_topology()
+          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=7'>8</a> Visualize(polymer_topology).infer_bond_orders().create_2D_image('tests/samples/polymer.png',(400,200))
+    
+
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:58, in Polymer.save_to_file(self, filename)
+         56 def save_to_file(self, filename: str) -> None:
+         57     with open(filename, "w") as f:
+    ---> 58         json.dump(self.to_dict(), f)
+    
+
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:76, in Polymer.to_dict(self)
+         65 def to_dict(
+         66     self,
+         67 ) -> Dict[
+       (...)
+         73     ],
+         74 ]:
+         75     return {
+    ---> 76         "monomers": [monomer.to_dict() for monomer in self.monomers],
+         77         "distribution": self.distribution,
+         78         "num_monomers": self.num_monomers,
+         79         "seed": self.seed,
+         80         "start_monomer": self.start_monomer.to_dict()
+         81         if self.start_monomer
+         82         else None,
+         83         "end_monomer": self.end_monomer.to_dict() if self.end_monomer else None,
+         84     }
+    
+
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:76, in <listcomp>(.0)
+         65 def to_dict(
+         66     self,
+         67 ) -> Dict[
+       (...)
+         73     ],
+         74 ]:
+         75     return {
+    ---> 76         "monomers": [monomer.to_dict() for monomer in self.monomers],
+         77         "distribution": self.distribution,
+         78         "num_monomers": self.num_monomers,
+         79         "seed": self.seed,
+         80         "start_monomer": self.start_monomer.to_dict()
+         81         if self.start_monomer
+         82         else None,
+         83         "end_monomer": self.end_monomer.to_dict() if self.end_monomer else None,
+         84     }
+    
+
+    AttributeError: 'NoneType' object has no attribute 'to_dict'
+
 
 To convert this notebook to markdown, run the following command: 
     ```
