@@ -1,6 +1,6 @@
 # Polytop Library Demonstration
 
-This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomer instances, and display a 3D representation of molecules.
+This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomer instances, and display a 2D representation of molecules.
 
 ## Importing the Library
 
@@ -108,68 +108,6 @@ Image(filename='README_files/glutamine.png')
 
 
 
-We can render the topology using 3Dmol (py3DMol) to see what it looks like.
-
-
-```python
-# render display presentation of arginine
-import py3Dmol
-from polytop.visualize import Visualize
-viewer = py3Dmol.view(width=800, height=400)
-Visualize(arg).create_py3Dmol_view(viewer)
-viewer.show()
-```
-
-
-<div id="3dmolviewer_16820058569475915"  style="position: relative; width: 800px; height: 400px">
-        <p id="3dmolwarning_16820058569475915" style="background-color:#ffcccc;color:black">You appear to be running in JupyterLab (or JavaScript failed to load for some other reason).  You need to install the 3dmol extension: <br>
-        <tt>jupyter labextension install jupyterlab_3dmol</tt></p>
-        </div>
-<script>
-
-var loadScriptAsync = function(uri){
-  return new Promise((resolve, reject) => {
-    //this is to ignore the existence of requirejs amd
-    var savedexports, savedmodule;
-    if (typeof exports !== 'undefined') savedexports = exports;
-    else exports = {}
-    if (typeof module !== 'undefined') savedmodule = module;
-    else module = {}
-
-    var tag = document.createElement('script');
-    tag.src = uri;
-    tag.async = true;
-    tag.onload = () => {
-        exports = savedexports;
-        module = savedmodule;
-        resolve();
-    };
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-});
-};
-
-if(typeof $3Dmolpromise === 'undefined') {
-$3Dmolpromise = null;
-  $3Dmolpromise = loadScriptAsync('https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js');
-}
-
-var viewer_16820058569475915 = null;
-var warn = document.getElementById("3dmolwarning_16820058569475915");
-if(warn) {
-    warn.parentNode.removeChild(warn);
-}
-$3Dmolpromise.then(function() {
-viewer_16820058569475915 = $3Dmol.createViewer(document.getElementById("3dmolviewer_16820058569475915"),{backgroundColor:"white"});
-viewer_16820058569475915.zoomTo();
-	viewer_16820058569475915.addModel("\n     RDKit          3D\n\n 26 25  0  0  0  0  0  0  0  0999 V2000\n   -4.9951    1.5338   -0.6108 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -4.2088    1.7752   -0.0201 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.7249    2.5864   -0.3951 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.3359    0.7532    0.1060 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.9971   -0.3852    0.4094 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.4059   -1.1235    0.7680 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -4.7767   -0.2138    1.0344 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.0865    0.9576   -0.0677 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1740   -0.1737    0.0520 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1766   -0.5585    1.0788 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4668   -0.9819   -0.6289 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2313    0.3102   -0.3067 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.5103    1.1334    0.3618 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2291    0.7174   -1.3256 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2538   -0.8255   -0.2055 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9192   -1.6527   -0.8452 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2689   -1.2056    0.8244 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6622   -0.3908   -0.6317 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6439    0.0593   -1.6301 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.5625   -1.5671   -0.6878 N   0  0  0  0  0  0  0  0  0  0  0  0\n    3.7368   -1.8712    0.2733 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.0918   -2.3381   -1.1566 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2357    0.6437    0.3439 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2668    1.8537    0.1864 O   0  0  0  0  0  0  0  0  0  0  0  0\n    3.6983    0.0947    1.4923 O   0  0  0  0  0  0  0  0  0  0  0  0\n    4.0376    0.8691    1.9878 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  4  1  0\n  2  3  1  0\n  4  8  2  3\n  4  5  1  0\n  5  7  1  0\n  5  6  1  0\n  8  9  1  0\n  9 12  1  0\n  9 11  1  0\n  9 10  1  0\n 12 14  1  0\n 12 13  1  0\n 12 15  1  0\n 15 17  1  0\n 15 18  1  0\n 15 16  1  0\n 18 23  1  0\n 18 19  1  0\n 18 20  1  0\n 20 22  1  0\n 20 21  1  0\n 23 25  1  0\n 23 24  2  0\n 25 26  1  0\nM  END\n","mol");
-	viewer_16820058569475915.setStyle({"stick": {}});
-	viewer_16820058569475915.zoomTo();
-viewer_16820058569475915.render();
-});
-</script>
-
-
 # Convert a molecule topology to a monomer 
 
 A monomer is an element that can participate in the formation of a polymer.  A monomer is defined by a topology and a set of polymerization junctions (defined by start and end bonds).  The monomer has 3 potential topologies, a start  unit, a link unit, and an end unit.  Which variant will be used will be determined by the position in the polymer the unit occupies.  The start unit is used for the first monomer in the polymer, the end unit is used for the last monomer in the polymer, and the link unit is used for all other monomers. 
@@ -194,19 +132,19 @@ Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/ar
 from IPython.display import Image
 from IPython.core.display import HTML
 html = ''
-html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="200"><figcaption>Arginine molecule</figcaption></figure>'
+html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure>'
 
 arginines = ['arginine_LHS.png','arginine_link.png', 'arginine_RHS.png']
 html += '<div style="display:flex">'
 for image in arginines:
-    html += f'<div style="display:inline-flex"><figure><img src="tests/samples/{image}" style="margin:0 10px" width="200"><figcaption>{image}</figcaption></figure></div>'
+    html += f'<div style="display:inline-flex"><figure><img src="tests/samples/{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
 html += '</div>'
 display(HTML(html))
 
 ```
 
 
-<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="200"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><div style="display:inline"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="200"><figcaption>arginine_LHS.png</figcaption></figure></div><div style="display:inline"><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="200"><figcaption>arginine_link.png</figcaption></figure></div><div style="display:inline"><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="200"><figcaption>arginine_RHS.png</figcaption></figure></div></div>
+<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="300"><figcaption>arginine_LHS.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="300"><figcaption>arginine_link.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="300"><figcaption>arginine_RHS.png</figcaption></figure></div></div>
 
 
 # Convert monomers + distribution to a Polymer
