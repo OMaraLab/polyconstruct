@@ -195,7 +195,7 @@ Image(filename='README_files/polymer.png')
 
     ---------------------------------------------------------------------------
 
-    TypeError                                 Traceback (most recent call last)
+    Exception                                 Traceback (most recent call last)
 
     c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\README.ipynb Cell 16 in <cell line: 15>()
          <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=12'>13</a> polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
@@ -213,15 +213,15 @@ Image(filename='README_files/polymer.png')
          42 monomers_remaining -= 1
     
 
-    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\topology.py:369, in Topology.extend_with_topology(self, extension)
-        367 def extend_with_topology(self, extension: "Topology"):
-        368     # TODO extend_with_topology
-    --> 369     end_virtual = self.last_virtual_atom()
-        370     if not end_virtual:
-        371         raise Exception("No virtual atoms in base topology")
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\topology.py:371, in Topology.extend_with_topology(self, extension)
+        369 end_virtual = self.last_virtual_atom()
+        370 if not end_virtual:
+    --> 371     raise Exception("No virtual atoms in base topology")
+        372 start_virtual = extension.first_virtual_atom()
+        373 if not start_virtual:
     
 
-    TypeError: Topology.last_virtual_atom() takes 0 positional arguments but 1 was given
+    Exception: No virtual atoms in base topology
 
 
 To convert this notebook to markdown, run the following command: 
