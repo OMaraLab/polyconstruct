@@ -187,10 +187,10 @@ start = glu.get_bond(7,8)
 end = glu.get_bond(2,3)
 glu_monomer = Monomer(glu,start,end).save('tests/samples/glutamine_monomer.json')
 
-Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(400,200))
-Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(400,200))
-Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(400,200))
-Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(400,200))
+Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(200,100))
+Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(200,100))
+Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(200,100))
+Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(200,100))
 from IPython.display import Image
 from IPython.core.display import HTML
 html = ''
