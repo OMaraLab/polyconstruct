@@ -187,26 +187,26 @@ start = glu.get_bond(7,8)
 end = glu.get_bond(2,3)
 glu_monomer = Monomer(glu,start,end).save('tests/samples/glutamine_monomer.json')
 
-Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(200,100))
-Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(200,100))
-Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(200,100))
-Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(200,100))
+Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(400,200))
+Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(400,200))
+Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(400,200))
+Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(400,200))
 from IPython.display import Image
 from IPython.core.display import HTML
 html = ''
-html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure>'
+html += f'<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="200"><figcaption>Arginine molecule</figcaption></figure>'
 
 arginines = ['arginine_LHS.png','arginine_link.png', 'arginine_RHS.png']
 html += '<div style="display:flex">'
 for image in arginines:
-    html += f'<figure><img src="tests/samples/{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure>'
+    html += f'<figure><img src="tests/samples/{image}" style="margin:0 10px" width="200"><figcaption>{image}</figcaption></figure>'
 html += '</div>'
 display(HTML(html))
 
 ```
 
 
-<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="300"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="300"><figcaption>arginine_LHS.png</figcaption></figure><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="300"><figcaption>arginine_link.png</figcaption></figure><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="300"><figcaption>arginine_RHS.png</figcaption></figure></div>
+<figure><img src="tests/samples/arginine.png" style="margin:0 10px" width="200"><figcaption>Arginine molecule</figcaption></figure><div style="display:flex"><figure><img src="tests/samples/arginine_LHS.png" style="margin:0 10px" width="200"><figcaption>arginine_LHS.png</figcaption></figure><figure><img src="tests/samples/arginine_link.png" style="margin:0 10px" width="200"><figcaption>arginine_link.png</figcaption></figure><figure><img src="tests/samples/arginine_RHS.png" style="margin:0 10px" width="200"><figcaption>arginine_RHS.png</figcaption></figure></div>
 
 
 # Convert monomers + distribution to a Polymer
