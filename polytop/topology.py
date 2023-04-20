@@ -353,14 +353,14 @@ class Topology:
         RHS_bond.atom_a.virtualize(index)                
         return LHS, RHS
 
-    def first_virtual_atom() -> Atom:
+    def first_virtual_atom(self) -> Atom:
         # TODO implement Topology first_virtual_atom
         for atom in self.atoms:
             if atom.virtual:
                 return atom
         pass
 
-    def last_virtual_atom() -> Atom:
+    def last_virtual_atom(self) -> Atom:
         # TODO implement Topology last_virtual_atom
         pass
 

@@ -14,6 +14,7 @@ class Visualize:
         topology: Topology,
     ):
         self.topology = topology
+        self.atom_mapping = {}
         self.valencies = {
             "H": 1,
             "F": 1,
@@ -69,15 +70,13 @@ class Visualize:
         lg.setLevel(RDLogger.CRITICAL)
         logging.basicConfig(level=logging.ERROR)
         mol = Chem.RWMol()
-        atom_mapping = {}
-
 
         for atom in self.topology.atoms:
             atom_name = atom.atom_name
             # if the atom is a virtual atom (X), then set the element to H for rdKit 
             element = "H" if atom.atom_type == "X" else re.sub("[^a-zA-Z]", "", atom_name)
             new_atom = Chem.Atom(element)
-            atom_mapping[atom.atom_id] = mol.AddAtom(new_atom)
+            self.atom_mapping[atom.atom_id] = mol.AddAtom(new_atom)
 
         for bond in self.topology.bonds:
             try:
@@ -88,8 +87,8 @@ class Visualize:
                 else:
                     bond_type = Chem.rdchem.BondType.SINGLE
                 mol.AddBond(
-                    atom_mapping[bond.atom_a.atom_id],
-                    atom_mapping[bond.atom_b.atom_id],
+                    self.atom_mapping[bond.atom_a.atom_id],
+                    self.atom_mapping[bond.atom_b.atom_id],
                     bond_type,
                 )
             except KeyError as e:
@@ -100,7 +99,7 @@ class Visualize:
 
         # Label atoms
         for atom in self.topology.atoms:
-            mol_atom = mol.GetAtomWithIdx(atom_mapping[atom.atom_id])
+            mol_atom = mol.GetAtomWithIdx(self.atom_mapping[atom.atom_id])
             atom_name = atom.atom_name
             element = atom.element
             index = atom.index
@@ -141,5 +140,6 @@ class Visualize:
         mol = self.to_rdKit_Chem_mol()
         if remove_explicit_Hs:
             mol = Chem.RemoveHs(mol)
-        img = Draw.MolToImage(mol, size=size)
+        virtual_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == 0]
+        img = Draw.MolToImage(mol, size=size, highlightAtoms=virtual_atoms )
         img.save(filename)
