@@ -64,6 +64,14 @@ class Atom:
     @property
     def element(self):
         return re.sub("[^a-zA-Z]", "", self.atom_name)
+
+    @property
+    def element(self):
+        return re.sub("[^a-zA-Z]", "", self.atom_name)
+    
+    @property 
+    def index(self):
+        return re.sub("[^0-9]", "", self.atom_name)
     
     @property
     def is_virtual(self):

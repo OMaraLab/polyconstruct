@@ -98,19 +98,33 @@ class Visualize:
         # Sanitize the molecule without virtual atoms
         Chem.SanitizeMol(mol)
 
-        # Re-label virtual atoms as element "X"
-        for atom in self.topology.pseudoatoms:
-            pseudoatom = mol.GetAtomWithIdx(atom_mapping[atom.atom_id])
-            pseudoatom.SetAtomicNum(0)
-            pseudoatom.SetProp("RDKIT_ATOM_SYMBOL", "X")
-            pseudoatom.SetFormalCharge(0)
-
+        # Label atoms
+        for atom in self.topology.atoms:
+            mol_atom = mol.GetAtomWithIdx(atom_mapping[atom.atom_id])
+            atom_name = atom.atom_name
+            element = atom.element
+            index = atom.index
+            atom_label=''
+            if not element == "C":
+                if atom.is_virtual:
+                    mol_atom.SetAtomicNum(0)
+                    mol_atom.SetProp("RDKIT_ATOM_SYMBOL", "X")
+                    mol_atom.SetFormalCharge(0)
+                    atom_label = f"X<sub>{index}</sub>"
+                else:
+                    atom_label = element
+                    count_h = sum([1 for neighbour in atom.bond_neighbours() if neighbour.element == "H"])
+                    if count_h == 1:
+                        atom_label += f"H"
+                    elif count_h > 1:
+                        atom_label += f"H<sub>{count_h}</sub>"
+            mol_atom.SetProp("atomLabel", atom_label)
         return mol
 
     def create_py3Dmol_view(self, view=None, show_hydrogens=False):
         # render display presentation of glutamine
         mol = self.to_rdKit_Chem_mol()  # Removed the MolToMolBlock conversion
-        # Chem.SanitizeMol(mol)
+        Chem.SanitizeMol(mol)
         AllChem.EmbedMolecule(mol)
         AllChem.MMFFOptimizeMolecule(mol)
         view.addModel(Chem.MolToMolBlock(mol), "mol")  # Convert to MolBlock for py3Dmol
@@ -127,33 +141,5 @@ class Visualize:
         mol = self.to_rdKit_Chem_mol()
         if remove_explicit_Hs:
             mol = Chem.RemoveHs(mol)
-        Chem.SanitizeMol(mol)
-
-        for atom in mol.GetAtoms():
-            # Check the number of heavy atoms bonded to the current atom
-            heavy_count = 0
-            neighbor_symbols = []
-            for neighbor in atom.GetNeighbors():
-                if neighbor.GetSymbol() != "H":
-                    heavy_count += 1
-                    neighbor_symbols.append(neighbor.GetSymbol())
-
-            # Modify the label of the current atom based on the number of heavy neighbors
-            if atom.GetSymbol() == "C":
-                atom.SetProp("atomLabel", "")
-            elif heavy_count > 1:
-                atom.SetProp("atomLabel", atom.GetSymbol())
-            else:
-                num_h = atom.GetTotalNumHs()
-                if num_h == 0:
-                    atom.SetProp("atomLabel", atom.GetSymbol())
-                elif num_h == 1:
-                    atom.SetProp("atomLabel", f"{atom.GetSymbol()}H")
-                else:
-                    atom.SetProp(
-                        "atomLabel",
-                        f"{atom.GetSymbol()}H<sub>{atom.GetTotalNumHs()}</sub>",
-                    )
-
         img = Draw.MolToImage(mol, size=size)
         img.save(filename)

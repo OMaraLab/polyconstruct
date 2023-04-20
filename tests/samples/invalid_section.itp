@@ -1,7 +1,0 @@
-[ atoms ]
-1   OW     1   SOL     OW     1       -0.8476  15.9994
-2   HW1    1   SOL     HW     1        0.4238   1.0080
-3   HW2    1   SOL     HW     1        0.4238   1.0080
-
-[ invalid_section ]
-1 2 3 
