@@ -1,4 +1,4 @@
-# Polytop Library Demonstration
+# Polytop Library
 
 This Jupyter notebook will demonstrate how to use the Polytop library to load sample ITP files, create monomer instances, and display a 2D representation of molecules.
 
@@ -183,7 +183,7 @@ start = glu.get_bond('C4','O1')
 end = glu.get_bond('N1','H6')
 glu_monomer = Monomer(glu,start,end)
 
-polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
+polymer = Polymer([arg_monomer,glu_monomer],[0,1], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
 polymer.save_to_file('tests/samples/polymer.json')
 polymer_topology = polymer.get_topology()
 
@@ -195,33 +195,25 @@ Image(filename='README_files/polymer.png')
 
     ---------------------------------------------------------------------------
 
-    Exception                                 Traceback (most recent call last)
+    ValueError                                Traceback (most recent call last)
 
-    c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\README.ipynb Cell 16 in <cell line: 15>()
-         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=12'>13</a> polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
-         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=13'>14</a> polymer.save_to_file('tests/samples/polymer.json')
-    ---> <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=14'>15</a> polymer_topology = polymer.get_topology()
-         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=16'>17</a> Visualize(polymer_topology).infer_bond_orders().create_2D_image('tests/samples/polymer.png',(400,200))
-         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X23sZmlsZQ%3D%3D?line=17'>18</a> from IPython.display import Image
+    c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\README.ipynb Cell 16 in <cell line: 13>()
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X21sZmlsZQ%3D%3D?line=9'>10</a> end = glu.get_bond('N1','H6')
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X21sZmlsZQ%3D%3D?line=10'>11</a> glu_monomer = Monomer(glu,start,end)
+    ---> <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X21sZmlsZQ%3D%3D?line=12'>13</a> polymer = Polymer([arg_monomer,glu_monomer],[0,1], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X21sZmlsZQ%3D%3D?line=13'>14</a> polymer.save_to_file('tests/samples/polymer.json')
+         <a href='vscode-notebook-cell:/c%3A/Users/Richard/OneDrive%20-%20Australian%20National%20University/Polytop/polytop/README.ipynb#X21sZmlsZQ%3D%3D?line=14'>15</a> polymer_topology = polymer.get_topology()
     
 
-    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:39, in Polymer.get_topology(self)
-         36 monomers_remaining = self.num_monomers
-         38 if self.start_monomer:
-    ---> 39     polymer_topology.extend_with_topology(self.start_monomer.LHS)
-         40     monomers_remaining -= 1
-         42 monomers_remaining -= 1
+    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\polymer.py:28, in Polymer.__init__(self, monomers, join_atoms_named, distribution, num_monomers, seed, start_monomer, end_monomer)
+         26 for monomer in self.monomers:
+         27     if monomer.link.get_atom(self.join_a) is None and monomer.link.get_atom(self.join_b) is None:
+    ---> 28         raise ValueError(f'All monomer must have virtual nodes named {self.join_a} and {self.join_b}')
+         29 self.distribution = distribution
+         30 self.seed = seed
     
 
-    File c:\Users\Richard\OneDrive - Australian National University\Polytop\polytop\polytop\topology.py:371, in Topology.extend_with_topology(self, extension)
-        369 end_virtual = self.last_virtual_atom()
-        370 if not end_virtual:
-    --> 371     raise Exception("No virtual atoms in base topology")
-        372 start_virtual = extension.first_virtual_atom()
-        373 if not start_virtual:
-    
-
-    Exception: No virtual atoms in base topology
+    ValueError: All monomer must have virtual nodes named 0 and 1
 
 
 To convert this notebook to markdown, run the following command: 

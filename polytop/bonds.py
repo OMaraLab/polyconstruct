@@ -17,7 +17,7 @@ class Bond:
         The first atom involved in the bond.
     atom_b : Atom
         The second atom involved in the bond.
-    bond_type : str
+    bond_type : int
         The type of the bond (e.g., single, double, triple).
     bond_length : float
         The length of the bond.

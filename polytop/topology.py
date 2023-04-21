@@ -354,20 +354,28 @@ class Topology:
         return LHS, RHS
 
     def extend_with_topology(self, extension: "Topology", join_atoms_named: Tuple[str, str] ):
-        # TODO extend_with_topology
         end_virtual = self.get_atom(join_atoms_named[1])
         if not end_virtual:
             raise Exception("No virtual atoms in base topology")
         start_virtual = extension.get_atom(join_atoms_named[0])
         if not start_virtual:
             raise Exception("No virtual atoms in extension topology")
-        last_atom = end_virtual.neighbour()
-        next_atom = start_virtual.neighbour()
-        last_bond = next(last_atom.bonds, None)  # bond backwards into the topology
-        last_angle = next(last_bond.angles, None)  # angle backwards into the topology
-        next_bond = next(next_atom.bonds[0], None)  # bond forwards into the extension
-        next_angle = next(next_bond.angles, None)  # angle forward into the extension
-        
+        last_atom = end_virtual.bond_neighbours().pop()
+        next_atom = start_virtual.bond_neighbours().pop()
+        last_bond = last_atom.bonds.pop()  # bond backwards into the topology
+        # last_angle = last_bond.angles.pop()  # angle backwards into the topology
+        next_bond = next_atom.bonds.pop()  # bond forwards into the extension
+        # next_angle = next_bond.angles.pop()  # angle forward into the extension
+        last_bond.atom_b = next_atom
+        next_bond.atom_a = last_atom
+        next_atom.bonds.add(last_bond)
+        last_atom.bonds.add(next_bond)
+        for atom in self.atoms:
+            if atom == end_virtual:
+                self.atoms.remove(atom)
+        for atom in extension.atoms:
+            if atom != start_virtual:
+                self.add_atom(atom)
 
     def contains_bond(self, candidate: Bond) -> bool:
         return any(bond for bond in self.bonds if bond == candidate)

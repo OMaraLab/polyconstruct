@@ -28,10 +28,12 @@ class Monomer:
         
         if not bond_b_in_B:
             B,A = A,B
+            A.pseudoatoms[0].atom_name,B.pseudoatoms[0].atom_name = B.pseudoatoms[0].atom_name,A.pseudoatoms[0].atom_name
             bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
         B,C = B.split(self.bond_b,self.indexes)
         if len(C.pseudoatoms) >1:
             B,C = C,B
+            B.pseudoatoms[0].atom_name,C.pseudoatoms[0].atom_name = C.pseudoatoms[0].atom_name,B.pseudoatoms[0].atom_name
         
         return A, B, C
 
