@@ -115,23 +115,23 @@ A monomer is an element that can participate in the formation of a polymer.  A m
 
 ```python
 arg = Topology.from_ITP('tests/samples/arginine.itp')
-start = arg.get_bond(21,20)
-end = arg.get_bond(23,25)
+start = arg.get_bond('N3','H20')
+end = arg.get_bond('C11','O1')
 arg_monomer = Monomer(arg,start,end)
 arg_monomer.save('tests/samples/arginine_monomer.json')
 
 glu=Topology.from_ITP('tests/samples/glutamine.itp')
-start = glu.get_bond(7,8)
-end = glu.get_bond(2,3)
+start = glu.get_bond('N1','H6')
+end = glu.get_bond('C4','O1')
 glu_monomer = Monomer(glu,start,end)
 glu_monomer.save('tests/samples/glutamine_monomer.json')
 
-Visualize(arg).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(400,200))
+Visualize(arg_monomer.topology).infer_bond_orders().create_2D_image('tests/samples/arginine.png',(400,200))
 Visualize(arg_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/arginine_LHS.png',(400,200))
 Visualize(arg_monomer.link).infer_bond_orders().create_2D_image('tests/samples/arginine_link.png',(400,200))
 Visualize(arg_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/arginine_RHS.png',(400,200))
 
-Visualize(glu).infer_bond_orders().create_2D_image('tests/samples/glutamine.png',(400,200))
+Visualize(glu_monomer.topology).infer_bond_orders().create_2D_image('tests/samples/glutamine.png',(400,200))
 Visualize(glu_monomer.LHS).infer_bond_orders().create_2D_image('tests/samples/glutamine_LHS.png',(400,200))
 Visualize(glu_monomer.link).infer_bond_orders().create_2D_image('tests/samples/glutamine_link.png',(400,200))
 Visualize(glu_monomer.RHS).infer_bond_orders().create_2D_image('tests/samples/glutamine_RHS.png',(400,200))
@@ -174,13 +174,13 @@ Once you have multiple molecules configured as monomers you can then polymerize 
 from polytop.polymer import Polymer
 
 arg = Topology.from_ITP('tests/samples/arginine.itp')
-start = arg.get_bond(21,20)
-end = arg.get_bond(23,25)
+start = arg.get_bond('N3','H20')
+end = arg.get_bond('C11','O1')
 arg_monomer = Monomer(arg,start,end)
 
 glu=Topology.from_ITP('tests/samples/glutamine.itp')
-start = glu.get_bond(7,8)
-end = glu.get_bond(2,3)
+start = glu.get_bond('C4','O1')
+end = glu.get_bond('N1','H6')
 glu_monomer = Monomer(glu,start,end)
 
 polymer = Polymer([arg_monomer,glu_monomer], [20,80], num_monomers= 12, seed= 42, start_monomer= arg_monomer)
