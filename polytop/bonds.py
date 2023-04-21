@@ -122,7 +122,14 @@ class Bond:
         return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5} {self.bond_length:>10.4f} {self.force_constant:.4e}"
 
     def __repr__(self) -> str:
-        return f"Bond({self.atom_a.atom_id} {'-' if self.order == 1 else '='} {self.atom_b.atom_id})"
+        if self.order == 1:
+            return f"Bond({self.atom_a.atom_id} - {self.atom_b.atom_id})"
+        elif self.order == 2:
+            return f"Bond({self.atom_a.atom_id} = {self.atom_b.atom_id})"
+        elif self.order == 3:
+            return f"Bond({self.atom_a.atom_id} ≡ {self.atom_b.atom_id})"
+        elif self.order == 0:
+            return f"Bond({self.atom_a.atom_id} | {self.atom_b.atom_id})"
 
     def to_dict(self):
         return {

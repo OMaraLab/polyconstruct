@@ -103,13 +103,22 @@ class Atom:
     @property
     def element(self):
         return re.sub("[^a-zA-Z]", "", self.atom_name)
+
+    @property
+    def element(self):
+        return re.sub("[^a-zA-Z]", "", self.atom_name)
+    
+    @property 
+    def index(self):
+        return re.sub("[^0-9]", "", self.atom_name)
     
     @property
     def is_virtual(self):
         return self.atom_type == "X"
     
-    def virtualize(self):
+    def virtualize(self, index: int):
         self.atom_type = "X"
+        self.atom_name = f"X{index}"
         self.mass = 0.0
         self.partial_charge = 0.0
     

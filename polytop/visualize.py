@@ -81,11 +81,14 @@ class Visualize:
         for bond in self.topology.bonds:
             try:
                 if bond.order == 2:
-                    bond_type = Chem.rdchem.BondType.DOUBLE
+                    bond_type = Chem.BondType.DOUBLE
                 elif bond.order == 3:
-                    bond_type = Chem.rdchem.BondType.TRIPLE
+                    bond_type = Chem.BondType.TRIPLE
+                elif bond.order == 1:
+                    bond_type = Chem.BondType.SINGLE
                 else:
-                    bond_type = Chem.rdchem.BondType.SINGLE
+                    bond_type = Chem.BondType.UNSPECIFIED
+
                 mol.AddBond(
                     self.atom_mapping[bond.atom_a.atom_id],
                     self.atom_mapping[bond.atom_b.atom_id],
@@ -140,6 +143,7 @@ class Visualize:
         mol = self.to_rdKit_Chem_mol()
         if remove_explicit_Hs:
             mol = Chem.RemoveHs(mol)
+        
         virtual_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == 0]
         img = Draw.MolToImage(mol, size=size, highlightAtoms=virtual_atoms )
         img.save(filename)

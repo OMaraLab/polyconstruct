@@ -13,6 +13,7 @@ class Polymer:
     def __init__(
         self,
         monomers: List[Monomer],
+        join_atoms_named: Tuple[str, str],
         distribution: List[float],
         num_monomers: int,
         seed: Optional[int] = None,
@@ -20,6 +21,11 @@ class Polymer:
         end_monomer: Optional[Monomer] = None,
     ):
         self.monomers = monomers
+        self.join_a = join_atoms_named[0]
+        self.join_b = join_atoms_named[1]
+        for monomer in self.monomers:
+            if monomer.link.get_atom(self.join_a) is None and monomer.link.get_atom(self.join_b) is None:
+                raise ValueError(f'All monomer must have virtual nodes named {self.join_a} and {self.join_b}')
         self.distribution = distribution
         self.seed = seed
         self.num_monomers = num_monomers
@@ -31,24 +37,29 @@ class Polymer:
         if self.seed:
             random.seed(self.seed)
         else:
-            random.seed = random.randint  # unseeded randomization
+            random.seed()
         # TODO implement build polymer
         monomers_remaining = self.num_monomers
 
         if self.start_monomer:
-            polymer_topology.extend_with_topology(self.start_monomer.LHS)
+            polymer_topology = self.start_monomer.LHS
+            polymer_topology.extend_with_topology(self.start_monomer.link,[self.join_a,self.join_b])
             monomers_remaining -= 1
 
-        monomers_remaining -= 1
+        monomers_remaining -= 1 # subtract 1 from the number of monomers to be added
 
         for _ in range(monomers_remaining):
             chosen_monomer = random.choices(self.monomers, weights=self.distribution)[0]
-            # polymer_topology.extend_with_topology(chosen_monomer.link)
+            if monomers_remaining == self.num_monomers:
+                polymer_topology = chosen_monomer.LHS
+            polymer_topology.extend_with_topology(chosen_monomer.link,[self.join_a,self.join_b])
 
         if self.end_monomer:
-            polymer_topology.extend_with_topology(self.end_monomer.RHS)
+            polymer_topology.extend_with_topology(self.end_monomer.link,[self.join_a,self.join_b])
+            polymer_topology.extend_with_topology(self.end_monomer.RHS,[self.join_a,self.join_b])
         else:
             chosen_monomer = random.choices(self.monomers, weights=self.distribution)[0]
+            polymer_topology.extend_with_topology(chosen_monomer.link)
             polymer_topology.extend_with_topology(chosen_monomer.RHS)
 
         return polymer_topology

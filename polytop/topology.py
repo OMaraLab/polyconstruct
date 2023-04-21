@@ -324,7 +324,7 @@ class Topology:
         reversed_atoms = copied_atoms[::-1]
         return Topology(reversed_atoms, self.preamble, self.molecule_type) 
     
-    def split(self, bond: Bond, index: int) -> Tuple["Topology", "Topology"]:
+    def split(self, bond: Bond, indexes: Tuple[int,int]) -> Tuple["Topology", "Topology"]:
         lhs_atom, rhs_atom = bond.atom_a, bond.atom_b
         if lhs_atom.atom_id > rhs_atom.atom_id:
             lhs_atom, rhs_atom = rhs_atom, lhs_atom
@@ -344,32 +344,21 @@ class Topology:
             if atom != LHS_bond.atom_b:
                 LHS.remove_atom(atom)
         # Replace the respective atoms with virtual atoms
-        LHS_bond.atom_b.virtualize(index)
+        LHS_bond.atom_b.virtualize(indexes[1])
         
         RHS_atoms_to_remove = list(RHS_bond.LHS())
         for atom in RHS_atoms_to_remove:
             if atom != RHS_bond.atom_a:
                 RHS.remove_atom(atom)
-        RHS_bond.atom_a.virtualize(index)                
+        RHS_bond.atom_a.virtualize(indexes[0])                
         return LHS, RHS
 
-    def first_virtual_atom(self) -> Atom:
-        # TODO implement Topology first_virtual_atom
-        for atom in self.atoms:
-            if atom.virtual:
-                return atom
-        pass
-
-    def last_virtual_atom(self) -> Atom:
-        # TODO implement Topology last_virtual_atom
-        pass
-
-    def extend_with_topology(self, extension: "Topology"):
+    def extend_with_topology(self, extension: "Topology", join_atoms_named: Tuple[str, str] ):
         # TODO extend_with_topology
-        end_virtual = self.last_virtual_atom()
+        end_virtual = self.get_atom(join_atoms_named[1])
         if not end_virtual:
             raise Exception("No virtual atoms in base topology")
-        start_virtual = extension.first_virtual_atom()
+        start_virtual = extension.get_atom(join_atoms_named[0])
         if not start_virtual:
             raise Exception("No virtual atoms in extension topology")
         last_atom = end_virtual.neighbour()

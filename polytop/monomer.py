@@ -11,20 +11,25 @@ class SubTopologyType(Enum):
     RHS = "RHS"
     
 class Monomer:
-    def __init__(self, topology: Topology, bond_a: Bond, bond_b: Bond):
+    def __init__(self, topology: Topology, bond_a: Bond, bond_b: Bond, indexes:Tuple[int,int]=None):
         self.topology = topology
         self.bond_a = bond_a
         self.bond_b = bond_b
+        self.indexes = indexes
+        if self.indexes is None:
+            self.indexes = (0,1)
         self.LHS, self.link, self.RHS = self.build_monomer()
 
     def build_monomer(self) -> Tuple[Topology, Topology, Topology]:
-        A,B = self.topology.split(self.bond_a,0)
+        self.bond_a.order = 0
+        self.bond_b.order = 0
+        A,B = self.topology.split(self.bond_a,self.indexes)
         bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
         
         if not bond_b_in_B:
             B,A = A,B
             bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
-        B,C = B.split(self.bond_b,1)
+        B,C = B.split(self.bond_b,self.indexes)
         if len(C.pseudoatoms) >1:
             B,C = C,B
         
@@ -34,16 +39,18 @@ class Monomer:
     def to_dict(self):
         return{
             "topology": self.topology.to_dict(),
-            "bond_a": self.bond_a.to_dict(),
-            "bond_b": self.bond_b.to_dict(),
+            "bond_a": {'a':self.bond_a.atom_a.atom_name,'b':self.bond_a.atom_b.atom_name},
+            "bond_b": {'a':self.bond_b.atom_a.atom_name,'b':self.bond_b.atom_b.atom_name},
+            "indexes": {'a':self.indexes[0],'b':self.indexes[1]}
         }
 
     @classmethod
     def from_dict(cls, data):
         topology = Topology.from_dict(data["topology"])
-        bond_a = Bond.from_dict(data["bond_a"],topology.atoms)
-        bond_b = Bond.from_dict(data["bond_b"],topology.atoms)
-        return cls(topology, bond_a, bond_b)
+        bond_a = topology.get_bond(data["bond_a"]["a"],data["bond_a"]["b"])
+        bond_b = topology.get_bond(data["bond_b"]["a"],data["bond_b"]["b"])
+        indexes = (data['indexes']['a'],data['indexes']['b'])
+        return cls(topology, bond_a, bond_b, indexes)
 
     def save(self, file_path):
 

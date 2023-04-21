@@ -21,17 +21,13 @@ class Monomer:
         self.LHS, self.link, self.RHS = self.build_monomer()
 
     def build_monomer(self) -> Tuple[Topology, Topology, Topology]:
-        # build 3 sub-topologies before (LHS) and after (RHS) and between (link) the 2 bonds
-        # create 3 topologies LHS (before bond_b), RHS (after bond_a) and link (between bonds a and b)
-        # distribute lost charges in each topology
-        # return a tuple of 3 topologies
-        A,B = self.topology.split(self.bond_a)
-        bond_b_in_B = B.get_bond_by_name(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
+        A,B = self.topology.split(self.bond_a,0)
+        bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
         
         if not bond_b_in_B:
             B,A = A,B
-            bond_b_in_B = B.get_bond_by_name(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
-        B,C = B.split(self.bond_b)
+            bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
+        B,C = B.split(self.bond_b,1)
         if len(C.pseudoatoms) >1:
             B,C = C,B
         
