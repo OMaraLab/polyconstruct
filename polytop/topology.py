@@ -66,7 +66,7 @@ class Topology:
 
     @property
     def pseudoatoms(self) -> List[Atom]:
-        return [atom for atom in self.atoms if atom.is_virtual]
+        return {atom.index: atom for atom in self.atoms if atom.is_virtual}
 
     @property
     def bonds(self) -> List[Bond]:
@@ -353,11 +353,11 @@ class Topology:
         RHS_bond.atom_a.virtualize(indexes[0])                
         return LHS, RHS
 
-    def extend_with_topology(self, extension: "Topology", join_atoms_named: Tuple[str, str] ):
-        end_virtual = self.get_atom(join_atoms_named[1])
+    def extend_with_topology(self, extension: "Topology", joints: Tuple[str, str] ):
+        end_virtual = self.get_atom(joints[1])
         if not end_virtual:
             raise Exception("No virtual atoms in base topology")
-        start_virtual = extension.get_atom(join_atoms_named[0])
+        start_virtual = extension.get_atom(joints[0])
         if not start_virtual:
             raise Exception("No virtual atoms in extension topology")
         last_atom = end_virtual.bond_neighbours().pop()

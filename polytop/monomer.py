@@ -23,18 +23,25 @@ class Monomer:
     def build_monomer(self) -> Tuple[Topology, Topology, Topology]:
         self.bond_a.order = 0
         self.bond_b.order = 0
-        A,B = self.topology.split(self.bond_a,self.indexes)
+        A,B = self.topology.split(self.bond_a,self.indexes) #TODO make sure indexes is being used
         bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
         
-        if not bond_b_in_B:
+        if not bond_b_in_B: # B is on the LHS so swap A and B
             B,A = A,B
-            A.pseudoatoms[0].atom_name,B.pseudoatoms[0].atom_name = B.pseudoatoms[0].atom_name,A.pseudoatoms[0].atom_name
+            pseudoatom_a = A.pseudoatoms[self.indexes[0]]    #TODO make sure indexes is being used
+            pseudoatom_a.index = self.indexes[1]
+            pseudoatom_b = B.pseudoatoms[self.indexes[1]]
+            pseudoatom_b.index = self.indexes[0]
             bond_b_in_B = B.get_bond(self.bond_b.atom_a.atom_name, self.bond_b.atom_b.atom_name)
         B,C = B.split(self.bond_b,self.indexes)
-        if len(C.pseudoatoms) >1:
+        if len(C.pseudoatoms) >1: # B is on the RHS so swap B and C
             B,C = C,B
-            B.pseudoatoms[0].atom_name,C.pseudoatoms[0].atom_name = C.pseudoatoms[0].atom_name,B.pseudoatoms[0].atom_name
-        
+            pseudoatom_b_left = B.pseudoatoms[self.indexes[1]]
+            pseudoatom_b_left.index = self.indexes[0]
+            pseudoatom_b_right = B.pseudoatoms[self.indexes[0]]
+            pseudoatom_b_right.index = self.indexes[1]
+            pseudoatom_c = C.pseudoatoms[self.indexes[0]]
+            pseudoatom_c.index = self.indexes[0]
         return A, B, C
 
 

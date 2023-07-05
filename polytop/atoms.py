@@ -62,16 +62,20 @@ class Atom:
         self.visited = False
 
     @property
-    def element(self):
+    def element(self) -> str:
         return re.sub("[^a-zA-Z]", "", self.atom_name)
 
-    @property
-    def element(self):
-        return re.sub("[^a-zA-Z]", "", self.atom_name)
-    
+    @element.setter
+    def element(self, value: str):
+        self.atom_name = f"{value}{self.index}"
+
     @property 
-    def index(self):
-        return re.sub("[^0-9]", "", self.atom_name)
+    def index(self) -> int:
+        return int(re.sub("[^0-9]", "", self.atom_name))
+    
+    @index.setter
+    def index(self, value: int):
+        self.atom_name = f"{self.element}{value}"
     
     @property
     def is_virtual(self):
