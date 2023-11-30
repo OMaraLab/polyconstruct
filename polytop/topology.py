@@ -230,6 +230,17 @@ class Topology:
             for exclusion in self.exclusions:
                 f.write(str(exclusion) + "\n")
 
+    @property
+    def netcharge(self):
+        return sum(atom.partial_charge for atom in self.atoms)
+
+    @netcharge.setter
+    def netcharge(self, new_netcharge):
+        old_netcharge = self.netcharge
+        charge_difference_per_atom = (new_netcharge - old_netcharge) / len(self.atoms)
+        for atom in self.atoms:
+            atom.partial_charge += charge_difference_per_atom
+            
     @singledispatchmethod
     def get_atom(self, atom_id: int) -> Atom:
         return next((atom for atom in self.atoms if atom.atom_id == atom_id), None)

@@ -181,3 +181,19 @@ def test_serialization():
     assert len(arg.pairs) == len(new_dihedral.pairs)
     assert len(arg.exclusions) == len(new_dihedral.exclusions)
     assert arg.molecule_type == new_dihedral.molecule_type
+
+def is_close(actual,expected) -> bool:
+    return abs(actual-expected) < 1e-6
+    
+    
+def test_net_charge():
+    arg = Topology.from_ITP("tests/samples/arginine.itp")
+    assert is_close(arg.netcharge, 0)
+    # change the net charge 
+    arg.netcharge = 1
+    assert is_close(arg.netcharge, 1)
+    # change the net charge to a fraction of a negative value
+    arg.netcharge = -0.5
+    assert is_close(arg.netcharge, -0.5)
+    arg.to_ITP("tests/samples/arginine_negative_charge.itp")
+    
