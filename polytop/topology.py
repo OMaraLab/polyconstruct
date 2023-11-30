@@ -57,6 +57,25 @@ class Topology:
         self.preamble = preamble or []
         self.reorder_atoms()
         
+    def copy(self):
+        new_topology = Topology(
+            atoms=copy.deepcopy(self.atoms),
+            preamble=copy.deepcopy(self.preamble),
+            molecule_type=copy.deepcopy(self.molecule_type)
+        )
+        # add bonds, angles, dihedrals, pairs and exclusions
+        for bond in self.bonds:
+            new_topology.bonds.append(copy.deepcopy(bond))
+        for angle in self.angles:
+            new_topology.angles.append(copy.deepcopy(angle))
+        for dihedral in self.dihedrals:
+            new_topology.dihedrals.append(copy.deepcopy(dihedral))
+        for pair in self.pairs:
+            new_topology.pairs.append(copy.deepcopy(pair))
+        for exclusion in self.exclusions:
+            new_topology.exclusions.append(copy.deepcopy(exclusion))
+        return new_topology
+            
     @property
     def name(self) -> str:
         return "Unknown" if self.molecule_type is None else self.molecule_type.name
@@ -287,19 +306,34 @@ class Topology:
             topology.add_atom(atom)
 
         for bond_data in data["bonds"]:
-            Bond.from_dict(bond_data,topology.atoms)
+            try:
+                Bond.from_dict(bond_data,topology.atoms)
+            except ValueError:
+                pass # if we get an error because a bond has lost an atom, just ignore it
 
         for angle_data in data["angles"]:
-            Angle.from_dict(angle_data,topology.atoms)
+            try:
+                Angle.from_dict(angle_data,topology.atoms)
+            except ValueError:
+                pass # if we get an error because an angle has lost an atom, just ignore it
 
         for dihedral_data in data["dihedrals"]:
-            Dihedral.from_dict(dihedral_data,topology.atoms)
+            try:
+                Dihedral.from_dict(dihedral_data,topology.atoms)
+            except ValueError:
+                pass # if we get an error because a dihedral has lost an atom, just ignore it
 
         for pair_data in data["pairs"]:
-            Pair.from_dict(pair_data,topology.atoms)
+            try:
+                Pair.from_dict(pair_data,topology.atoms)
+            except ValueError:
+                pass # if we get an error because a pair has lost an atom, just ignore it
 
         for exclusion_data in data["exclusions"]:
-            Exclusion.from_dict(exclusion_data,topology.atoms)
+            try:
+                Exclusion.from_dict(exclusion_data,topology.atoms)
+            except ValueError:
+                pass # if we get an error because an exclusion has lost an atom, just ignore it
         
         for preamble_line in data["preamble"]:
             topology.preamble.append(preamble_line)
@@ -309,15 +343,42 @@ class Topology:
         return topology
 
     def remove_atom(self, atom: Atom):
-        '''Remove an atom and all bonds, angles and dihedrals associated with it'''
-        if atom not in self.atoms:
-            raise ValueError("Atom not in topology")
-        atom.remove()
-        self.atoms.remove(atom)        
+        '''Remove an atom and all bonds, angles and dihedrals associated with it - ignore errors if the atom is not present'''
+        try:
+            atom.remove()
+            self.atoms.remove(atom)        
+        except ValueError:
+            pass
         
+
     def reorder_atoms(self):
         for i in range(len(self.atoms)):
             self.atoms[i].atom_id = i + 1  # note atom id's are 1 indexed
+            
+    def renumber_atoms(self, start):
+        for atom in self.atoms:
+            atom.atom_id = atom.atom_id + start
+
+    def add(self, topology):
+        self.atoms.extend(topology.atoms)
+        for bond in topology.bonds:
+            new_bond = Bond.from_dict(bond.to_dict(), self.atoms)
+            self.bonds.append(new_bond)
+        for angle in topology.angles:
+            new_angle = Angle.from_dict(angle.to_dict(), self.atoms)
+            self.angles.append(new_angle)
+        for dihedral in topology.dihedrals:
+            try:  # if we get an error because a dihedral has lost an atom, just ignore it
+                new_dihedral = Dihedral.from_dict(dihedral.to_dict(), self.atoms)
+                self.dihedrals.append(new_dihedral)
+            except ValueError:
+                pass
+        for pair in topology.pairs:
+            new_pair = Pair.from_dict(pair.to_dict(), self.atoms)
+            self.pairs.append(new_pair)
+        for exclusion in topology.exclusions:
+            new_exclusion = Exclusion.from_dict(exclusion.to_dict(), self.atoms)
+            self.exclusions.append(new_exclusion)
 
     def reverse(self) -> "Topology":
         copied_atoms = copy.deepcopy(self.atoms)
@@ -379,3 +440,6 @@ class Topology:
 
     def contains_bond(self, candidate: Bond) -> bool:
         return any(bond for bond in self.bonds if bond == candidate)
+    
+    def __repr__(self) -> str:
+        return f"Topology: ({len(self.atoms)} atoms)"

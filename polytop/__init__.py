@@ -24,3 +24,5 @@ from .pairs import Pair
 from .polymer import Polymer
 from .topology import Topology
 from .visualize import Visualize
+from .junction import Junction
+from .polymerization_type import PolymerizationType

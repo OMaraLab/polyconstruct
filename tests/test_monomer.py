@@ -1,28 +1,40 @@
 import json
 from polytop.monomer import Monomer
 from polytop.topology import Topology
+from polytop.junction import Junction, Junctions
 
 
 def test_monomer():
     arg = Topology.from_ITP("tests/samples/arginine.itp")
     bond_a = arg.get_bond('N3','H20')
     bond_b = arg.get_bond('C11','O1')
-    monomer = Monomer(arg, bond_a, bond_b)
-    assert len(monomer.LHS.atoms) == 2
-    assert len(monomer.link.atoms) == 26-3+2
-    assert len(monomer.RHS.atoms) == 3
+    
+    monomer = Monomer(arg, [Junction("A",bond_a), Junction("C",bond_b)])
+    
+    assert len(monomer.topology.atoms) == 26
+    assert len(monomer.junctions.get_junctions()) == 2
+    assert monomer.junctions.named("A")[0].location.atom_a.atom_name == 'N3'
+    assert monomer.junctions.named("A")[0].location.atom_b.atom_name == 'H20'
+    assert monomer.junctions.named("C")[0].location.atom_a.atom_name == 'C11'
+    assert monomer.junctions.named("C")[0].location.atom_b.atom_name == 'O1'
     
 def test_serializable():
     arg = Topology.from_ITP("tests/samples/arginine.itp")
     bond_a = arg.get_bond('N3','H20')
     bond_b = arg.get_bond('C11','O1')
-    monomer = Monomer(arg, bond_a, bond_b)
+    junctions = Junctions()
+    junctions.add(Junction("A",bond_a))
+    junctions.add(Junction("C",bond_b))
+ 
+    
+    monomer = Monomer(arg, junctions)
     monomer.save("tests/samples/arg.json")
     
     new_monomer = Monomer.load("tests/samples/arg.json")
     assert len(monomer.topology.atoms) == len(new_monomer.topology.atoms)
-    assert monomer.bond_a.atom_a.atom_id == new_monomer.bond_a.atom_a.atom_id
-    assert monomer.bond_a.atom_b.atom_id == new_monomer.bond_a.atom_b.atom_id
-    
-    
-    
+    assert monomer.junctions.get_junctions()[0].name == new_monomer.junctions.get_junctions()[0].name
+    assert monomer.junctions.get_junctions()[1].name == new_monomer.junctions.get_junctions()[1].name
+    assert monomer.junctions.get_junctions()[0].location.atom_a.atom_name == new_monomer.junctions.get_junctions()[0].location.atom_a.atom_name
+    assert monomer.junctions.get_junctions()[0].location.atom_b.atom_name == new_monomer.junctions.get_junctions()[0].location.atom_b.atom_name
+    assert monomer.junctions.get_junctions()[1].location.atom_a.atom_name == new_monomer.junctions.get_junctions()[1].location.atom_a.atom_name
+    assert monomer.junctions.get_junctions()[1].location.atom_b.atom_name == new_monomer.junctions.get_junctions()[1].location.atom_b.atom_name

@@ -36,6 +36,8 @@ class Bond:
         force_constant: float,
         order: int = 1,
     ) -> None:
+        if atom_a is None or atom_b is None:
+            raise ValueError("Bond must have two atoms")
         self.atom_a = atom_a
         self.atom_b = atom_b
         if self.atom_a.atom_id > self.atom_b.atom_id:  # keep atom order ascending
@@ -130,6 +132,8 @@ class Bond:
             return f"Bond({self.atom_a.atom_id} ≡ {self.atom_b.atom_id})"
         elif self.order == 0:
             return f"Bond({self.atom_a.atom_id} | {self.atom_b.atom_id})"
+        else:
+            return f"Bond({self.atom_a.atom_id} {self.atom_b.atom_id})"
 
     def to_dict(self):
         return {
