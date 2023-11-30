@@ -45,7 +45,7 @@ def test_polymer():
         polymer.extend(arg_monomer, from_junction_name= 'C', to_junction_name= 'N1')
                 
     # add another monomer (80:20::GLU:ARG) to the branches of any remaining junction points
-    while polymer.has_junction("A2"):
+    while polymer.has_junction("N2"):
         if random.random() < 0.2:
             polymer.extend(arg_monomer, from_junction_name= 'N2', to_junction_name= 'C')
         else:
