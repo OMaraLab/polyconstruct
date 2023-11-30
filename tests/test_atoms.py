@@ -25,7 +25,7 @@ def test_atom_creation()->None:
 
 def test_repr():
     arg=Topology.from_ITP("tests/samples/arginine.itp")
-    assert arg.atoms[0].__repr__()=='Atom(1H)->[2]'
+    assert arg.atoms[0].__repr__()=='Atom(1H)->[2] charge=0.412'
     
 def test_pseudoatoms():
     atom = Atom(

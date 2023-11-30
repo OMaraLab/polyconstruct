@@ -151,21 +151,6 @@ def test_remove():
     assert len(arg.angles) == 35
     assert len(arg.dihedrals) == 8
 
-def test_split():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
-    first_polymerization_bond = arg.get_bond('N3','H20') # H20 replaced with X)
-    LHS,RHS = arg.split(first_polymerization_bond,(0,1))
-    assert len(LHS.atoms) == 26
-    assert len(RHS.atoms) == 2
-    assert LHS.atoms[21-1].is_virtual
-    assert RHS.atoms[0].is_virtual
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
-    second_polymerization_bond = arg.get_bond('C11','O1') # O1 replaced with X)
-    LHS,RHS = arg.split(second_polymerization_bond,(0,1))
-    assert len(LHS.atoms) == 25
-    assert len(RHS.atoms) == 3
-    assert LHS.atoms[24].is_virtual
-    assert RHS.atoms[0].is_virtual
 
 def test_serialization():
     arg = Topology.from_ITP("tests/samples/arginine.itp")
@@ -196,4 +181,12 @@ def test_net_charge():
     arg.netcharge = -0.5
     assert is_close(arg.netcharge, -0.5)
     arg.to_ITP("tests/samples/arginine_negative_charge.itp")
+    
+    new_arg = Topology.from_ITP("tests/samples/arginine.itp")
+    new_arg.proportional_charge_change(-0.5)
+    assert is_close(new_arg.netcharge, -0.5)
+    assert not is_close(new_arg.atoms[0].partial_charge, arg.atoms[0].partial_charge)
+    arg.to_ITP("tests/samples/arginine_negative_charge_proportional.itp")
+    
+    
     

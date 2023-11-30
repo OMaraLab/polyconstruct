@@ -8,6 +8,17 @@ class Atom:
 
 
 class Pair:
+    """ 
+    Represents interactions between a pair of atoms in a molecular system not reflected by bonds.
+    Attributes
+    ----------
+    atom_a : Atom
+        The first atom involved in the pair.
+    atom_b : Atom
+        The second atom involved in the pair.
+    pair_type : int
+        The type of the pair (e.g., 1-4 interactions).
+    """
     def __init__(self, atom_a: Atom, atom_b: Atom, pair_type: int):
         self.atom_a = atom_a
         self.atom_b = atom_b

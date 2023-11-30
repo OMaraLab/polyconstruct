@@ -113,7 +113,7 @@ class Atom:
         return f"{self.atom_id:5} {self.atom_type:5} {self.residue_id:5} {self.residue_name:5} {self.atom_name:5} {self.charge_group_num:5} {self.partial_charge:9.3f} {self.mass:9.4f}"
 
     def __repr__(self) -> str:
-        return f"Atom({self.atom_id}{self.element})->[{','.join([str(bond.other_atom(self).atom_id) for bond in self.bonds])}]"
+        return f"Atom({self.atom_id}{self.element})->[{','.join([str(bond.other_atom(self).atom_id) for bond in self.bonds])}] charge={self.partial_charge}"
 
     def remove(self):
         while self.bonds:
