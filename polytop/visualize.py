@@ -190,21 +190,28 @@ class Visualize:
         d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1])
         opt = d.drawOptions()
         
+        junction_color = (0,0,1,.2)
+        text_color = (0,0,0,1)
         opt.minFontSize = 16
         opt.highlightBondWidthMultiplier = 16
         opt.annotationFontScale = 1.2
-        opt.setAnnotationColour((.3,.3,0))
-        opt.setHighlightColour((1,1,0))
+        opt.setAnnotationColour(text_color)
+        opt.setHighlightColour(junction_color)
         
         
         mol_bonds = mol.GetBonds()
         junction_bonds = [bond.GetIdx() for bond in mol_bonds if bond.HasProp("Junction")]
-        junction_bonds_colors = {bond: (1,1,0) for bond in junction_bonds}
+        junction_bonds_colors = {bond: junction_color for bond in junction_bonds}
 
         junction_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.HasProp("Junction")]
+        junction_atoms = [] # disable highlighting of junction atoms
 
         # Draw the molecule
-        d.DrawMolecule(mol,highlightAtoms=junction_atoms, highlightBonds=junction_bonds)
+        if self.topology.title:
+            d.SetFontSize(0.75)  # Adjust the font size as needed
+            rdMolDraw2D.PrepareAndDrawMolecule(d, mol, legend=self.topology.title, highlightAtoms=junction_atoms, highlightBonds=junction_bonds, highlightAtomColors=None, highlightBondColors=junction_bonds_colors)
+        else:
+            d.DrawMolecule(mol, highlightAtoms=junction_atoms, highlightBonds=junction_bonds, highlightAtomColors=None, highlightBondColors=junction_bonds_colors)
 
         # Finish drawing
         d.FinishDrawing()
@@ -212,3 +219,6 @@ class Visualize:
         # Save the image
         with open(filename, 'wb') as f:
             f.write(d.GetDrawingText())
+
+
+    

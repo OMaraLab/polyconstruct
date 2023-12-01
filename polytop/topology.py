@@ -55,6 +55,9 @@ class Topology:
         self.molecule_type = molecule_type
         self.atoms = atoms or []
         self.preamble = preamble or []
+        self.title = "Unknown molecule"
+        if self.preamble and self.preamble[1].startswith(';'):
+            self.title = self.preamble[1].lstrip('; ')
         self.reorder_atoms()
         
     def copy(self):
