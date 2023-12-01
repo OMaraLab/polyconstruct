@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from polytop.angles import Angle
 from polytop.atoms import Atom
 from polytop.dihedrals import Dihedral, Dihedral_type
@@ -234,7 +235,7 @@ def test_dihedrals_storage()->None:
     assert dihedral_abcd in angle_abc.dihedrals
     assert dihedral_abcd in angle_bcd.dihedrals
 
-def test_dihedral_serialization():
+def test_dihedral_serialization(output_dir: Path):
     atomlist = [
         Atom(
             atom_id=1,
@@ -286,12 +287,13 @@ def test_dihedral_serialization():
     Angle(atomlist[1], atomlist[2], atomlist[3], angle_type="1", angle_value=109.5, force_constant=29288.0)
     
     dihedral = Dihedral(atomlist[0], atomlist[1], atomlist[2], atomlist[3], dihedral_type=Dihedral_type.proper, phase_angle=0.0, force_constant=0.0, multiplicity=1)
-    dihedral_dict = dihedral.to_dict()
-    with open("tests/samples/dihedral.json", "w") as f:
-        json.dump(dihedral_dict, f)
-    with open("tests/samples/dihedral.json", "r") as f:
-        new_dihedral = Dihedral.from_dict(json.load(f),atoms=atomlist)
         
+    # Write to the file
+    (output_dir / "dihedral.json").write_text(json.dumps(dihedral.to_dict()))
+
+    # Read from the file
+    new_dihedral = Dihedral.from_dict(json.loads((output_dir / "dihedral.json").read_text()),atoms=atomlist)
+            
     assert dihedral.atom_a.atom_id == new_dihedral.atom_a.atom_id
     assert dihedral.atom_b.atom_id == new_dihedral.atom_b.atom_id
     assert dihedral.atom_c.atom_id == new_dihedral.atom_c.atom_id

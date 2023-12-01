@@ -418,59 +418,6 @@ class Topology:
         reversed_atoms = copied_atoms[::-1]
         return Topology(reversed_atoms, self.preamble, self.molecule_type) 
     
-    # def split(self, bond: Bond, indexes: Tuple[int,int]) -> Tuple["Topology", "Topology"]:
-    #     lhs_atom, rhs_atom = bond.atom_a, bond.atom_b
-    #     if lhs_atom.atom_id > rhs_atom.atom_id:
-    #         lhs_atom, rhs_atom = rhs_atom, lhs_atom
-
-    #     lhs_atom_name = lhs_atom.atom_name # store the atom names so that we can find them in the fragments
-    #     rhs_atom_name = rhs_atom.atom_name            
-            
-    #     # Create deep copies of the topology
-    #     LHS, RHS = copy.deepcopy(self), copy.deepcopy(self)
-
-    #     LHS_bond = LHS.get_bond(lhs_atom_name, rhs_atom_name)
-    #     RHS_bond = RHS.get_bond(lhs_atom_name, rhs_atom_name)
-
-    #     # Remove atoms before lhs_atom_idx and after rhs_atom_idx
-    #     LHS_atoms_to_remove = list(LHS_bond.RHS())
-    #     for atom in LHS_atoms_to_remove:
-    #         if atom != LHS_bond.atom_b:
-    #             LHS.remove_atom(atom)
-    #     # Replace the respective atoms with virtual atoms
-    #     LHS_bond.atom_b.virtualize(indexes[1])
-        
-    #     RHS_atoms_to_remove = list(RHS_bond.LHS())
-    #     for atom in RHS_atoms_to_remove:
-    #         if atom != RHS_bond.atom_a:
-    #             RHS.remove_atom(atom)
-    #     RHS_bond.atom_a.virtualize(indexes[0])                
-    #     return LHS, RHS
-
-    # def extend_with_topology(self, extension: "Topology", joints: Tuple[str, str] ):
-    #     end_virtual = self.get_atom(joints[1])
-    #     if not end_virtual:
-    #         raise Exception("No virtual atoms in base topology")
-    #     start_virtual = extension.get_atom(joints[0])
-    #     if not start_virtual:
-    #         raise Exception("No virtual atoms in extension topology")
-    #     last_atom = end_virtual.bond_neighbours().pop()
-    #     next_atom = start_virtual.bond_neighbours().pop()
-    #     last_bond = last_atom.bonds.pop()  # bond backwards into the topology
-    #     # last_angle = last_bond.angles.pop()  # angle backwards into the topology
-    #     next_bond = next_atom.bonds.pop()  # bond forwards into the extension
-    #     # next_angle = next_bond.angles.pop()  # angle forward into the extension
-    #     last_bond.atom_b = next_atom
-    #     next_bond.atom_a = last_atom
-    #     next_atom.bonds.add(last_bond)
-    #     last_atom.bonds.add(next_bond)
-    #     for atom in self.atoms:
-    #         if atom == end_virtual:
-    #             self.atoms.remove(atom)
-    #     for atom in extension.atoms:
-    #         if atom != start_virtual:
-    #             self.add_atom(atom)
-
     def contains_bond(self, candidate: Bond) -> bool:
         return any(bond for bond in self.bonds if bond == candidate)
     

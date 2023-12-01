@@ -1,11 +1,12 @@
 import json
+from pathlib import Path
 from polytop.monomer import Monomer
 from polytop.topology import Topology
 from polytop.junction import Junction, Junctions
 
 
-def test_junctions():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_junctions(data_dir: Path):
+    arg = Topology.from_ITP(data_dir / "arginine.itp")
     carboxylic_junction = Junction("carboxylic",arg.get_bond('C11','O1'))
     amine1_junction = Junction("amine",arg.get_bond('N3','H20'))
     amine2_junction = Junction("amine",arg.get_bond('N6','H23'))
@@ -14,22 +15,25 @@ def test_junctions():
     assert junctions.named("carboxylic") == [carboxylic_junction]
     assert junctions.named("amine") == [amine1_junction, amine2_junction]
 
-def test_junction_serialization():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_junction_serialization(data_dir: Path, output_dir: Path):
+    arg = Topology.from_ITP(data_dir / "arginine.itp")
     atoms = arg.atoms
     carboxylic_junction = Junction("carboxylic",arg.get_bond('C11','O1'))
-    with open("tests/samples/cjunction.json", "w") as f:
-        json.dump(carboxylic_junction.to_dict(), f)
-    with open("tests/samples/cjunction.json", "r") as f:
-        new_junction = Junction.from_dict(json.load(f), atoms)
+    
+    # Write to the file
+    (output_dir / "junction.json").write_text(json.dumps(carboxylic_junction.to_dict()))
+
+    # Read from the file
+    new_junction = Junction.from_dict(json.loads((output_dir / "junction.json").read_text()),atoms)
+    
     assert carboxylic_junction.name == new_junction.name
     assert carboxylic_junction.location.atom_a.atom_name == new_junction.location.atom_a.atom_name
     assert carboxylic_junction.location.atom_b.atom_name == new_junction.location.atom_b.atom_name
     
     
     
-def test_junctions_serialization():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_junctions_serialization(data_dir: Path, output_dir: Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
     atoms = arg.atoms
     carboxylic_junction = Junction("carboxylic",arg.get_bond('C11','O1'))
     amine1_junction = Junction("amine",arg.get_bond('N3','H20'))
@@ -38,10 +42,13 @@ def test_junctions_serialization():
     junctions.add(carboxylic_junction)
     junctions.add(amine1_junction)
     junctions.add(amine2_junction)
-    with open("tests/samples/junctions.json", "w") as f:
-        json.dump(junctions.to_dict(), f)
-    with open("tests/samples/junctions.json", "r") as f:
-        new_junctions = Junctions.from_dict(json.load(f), atoms)
+
+    # Write to the file
+    (output_dir / "junctions.json").write_text(json.dumps(junctions.to_dict()))
+
+    # Read from the file
+    new_junctions = Junctions.from_dict(json.loads((output_dir / "junctions.json").read_text()),atoms)
+
     assert len(new_junctions) == 3
     assert junctions[0].name == new_junctions[0].name
     assert junctions[1].name == new_junctions[1].name

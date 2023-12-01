@@ -26,3 +26,4 @@ from .topology import Topology
 from .visualize import Visualize
 from .junction import Junction
 from .polymerization_type import PolymerizationType
+from .gromacs import Gromacs

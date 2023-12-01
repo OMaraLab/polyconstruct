@@ -1,20 +1,27 @@
 import logging
 import re
 from typing import Tuple
-
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem, Draw
-
+from rdkit.Chem.Draw import rdMolDraw2D
+from PIL import Image, ImageDraw
+from polytop.junction import Junctions
 from polytop.topology import Topology
-
+from functools import singledispatchmethod
+from polytop.polymer import Polymer
+from polytop.monomer import Monomer
 
 class Visualize:
     def __init__(
         self,
         topology: Topology,
+        junctions: Junctions = None,
     ):
-        self.topology = topology
+        self.topology = topology.copy()
+        self.junctions = Junctions() if junctions is None else junctions
         self.atom_mapping = {}
+        
+        # add double bonds to the topology using the known valencies of the atoms and number of declared bonds
         self.valencies = {
             "H": 1,
             "F": 1,
@@ -28,16 +35,13 @@ class Visualize:
             "X": 1,
         }
 
-    def infer_bond_orders(self) -> "Visualize":
-        # Step 1: Get a dictionary of known valencies for common atom types
-
-        # Step 2: Iterate over the atoms and count the number of bonds for each atom
+        # Iterate over the atoms and count the number of bonds for each atom
         bond_count = {atom: 0 for atom in self.topology.atoms}
         for bond in self.topology.bonds:
             bond_count[bond.atom_a] += 1
             bond_count[bond.atom_b] += 1
 
-        # Step 3: Compare the bond count with the known valency and infer bond orders
+        # Compare the bond count with the known valency and infer bond orders
         inferred_bond_orders = []
         for bond in self.topology.bonds:
             atom_a = bond.atom_a
@@ -59,10 +63,17 @@ class Visualize:
 
                 inferred_bond_orders.append((atom_a, atom_b, inferred_bond_order))
 
-        # Step 4: Update the bond orders in the Topology object
+        # Update the bond orders in the Topology object
         for atom_a, atom_b, bond_order in inferred_bond_orders:
             self.topology.get_bond(atom_a.atom_id, atom_b.atom_id).order = bond_order
-        return self
+            
+    @classmethod
+    def polymer(cls, polymer: Polymer):
+        return cls(topology=polymer.topology, junctions=polymer.junctions)
+
+    @classmethod
+    def monomer(cls, monomer: Monomer):
+        return cls(topology=monomer.topology, junctions=monomer.junctions)
 
     def to_rdKit_Chem_mol(self):
 
@@ -121,9 +132,21 @@ class Visualize:
                     elif count_h > 1:
                         atom_label += f"H<sub>{count_h}</sub>"
             mol_atom.SetProp("atomLabel", atom_label)
+            
+        # Draw bonds that represent junction locations in a different colour
+        for junction in self.junctions:
+            atom_a = junction.location.atom_a
+            atom_b = junction.location.atom_b
+            bond = mol.GetBondBetweenAtoms(self.atom_mapping[atom_a.atom_id], self.atom_mapping[atom_b.atom_id])
+            index = bond.GetIdx()
+            bond.SetProp("Junction", junction.name)
+            bond.SetProp("bondNote", '"'+junction.name+'"')
+            atom = mol.GetAtomWithIdx(self.atom_mapping[atom_b.atom_id])
+            atom.SetProp("Junction", junction.name)
+
         return mol
 
-    def create_py3Dmol_view(self, view=None, show_hydrogens=False):
+    def draw3D(self, view=None):
         # render display presentation of glutamine
         mol = self.to_rdKit_Chem_mol()  # Removed the MolToMolBlock conversion
         Chem.SanitizeMol(mol)
@@ -132,18 +155,60 @@ class Visualize:
         view.addModel(Chem.MolToMolBlock(mol), "mol")  # Convert to MolBlock for py3Dmol
         view.setStyle({"stick": {}})
         view.zoomTo()
+        
+    def remove_non_junction_hydrogens(self, mol):
+        # Get the indices of all hydrogen atoms
+        hydrogen_indices = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == 1]
 
-    def create_2D_image(
+        # Get the indices of the hydrogens connected to a bond with the "Junction" property
+        junction_hydrogen_indices = [bond.GetBeginAtomIdx() for bond in mol.GetBonds() if bond.HasProp("Junction") and bond.GetBeginAtom().GetAtomicNum() == 1]
+        junction_hydrogen_indices.extend(bond.GetEndAtomIdx() for bond in mol.GetBonds() if bond.HasProp("Junction") and bond.GetEndAtom().GetAtomicNum() == 1)
+
+        # Remove the indices of the junction hydrogens from the list of hydrogen indices
+        hydrogen_indices = [idx for idx in hydrogen_indices if idx not in junction_hydrogen_indices]
+
+        # Sort the indices in descending order
+        hydrogen_indices.sort(reverse=True)
+
+        # Remove the hydrogens
+        mol = Chem.RWMol(mol)
+        for idx in hydrogen_indices:
+            mol.RemoveAtom(idx)
+
+        return mol.GetMol()
+
+    def draw2D(
         self,
         filename: str,
         size: Tuple[int, int] = (600, 300),
         remove_explicit_Hs: bool = True,
     ):
-
         mol = self.to_rdKit_Chem_mol()
         if remove_explicit_Hs:
-            mol = Chem.RemoveHs(mol)
+            mol = self.remove_non_junction_hydrogens(mol)
+
+        d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1])
+        opt = d.drawOptions()
         
-        virtual_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == 0]
-        img = Draw.MolToImage(mol, size=size, highlightAtoms=virtual_atoms )
-        img.save(filename)
+        opt.minFontSize = 16
+        opt.highlightBondWidthMultiplier = 16
+        opt.annotationFontScale = 1.2
+        opt.setAnnotationColour((.3,.3,0))
+        opt.setHighlightColour((1,1,0))
+        
+        
+        mol_bonds = mol.GetBonds()
+        junction_bonds = [bond.GetIdx() for bond in mol_bonds if bond.HasProp("Junction")]
+        junction_bonds_colors = {bond: (1,1,0) for bond in junction_bonds}
+
+        junction_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.HasProp("Junction")]
+
+        # Draw the molecule
+        d.DrawMolecule(mol,highlightAtoms=junction_atoms, highlightBonds=junction_bonds)
+
+        # Finish drawing
+        d.FinishDrawing()
+
+        # Save the image
+        with open(filename, 'wb') as f:
+            f.write(d.GetDrawingText())

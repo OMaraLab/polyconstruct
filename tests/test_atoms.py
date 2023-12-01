@@ -1,9 +1,10 @@
 import json
+from pathlib import Path
 from polytop.atoms import Atom
 from polytop.topology import Topology
 
 
-def test_atom_creation()->None:
+def test_atom_creation():
     atom = Atom(
         atom_id=26,
         atom_type="N3",
@@ -23,8 +24,8 @@ def test_atom_creation()->None:
     assert atom.partial_charge == -0.940000
     assert atom.mass == 14.0067
 
-def test_repr():
-    arg=Topology.from_ITP("tests/samples/arginine.itp")
+def test_repr(data_dir: Path):
+    arg=Topology.from_ITP(data_dir / "arginine.itp")
     assert arg.atoms[0].__repr__()=='Atom(1H)->[2] charge=0.412'
     
 def test_pseudoatoms():
@@ -51,7 +52,7 @@ def test_atom_creation_from_line():
     assert atom.partial_charge == 0.412
     assert atom.mass == 1.0080
     
-def test_atom_serialization():
+def test_atom_serialization(output_dir: Path):
     atom = Atom(
         atom_id=26,
         atom_type="N3",
@@ -62,11 +63,12 @@ def test_atom_serialization():
         partial_charge=-0.940000,
         mass=14.0067,
     )
-    atom_dict = atom.to_dict()
-    with open("tests/samples/atom.json", "w") as f:
-        json.dump(atom_dict, f)
-    with open("tests/samples/atom.json", "r") as f:
-        new_atom = Atom.from_dict(json.load(f))
+    # Write to the file
+    (output_dir / "atom.json").write_text(json.dumps(atom.to_dict()))
+
+    # Read from the file
+    new_atom = Atom.from_dict(json.loads((output_dir / "atom.json").read_text()))
+    
     assert atom.atom_id == new_atom.atom_id
     assert atom.atom_type == new_atom.atom_type
     assert atom.residue_id == new_atom.residue_id

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from polytop.atoms import Atom
 from polytop.bonds import Bond
 from polytop.topology import Topology
@@ -34,8 +35,8 @@ def test_bond_creation()->None:
     assert bond.bond_length == 0.147
     assert bond.force_constant == 265265.0
 
-def test_bond_traversal():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_bond_traversal(data_dir: Path):
+    arg = Topology.from_ITP(data_dir / "arginine.itp")
     bond = arg.get_bond(12, 15)
     assert bond.atom_a.atom_id == 12
     assert bond.atom_b.atom_id == 15
@@ -47,7 +48,7 @@ def test_bond_traversal():
     assert allatoms == LHS | RHS
     assert LHS & RHS == set()
 
-def test_bond_serialization():
+def test_bond_serialization(output_dir: Path):
     atomlist = [
         Atom(
             atom_id=1,
@@ -71,19 +72,21 @@ def test_bond_serialization():
         )
     ]
     bond = Bond(atomlist[0], atomlist[1], bond_type="1", bond_length=0.147, force_constant=265265.0)
-    bond_dict = bond.to_dict()
-    with open("tests/samples/bonds.json", "w") as f:
-        json.dump(bond_dict, f)
-    with open("tests/samples/bonds.json", "r") as f:
-        new_bond = Bond.from_dict(json.load(f),atoms=atomlist)
+        
+    # Write to the file
+    (output_dir / "bonds.json").write_text(json.dumps(bond.to_dict()))
+
+    # Read from the file
+    new_bond = Bond.from_dict(json.loads((output_dir / "bonds.json").read_text()),atoms=atomlist)
+            
     assert new_bond.atom_a.atom_id == bond.atom_a.atom_id
     assert new_bond.atom_b.atom_id == bond.atom_b.atom_id
     assert new_bond.bond_type == bond.bond_type
     assert new_bond.bond_length == bond.bond_length
     assert new_bond.force_constant == bond.force_constant
 
-def test_arg_double_bonds():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_arg_double_bonds(data_dir: Path):
+    arg = Topology.from_ITP(data_dir / "arginine.itp")
     double_bond_1 = arg.get_bond('C11','O2')
     assert double_bond_1.order == 1
     assert double_bond_1

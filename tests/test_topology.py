@@ -1,50 +1,48 @@
 import json
+from pathlib import Path
 from polytop import *
-
-
 import pytest
 
-
-def test_invalid_file():
+def test_invalid_file(data_dir: Path):
     with pytest.raises(FileNotFoundError):
-        Topology.from_ITP("tests/samples/non_existent.itp")
+        Topology.from_ITP(data_dir/"non_existent.itp")
 
 
-def test_invalid_section_warning():
+def test_invalid_section_warning(data_dir: Path):
     with pytest.warns(UserWarning, match="Unknown section"):
-        Topology.from_ITP("tests/samples/invalid_section.itp")
+        Topology.from_ITP(data_dir/"invalid_section.itp")
 
 
-def test_arginine_bonds_angles_dihedrals():
-    arginine = Topology.from_ITP("tests/samples/arginine.itp")
+def test_arginine_bonds_angles_dihedrals(data_dir: Path):
+    arginine = Topology.from_ITP(data_dir/"arginine.itp")
     assert len(arginine.bonds) == 25
     assert len(arginine.angles) == 41
     assert len(arginine.dihedrals) == 12
 
 
-def test_glutamine_bonds_angles_dihedrals():
-    glutamine = Topology.from_ITP("tests/samples/glutamine.itp")
+def test_glutamine_bonds_angles_dihedrals(data_dir: Path):
+    glutamine = Topology.from_ITP(data_dir/"glutamine.itp")
     assert len(glutamine.bonds) == 19
     assert len(glutamine.angles) == 31
     assert len(glutamine.dihedrals) == 10
 
 
-def test_arginine_molecule_type():
-    arginine = Topology.from_ITP("tests/samples/arginine.itp")
+def test_arginine_molecule_type(data_dir: Path):
+    arginine = Topology.from_ITP(data_dir/"arginine.itp")
     assert arginine.molecule_type.name == "AE97"
     assert arginine.molecule_type.nrexcl == 3
 
 
-def test_glutamine_molecule_type():
-    glutamine = Topology.from_ITP("tests/samples/glutamine.itp")
+def test_glutamine_molecule_type(data_dir: Path):
+    glutamine = Topology.from_ITP(data_dir/"glutamine.itp")
     assert glutamine.molecule_type.name == "9NF5"
     assert glutamine.molecule_type.nrexcl == 3
 
 
-def test_arginine():
-    arginine = Topology.from_ITP("tests/samples/arginine.itp")
-    arginine.to_ITP("tests/samples/arginine_new.itp")
-    loaded_arginine = Topology.from_ITP("tests/samples/arginine_new.itp")
+def test_arginine(data_dir: Path, output_dir: Path):
+    arginine = Topology.from_ITP(data_dir/"arginine.itp")
+    arginine.to_ITP(output_dir/"arginine_new.itp")
+    loaded_arginine = Topology.from_ITP(output_dir/"arginine_new.itp")
     assert (
         len(loaded_arginine.atoms) == 26
     )  # verify that the number of atoms is correct
@@ -63,19 +61,19 @@ def test_arginine():
     )  # verify that the proper dihedral between atoms 2, 4, 8 and 9 exists
 
 
-def test_glutamine():
-    glutamine = Topology.from_ITP("tests/samples/glutamine.itp")
-    glutamine.to_ITP("tests/samples/glutamine_new.itp")
-    loaded_glutamine = Topology.from_ITP("tests/samples/glutamine_new.itp")
+def test_glutamine(data_dir: Path, output_dir: Path):
+    glutamine = Topology.from_ITP(data_dir/"glutamine.itp")
+    glutamine.to_ITP(output_dir/"glutamine_new.itp")
+    loaded_glutamine = Topology.from_ITP(output_dir/"glutamine_new.itp")
     assert len(loaded_glutamine.atoms) == 20
     assert loaded_glutamine.get_atom(20)
     assert loaded_glutamine.get_bond(5, 10)
     assert loaded_glutamine.get_angle(5, 10, 13)
 
-def test_reverse_topology():
-    glu = Topology.from_ITP("tests/samples/glutamine.itp")
+def test_reverse_topology(data_dir: Path, output_dir: Path):
+    glu = Topology.from_ITP(data_dir/"glutamine.itp")
     reverse_glu = glu.reverse()
-    reverse_glu.to_ITP("tests/samples/reverse_glutamine.itp")
+    reverse_glu.to_ITP(output_dir/"reverse_glutamine.itp")
     
     def same_properties(atom_a,atom_b)-> bool: 
         if glu_atom.atom_type != rev_glu_atom.atom_type:
@@ -105,18 +103,18 @@ def test_reverse_topology():
         for atom in glu_atom.dihedral_neighbours():
             assert any(same_properties(atom, rev_atom) for rev_atom in rev_glu_atom.dihedral_neighbours())
         
-def test_vizualization():
+def test_vizualization(data_dir: Path, output_dir: Path):
     import py3Dmol 
     from rdkit import Chem
     from rdkit.Chem import AllChem
 
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
     viewer = py3Dmol.view(width=400, height=400)
-    Visualize(arg).create_py3Dmol_view(viewer)
+    Visualize(arg).draw3D(viewer)
 
-def test_infer_bond_order():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
-    Visualize(arg).infer_bond_orders()
+def test_infer_bond_order(data_dir: Path, output_dir: Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    arg = Visualize(arg).topology # visualize constructor infers bond order in it's internal instance of the topology 
     for bond in arg.bonds:
         assert bond.order is not None
         if bond is arg.get_bond(23,24):
@@ -126,8 +124,8 @@ def test_infer_bond_order():
         else:
             assert bond.order == 1
             
-def test_remove():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_remove(data_dir: Path, output_dir: Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
     assert len(arg.atoms) == 26
     assert len(arg.bonds) == 25
     assert len(arg.angles) == 41
@@ -152,12 +150,15 @@ def test_remove():
     assert len(arg.dihedrals) == 8
 
 
-def test_serialization():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
-    with open("tests/samples/arg.json", "w") as f:
-        json.dump(arg.to_dict(), f)
-    with open("tests/samples/arg.json", "r") as f:
-        new_dihedral = Topology.from_dict(json.load(f))
+def test_serialization(data_dir: Path, output_dir: Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    
+    # Write to the file
+    (output_dir / "arg.json").write_text(json.dumps(arg.to_dict()))
+
+    # Read from the file
+    new_dihedral = Topology.from_dict(json.loads((output_dir/"arg.json").read_text()))
+    
     assert len(arg.atoms) == len(new_dihedral.atoms)
     assert len(arg.bonds) == len(new_dihedral.bonds)
     assert len(arg.angles) == len(new_dihedral.angles)
@@ -171,8 +172,8 @@ def is_close(actual,expected) -> bool:
     return abs(actual-expected) < 1e-6
     
     
-def test_net_charge():
-    arg = Topology.from_ITP("tests/samples/arginine.itp")
+def test_net_charge(data_dir: Path, output_dir: Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
     assert is_close(arg.netcharge, 0)
     # change the net charge 
     arg.netcharge = 1
@@ -180,13 +181,13 @@ def test_net_charge():
     # change the net charge to a fraction of a negative value
     arg.netcharge = -0.5
     assert is_close(arg.netcharge, -0.5)
-    arg.to_ITP("tests/samples/arginine_negative_charge.itp")
+    arg.to_ITP(output_dir/"arginine_negative_charge.itp")
     
-    new_arg = Topology.from_ITP("tests/samples/arginine.itp")
+    new_arg = Topology.from_ITP(data_dir/"arginine.itp")
     new_arg.proportional_charge_change(-0.5)
     assert is_close(new_arg.netcharge, -0.5)
     assert not is_close(new_arg.atoms[0].partial_charge, arg.atoms[0].partial_charge)
-    arg.to_ITP("tests/samples/arginine_negative_charge_proportional.itp")
+    arg.to_ITP(output_dir/"arginine_negative_charge_proportional.itp")
     
     
     

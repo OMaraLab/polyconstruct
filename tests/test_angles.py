@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from polytop.angles import Angle
 from polytop.atoms import Atom
 from polytop.bonds import Bond
@@ -53,7 +54,7 @@ def test_angle_creation()->None:
     assert angle.angle_value == 109.5
     assert angle.force_constant == 29288.0
 
-def test_angle_serialization():
+def test_angle_serialization(output_dir: Path):
     atomlist = [
         Atom(
             atom_id=1,
@@ -92,14 +93,16 @@ def test_angle_serialization():
 
     angle = Angle(atomlist[0], atomlist[1], atomlist[2], angle_type="1", angle_value=109.5, force_constant=29288.0)
     angle_dict = angle.to_dict()
-    with open("tests/samples/angle.json", "w") as f:
-        json.dump(angle_dict, f)
-    with open("tests/samples/angle.json", "r") as f:
-        new_bond = Angle.from_dict(json.load(f),atoms=atomlist)
-    assert angle.atom_a.atom_id == new_bond.atom_a.atom_id
-    assert angle.atom_b.atom_id == new_bond.atom_b.atom_id
-    assert angle.atom_c.atom_id == new_bond.atom_c.atom_id
-    assert angle.angle_type == new_bond.angle_type
-    assert angle.angle_value == new_bond.angle_value
-    assert angle.force_constant == new_bond.force_constant
+
+    # Write to the file
+    (output_dir / "angle.json").write_text(json.dumps(angle.to_dict()))
+
+    # Read from the file
+    new_angle = Angle.from_dict(json.loads((output_dir / "angle.json").read_text()),atoms=atomlist)
     
+    assert angle.atom_a.atom_id == new_angle.atom_a.atom_id
+    assert angle.atom_b.atom_id == new_angle.atom_b.atom_id
+    assert angle.atom_c.atom_id == new_angle.atom_c.atom_id
+    assert angle.angle_type == new_angle.angle_type
+    assert angle.angle_value == new_angle.angle_value
+    assert angle.force_constant == new_angle.force_constant
