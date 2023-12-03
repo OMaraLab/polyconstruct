@@ -70,6 +70,33 @@ def test_glutamine(data_dir: Path, output_dir: Path):
     assert loaded_glutamine.get_bond(5, 10)
     assert loaded_glutamine.get_angle(5, 10, 13)
 
+def test_topology_max_atom_index(data_dir: Path, output_dir: Path):
+    arginine = Topology.from_ITP(data_dir/"arginine.itp")
+    arg_max_atom_index = arginine.max_atom_index()
+    assert arg_max_atom_index["H"] == 26
+    assert arg_max_atom_index["C"] == 12
+    assert arg_max_atom_index["N"] == 6
+    assert arg_max_atom_index["O"] == 2
+
+def test_topology_reorder_atom_indexes(data_dir: Path, output_dir: Path):
+    arginine = Topology.from_ITP(data_dir/"arginine.itp")
+    for element, number in { "H": 26, "C": 12, "N": 6, "O": 2 }.items(): 
+        arginine.reorder_atom_indexes(element, number)
+    arg_max_atom_index = arginine.max_atom_index()
+    assert arg_max_atom_index["H"] == 39
+    assert arg_max_atom_index["C"] == 17
+    assert arg_max_atom_index["N"] == 9
+    assert arg_max_atom_index["O"] == 3
+    
+def test_topology_auto_rename_atoms(data_dir: Path, output_dir: Path):
+    arginine = Topology.from_ITP(data_dir/"arginine.itp")
+    arginine.auto_rename_atoms()
+    arg_max_atom_index = arginine.max_atom_index()
+    assert arg_max_atom_index["H"] == 14
+    assert arg_max_atom_index["C"] == 6
+    assert arg_max_atom_index["N"] == 4
+    assert arg_max_atom_index["O"] == 2
+
 def test_reverse_topology(data_dir: Path, output_dir: Path):
     glu = Topology.from_ITP(data_dir/"glutamine.itp")
     reverse_glu = glu.reverse()

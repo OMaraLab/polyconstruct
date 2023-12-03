@@ -2,7 +2,7 @@ import copy
 from functools import singledispatchmethod
 import re
 import warnings
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import numpy.linalg as la
@@ -66,17 +66,6 @@ class Topology:
             preamble=copy.deepcopy(self.preamble),
             molecule_type=copy.deepcopy(self.molecule_type)
         )
-        # add bonds, angles, dihedrals, pairs and exclusions
-        for bond in self.bonds:
-            new_topology.bonds.append(copy.deepcopy(bond))
-        for angle in self.angles:
-            new_topology.angles.append(copy.deepcopy(angle))
-        for dihedral in self.dihedrals:
-            new_topology.dihedrals.append(copy.deepcopy(dihedral))
-        for pair in self.pairs:
-            new_topology.pairs.append(copy.deepcopy(pair))
-        for exclusion in self.exclusions:
-            new_topology.exclusions.append(copy.deepcopy(exclusion))
         return new_topology
             
     @property
@@ -237,6 +226,75 @@ class Topology:
             f.write("\n[ exclusions ]\n")
             for exclusion in self.exclusions:
                 f.write(str(exclusion) + "\n")
+    @property 
+    def residue_name(self):
+        return self.atoms[0].residue_name
+    
+    @residue_name.setter
+    def residue_name(self, new_name):
+        if len(new_name) > 5:
+            raise ValueError("Residue name must be 5 characters or less")
+        for atom in self.atoms:
+            atom.residue_name = new_name
+        
+    def atom_counts(self) -> Dict[str, int]:
+        """ 
+        Get the number of atoms of each element in the topology. 
+        """
+        atom_counts = {}
+        for atom in self.atoms:
+            if atom.element not in atom_counts:
+                atom_counts[atom.element] = 1
+            else:
+                atom_counts[atom.element] += 1
+        return atom_counts
+    
+    def atom_elements (self) -> set[str]:
+        """set of all atom elements in the topology"""
+        return set(atom.element for atom in self.atoms)
+    
+    def auto_rename_atoms(self):
+        """
+        rename all atoms in the topology to their element symbol plus their index among atoms with the same element (ordered by atom.id)
+        
+        This compresses the namespace of atom names to the minimum possible while preserving the element and order of atoms in the topology.
+        """
+        for atom_symbol in self.atom_elements():
+            self.reorder_atom_indexes(atom_symbol,1)
+        
+    def reorder_atom_indexes(self,atom_symbol: str,new_first_index: int):
+        """
+        Reorder the atom indexes of all atoms with a given symbol to start from a given index.
+        """
+        atoms_with_this_symbol = [atom for atom in self.atoms if atom.element == atom_symbol]
+        atoms_with_this_symbol.sort(key=lambda atom: atom.index)
+        for atom in atoms_with_this_symbol:
+            atom.index = new_first_index
+            new_first_index += 1
+
+    def max_atom_index(self) -> dict[str, int]:
+        """ 
+        Get the maximum atom index for each atom symbol in the topology. 
+        """
+        max_atom_index = {}
+        for atom in self.atoms:
+            if atom.element not in max_atom_index:
+                max_atom_index[atom.element] = atom.index
+            else:
+                max_atom_index[atom.element] = max(max_atom_index[atom.element], atom.index)
+        return max_atom_index
+            
+    @property
+    def residue_id(self):
+        return self.atoms[0].residue_id
+    @residue_id.setter
+    def residue_id(self, new_id):
+        if new_id < 1:
+            raise ValueError("Residue id must be greater than zero")
+        if new_id > 99999:
+            raise ValueError("Residue id must be less than 100000")
+        for atom in self.atoms:
+            atom.residue_id = new_id
 
     @property
     def netcharge(self):
@@ -342,34 +400,19 @@ class Topology:
             topology.add_atom(atom)
 
         for bond_data in data["bonds"]:
-            try:
-                Bond.from_dict(bond_data,topology.atoms)
-            except ValueError:
-                pass # if we get an error because a bond has lost an atom, just ignore it
+            Bond.from_dict(bond_data,topology.atoms)
 
         for angle_data in data["angles"]:
-            try:
-                Angle.from_dict(angle_data,topology.atoms)
-            except ValueError:
-                pass # if we get an error because an angle has lost an atom, just ignore it
+            Angle.from_dict(angle_data,topology.atoms)
 
         for dihedral_data in data["dihedrals"]:
-            try:
-                Dihedral.from_dict(dihedral_data,topology.atoms)
-            except ValueError:
-                pass # if we get an error because a dihedral has lost an atom, just ignore it
+            Dihedral.from_dict(dihedral_data,topology.atoms)
 
         for pair_data in data["pairs"]:
-            try:
-                Pair.from_dict(pair_data,topology.atoms)
-            except ValueError:
-                pass # if we get an error because a pair has lost an atom, just ignore it
+            Pair.from_dict(pair_data,topology.atoms)
 
         for exclusion_data in data["exclusions"]:
-            try:
-                Exclusion.from_dict(exclusion_data,topology.atoms)
-            except ValueError:
-                pass # if we get an error because an exclusion has lost an atom, just ignore it
+            Exclusion.from_dict(exclusion_data,topology.atoms)
         
         for preamble_line in data["preamble"]:
             topology.preamble.append(preamble_line)
@@ -396,25 +439,8 @@ class Topology:
             atom.atom_id = atom.atom_id + start
 
     def add(self, topology):
-        self.atoms.extend(topology.atoms)
-        for bond in topology.bonds:
-            new_bond = Bond.from_dict(bond.to_dict(), self.atoms)
-            self.bonds.append(new_bond)
-        for angle in topology.angles:
-            new_angle = Angle.from_dict(angle.to_dict(), self.atoms)
-            self.angles.append(new_angle)
-        for dihedral in topology.dihedrals:
-            try:  # if we get an error because a dihedral has lost an atom, just ignore it
-                new_dihedral = Dihedral.from_dict(dihedral.to_dict(), self.atoms)
-                self.dihedrals.append(new_dihedral)
-            except ValueError:
-                pass
-        for pair in topology.pairs:
-            new_pair = Pair.from_dict(pair.to_dict(), self.atoms)
-            self.pairs.append(new_pair)
-        for exclusion in topology.exclusions:
-            new_exclusion = Exclusion.from_dict(exclusion.to_dict(), self.atoms)
-            self.exclusions.append(new_exclusion)
+        new_topology = copy.deepcopy(topology)
+        self.atoms.extend(new_topology.atoms)
 
     def reverse(self) -> "Topology":
         copied_atoms = copy.deepcopy(self.atoms)

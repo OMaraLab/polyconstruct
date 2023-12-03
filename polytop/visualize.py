@@ -16,11 +16,16 @@ class Visualize:
         self,
         topology: Topology,
         junctions: Junctions = None,
+        infer_bond_order = True,
     ):
         self.topology = topology.copy()
         self.junctions = Junctions() if junctions is None else junctions
         self.atom_mapping = {}
+
+        if infer_bond_order:
+            self.infer_bond_order()
         
+    def infer_bond_order(self):
         # add double bonds to the topology using the known valencies of the atoms and number of declared bonds
         self.valencies = {
             "H": 1,
@@ -62,20 +67,25 @@ class Visualize:
                     inferred_bond_order = 1
 
                 inferred_bond_orders.append((atom_a, atom_b, inferred_bond_order))
-
+                   
         # Update the bond orders in the Topology object
         for atom_a, atom_b, bond_order in inferred_bond_orders:
             self.topology.get_bond(atom_a.atom_id, atom_b.atom_id).order = bond_order
+                    
             
     @classmethod
-    def polymer(cls, polymer: Polymer):
-        return cls(topology=polymer.topology, junctions=polymer.junctions)
+    def polymer(cls, polymer: Polymer, infer_bond_order = True):
+        return cls(topology=polymer.topology, junctions=polymer.junctions, infer_bond_order = infer_bond_order)
 
     @classmethod
-    def monomer(cls, monomer: Monomer):
-        return cls(topology=monomer.topology, junctions=monomer.junctions)
+    def monomer(cls, monomer: Monomer, infer_bond_order = True):
+        return cls(topology=monomer.topology, junctions=monomer.junctions, infer_bond_order = infer_bond_order)
 
-    def to_rdKit_Chem_mol(self):
+    @classmethod
+    def topology(cls, topology: Topology, infer_bond_order = True):
+        return cls(topology=topology, infer_bond_order = infer_bond_order)
+
+    def to_rdKit_Chem_mol(self,options: dict[str,any]):
 
         lg = RDLogger.logger()
         lg.setLevel(RDLogger.CRITICAL)
@@ -118,13 +128,10 @@ class Visualize:
             element = atom.element
             index = atom.index
             atom_label=''
-            if not element == "C":
-                if atom.is_virtual:
-                    mol_atom.SetAtomicNum(0)
-                    mol_atom.SetProp("RDKIT_ATOM_SYMBOL", "X")
-                    mol_atom.SetFormalCharge(0)
-                    atom_label = f"X<sub>{index}</sub>"
-                else:
+            if options["show_atom_ID"]:
+                atom_label = f"{element}<sub>{index}</sub>"
+            else:
+                if not element == "C": # don't label carbons
                     atom_label = element
                     count_h = sum([1 for neighbour in atom.bond_neighbours() if neighbour.element == "H"])
                     if count_h == 1:
@@ -132,23 +139,28 @@ class Visualize:
                     elif count_h > 1:
                         atom_label += f"H<sub>{count_h}</sub>"
             mol_atom.SetProp("atomLabel", atom_label)
-            
-        # Draw bonds that represent junction locations in a different colour
-        for junction in self.junctions:
-            atom_a = junction.location.atom_a
-            atom_b = junction.location.atom_b
-            bond = mol.GetBondBetweenAtoms(self.atom_mapping[atom_a.atom_id], self.atom_mapping[atom_b.atom_id])
-            index = bond.GetIdx()
-            bond.SetProp("Junction", junction.name)
-            bond.SetProp("bondNote", '"'+junction.name+'"')
-            atom = mol.GetAtomWithIdx(self.atom_mapping[atom_b.atom_id])
-            atom.SetProp("Junction", junction.name)
+        
+        if options.get("highlight_junctions",False):
+            # Draw bonds that represent junction locations in a different colour
+            for junction in self.junctions:
+                atom_a = junction.location.atom_a
+                atom_b = junction.location.atom_b
+                bond = mol.GetBondBetweenAtoms(self.atom_mapping[atom_a.atom_id], self.atom_mapping[atom_b.atom_id])
+                index = bond.GetIdx()
+                bond.SetProp("Junction", junction.name)
+                bond.SetProp("bondNote", '"'+junction.name+'"')
+                atom = mol.GetAtomWithIdx(self.atom_mapping[atom_b.atom_id])
+                atom.SetProp("Junction", junction.name)
 
         return mol
 
-    def draw3D(self, view=None):
-        # render display presentation of glutamine
-        mol = self.to_rdKit_Chem_mol()  # Removed the MolToMolBlock conversion
+    def draw3D(self, view=None, options: dict[str,any] = None):
+        if options is None:
+            options = {
+                "highlight_junctions":False, 
+                "show_atom_ID":False,
+                }
+        mol = self.to_rdKit_Chem_mol(options=options)  # Removed the MolToMolBlock conversion
         Chem.SanitizeMol(mol)
         AllChem.EmbedMolecule(mol)
         AllChem.MMFFOptimizeMolecule(mol)
@@ -180,39 +192,71 @@ class Visualize:
     def draw2D(
         self,
         filename: str,
-        size: Tuple[int, int] = (600, 300),
-        remove_explicit_Hs: bool = True,
+        size: Tuple[int,int] = (600,300),
+        highlight_junctions = False,
+        show_atom_ID = False,
+        show_legend = True,
+        remove_explicit_H = True,
     ):
-        mol = self.to_rdKit_Chem_mol()
-        if remove_explicit_Hs:
+        """
+        Draw the molecule using RDKit's DrawMolecule function
+        Args:
+            filename (str): the filename to save the image to
+            size (tuple[int,int]): the size of the image to draw
+            highlight_junctions (bool): if True, highlight the junctions in the molecule
+            show_atom_ID (bool): if True, show the atom ID in the molecule
+            show_legend (bool): if True, show the legend in the molecule
+            remove_explicit_H (bool): if True, remove the explicit hydrogens from the molecule        
+        """
+        options = {
+            "size":size, 
+            "highlight_junctions":highlight_junctions, 
+            "show_atom_ID":show_atom_ID,
+            "show_legend":show_legend,
+            "remove_explicit_H":remove_explicit_H,
+            }
+        if options["show_atom_ID"] and options["remove_explicit_H"]:
+            raise ValueError("show_atom_ID and remove_explicit_H cannot both be True")  
+        
+        mol = self.to_rdKit_Chem_mol(options)
+        
+        # Initialize args and kwargs for DrawMolecule
+        draw_kwargs = {}
+        
+        if options.get("remove_explicit_H",True):
             mol = self.remove_non_junction_hydrogens(mol)
-
-        d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1])
+        
+        size = options.get("size",(600,300))
+        d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1]) 
         opt = d.drawOptions()
-        
-        junction_color = (0,0,1,.2)
-        text_color = (0,0,0,1)
-        opt.minFontSize = 16
-        opt.highlightBondWidthMultiplier = 16
-        opt.annotationFontScale = 1.2
-        opt.setAnnotationColour(text_color)
-        opt.setHighlightColour(junction_color)
-        
-        
-        mol_bonds = mol.GetBonds()
-        junction_bonds = [bond.GetIdx() for bond in mol_bonds if bond.HasProp("Junction")]
-        junction_bonds_colors = {bond: junction_color for bond in junction_bonds}
 
-        junction_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.HasProp("Junction")]
-        junction_atoms = [] # disable highlighting of junction atoms
+        if options.get("highlight_junctions",False):
+            junction_color = (0,0,1,.2)
+            text_color = (0,0,0,1)
+            opt.minFontSize = 16
+            opt.highlightBondWidthMultiplier = 16
+            opt.annotationFontScale = 1.2
+            opt.setAnnotationColour(text_color)
+            opt.setHighlightColour(junction_color)
+            
+            mol_bonds = mol.GetBonds()
+            junction_bonds = [bond.GetIdx() for bond in mol_bonds if bond.HasProp("Junction")]
+            junction_bonds_colors = {bond: junction_color for bond in junction_bonds}
 
+            junction_atoms = [atom.GetIdx() for atom in mol.GetAtoms() if atom.HasProp("Junction")]
+            junction_atoms = []
+            draw_kwargs["highlightAtoms"] = junction_atoms
+            draw_kwargs["highlightBonds"] = junction_bonds
+            draw_kwargs["highlightBondColors"] = junction_bonds_colors
+            draw_kwargs["highlightAtomColors"] = None
+
+        d.SetFontSize(0.75)
         # Draw the molecule
-        if self.topology.title:
-            d.SetFontSize(0.75)  # Adjust the font size as needed
-            rdMolDraw2D.PrepareAndDrawMolecule(d, mol, legend=self.topology.title, highlightAtoms=junction_atoms, highlightBonds=junction_bonds, highlightAtomColors=None, highlightBondColors=junction_bonds_colors)
+        if options.get("show_legend",True):
+            rdMolDraw2D.PrepareAndDrawMolecule(d, mol, legend=self.topology.title, **draw_kwargs)
         else:
-            d.DrawMolecule(mol, highlightAtoms=junction_atoms, highlightBonds=junction_bonds, highlightAtomColors=None, highlightBondColors=junction_bonds_colors)
-
+            d.DrawMolecule(mol, **draw_kwargs)
+    
         # Finish drawing
         d.FinishDrawing()
 

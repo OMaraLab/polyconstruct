@@ -3,11 +3,33 @@ from pathlib import Path
 import random
 from polytop.junction import Junction
 from polytop.monomer import Monomer
+from polytop.visualize import Visualize
 from polytop.polymer import Polymer
 from polytop.topology import Topology
 
+def test_simple_polymer(data_dir: Path, output_dir: Path):    
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    arg_N = Junction("N1", arg.get_bond('N3','H20'))
+    arg_C = Junction("C", arg.get_bond('C11','O1'))
+    arg_monomer = Monomer(arg, [arg_N, arg_C])
+    Visualize.monomer(arg_monomer).draw2D(output_dir/'arginine_monomer.png',(400,200))
+    
+    glu = Topology.from_ITP(data_dir/"glutamine.itp")
+    glu_N = Junction("N1", glu.get_bond('N1','H6'))
+    glu_C = Junction("C", glu.get_bond('C4','O1'))
+    glu_monomer = Monomer(glu, [glu_N, glu_C])
+    Visualize.monomer(glu_monomer).draw2D(output_dir/'glutamine_monomer.png',(400,200))
+    
+    polymer = Polymer(arg_monomer)
+    polymer.extend(glu_monomer, from_junction_name= 'N1', to_junction_name= 'C')
+    
+    polymer.save_to_file(output_dir/'simple_polymer.json')
+    polymer_topology = polymer.topology
+    polymer_topology.to_ITP(output_dir/'simple_polymer.itp')
+    Visualize.polymer(polymer).draw2D(output_dir/'simple_polymer.png',(400,200))
 
-def test_polymer(data_dir: Path, output_dir: Path):    
+
+def test_complex_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     arg_a1 = Junction("N1", arg.get_bond('N3','H20'))
     arg_a2 = Junction("N2", arg.get_bond('N6','H23'))
@@ -45,8 +67,8 @@ def test_polymer(data_dir: Path, output_dir: Path):
         polymer.extend(arg_monomer, from_junction_name= 'N1', to_junction_name= 'C')
         polymer.extend(arg_monomer, from_junction_name= 'C', to_junction_name= 'N1')
                 
-    # add another monomer (80:20::GLU:ARG) to the branches of any remaining junction points 20 times
-    countdown = 20
+    # add another monomer (80:20::GLU:ARG) to the branches of any remaining junction points 5 times
+    countdown = 5
     while polymer.has_junction("N2") and countdown > 0:
         if random.random() < 0.2:
             polymer.extend(arg_monomer, from_junction_name= 'N2', to_junction_name= 'C')
@@ -58,6 +80,7 @@ def test_polymer(data_dir: Path, output_dir: Path):
     polymer.save_to_file(output_dir/'polymer.json')
     polymer_topology = polymer.topology
     polymer_topology.to_ITP(output_dir/'polymer.itp')
+    Visualize.polymer(polymer,infer_bond_order=False).draw2D(output_dir/'polymer.png',(400,200))
 
     
     
