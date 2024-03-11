@@ -5,28 +5,50 @@ from polytop.topology import Topology
 from polytop.junction import Junction, Junctions
 
 
-def test_monomer(data_dir: Path ):
-    arg = Topology.from_ITP(data_dir/"arginine.itp")
-    bond_a = arg.get_bond('N3','H20')
-    bond_b = arg.get_bond('C11','O1')
+def test_monomer_ARG(data_dir: Path ):
+    ARG = Topology.from_ITP(data_dir/"arginine.itp")
+    ARG_N = ARG.junction('N3','H20').named("N")
+    ARG_C = ARG.junction('C11','O1').named("C")
+    ARG_monomer = Monomer(ARG, [ARG_N, ARG_C])
     
-    monomer = Monomer(arg, [Junction("A",bond_a), Junction("C",bond_b)])
+    assert len(ARG_monomer.topology.atoms) == 26
+    assert len(ARG_monomer.junctions.get_junctions()) == 2
+    assert ARG_monomer.junctions.named("N")[0].monomer_atom.atom_name == 'N3'
+    assert ARG_monomer.junctions.named("N")[0].residue_atom.atom_name == 'H20'
+    assert ARG_monomer.junctions.named("C")[0].monomer_atom.atom_name == 'C11'
+    assert ARG_monomer.junctions.named("C")[0].residue_atom.atom_name == 'O1'
+
+def test_monomer_GLN(data_dir: Path ):
+    GLN = Topology.from_ITP(data_dir/"glutamine.itp")
+    GLN_N = GLN.junction('N1','H6').named("N")
+    GLN_C = GLN.junction('C4','O1').named("C")
     
-    assert len(monomer.topology.atoms) == 26
+    GLN_monomer = Monomer(GLN, [GLN_N, GLN_C])
+    
+    assert len(GLN_monomer.topology.atoms) == 20
+    assert len(GLN_monomer.junctions.get_junctions()) == 2
+    assert GLN_monomer.junctions.named("N")[0].monomer_atom.atom_name == 'N1'
+    assert GLN_monomer.junctions.named("N")[0].residue_atom.atom_name == 'H6'
+    assert GLN_monomer.junctions.named("C")[0].monomer_atom.atom_name == 'C4'
+    assert GLN_monomer.junctions.named("C")[0].residue_atom.atom_name == 'O1'
+    
+def test_monomer_GLU(data_dir: Path ):
+    glu = Topology.from_ITP(data_dir/"glucose.itp")
+    
+    monomer = Monomer(glu, [Junction("A",bond_a), Junction("C",bond_b)])
+    
+    assert len(monomer.topology.atoms) == 20
     assert len(monomer.junctions.get_junctions()) == 2
-    assert monomer.junctions.named("A")[0].location.atom_a.atom_name == 'N3'
-    assert monomer.junctions.named("A")[0].location.atom_b.atom_name == 'H20'
-    assert monomer.junctions.named("C")[0].location.atom_a.atom_name == 'C11'
+    assert monomer.junctions.named("A")[0].location.atom_a.atom_name == 'N1'
+    assert monomer.junctions.named("A")[0].location.atom_b.atom_name == 'H6'
+    assert monomer.junctions.named("C")[0].location.atom_a.atom_name == 'C4'
     assert monomer.junctions.named("C")[0].location.atom_b.atom_name == 'O1'
     
 def test_serializable(data_dir: Path, output_dir: Path):
     arg = Topology.from_ITP(data_dir/"arginine.itp")
-    bond_a = arg.get_bond('N3','H20')
-    bond_b = arg.get_bond('C11','O1')
     junctions = Junctions()
-    junctions.add(Junction("A",bond_a))
-    junctions.add(Junction("C",bond_b))
- 
+    junctions.add(arg.junction('N3','H20').named("A"))
+    junctions.add(arg.junction('C11','O1').named("C"))
     
     monomer = Monomer(arg, junctions)
     monomer.save(output_dir/"arg.json")
@@ -35,7 +57,7 @@ def test_serializable(data_dir: Path, output_dir: Path):
     assert len(monomer.topology.atoms) == len(new_monomer.topology.atoms)
     assert monomer.junctions.get_junctions()[0].name == new_monomer.junctions.get_junctions()[0].name
     assert monomer.junctions.get_junctions()[1].name == new_monomer.junctions.get_junctions()[1].name
-    assert monomer.junctions.get_junctions()[0].location.atom_a.atom_name == new_monomer.junctions.get_junctions()[0].location.atom_a.atom_name
-    assert monomer.junctions.get_junctions()[0].location.atom_b.atom_name == new_monomer.junctions.get_junctions()[0].location.atom_b.atom_name
-    assert monomer.junctions.get_junctions()[1].location.atom_a.atom_name == new_monomer.junctions.get_junctions()[1].location.atom_a.atom_name
-    assert monomer.junctions.get_junctions()[1].location.atom_b.atom_name == new_monomer.junctions.get_junctions()[1].location.atom_b.atom_name
+    assert monomer.junctions.get_junctions()[0].monomer_atom.atom_name == new_monomer.junctions.get_junctions()[0].monomer_atom.atom_name
+    assert monomer.junctions.get_junctions()[0].residue_atom.atom_name == new_monomer.junctions.get_junctions()[0].residue_atom.atom_name
+    assert monomer.junctions.get_junctions()[1].monomer_atom.atom_name == new_monomer.junctions.get_junctions()[1].monomer_atom.atom_name
+    assert monomer.junctions.get_junctions()[1].residue_atom.atom_name == new_monomer.junctions.get_junctions()[1].residue_atom.atom_name

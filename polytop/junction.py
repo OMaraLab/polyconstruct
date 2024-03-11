@@ -1,7 +1,4 @@
 from typing import List
-from polytop.atoms import Atom
-from polytop.bonds import Bond
-
 
 class Junction:
     """Junctions are the polymerization sites of a monomer topology. 
@@ -9,50 +6,65 @@ class Junction:
     name: str - the name of the PolymerJunction type
     bonds: list - a list of bonds of that junction type
     """
-    def __init__(self, name: str, location: Bond):
+    from polytop.atoms import Atom
+    from polytop.bonds import Bond
+
+    def __init__(self, monomer_atom : Atom, residue_atom: Atom, name: str = None):
+        if name is None:
+            name = f"{monomer_atom.atom_name}-{residue_atom.atom_name}"
         self.name = name
-        self.location = location
-        if not location:
+        self.monomer_atom = monomer_atom
+        self.residue_atom = residue_atom
+        if not residue_atom in monomer_atom.bond_neighbours():
             raise ValueError("Junction location cannot be found")
+        
+    def named(self, newname : str) -> "Junction":
+        self.name = newname
+        return self
         
     def to_dict(self)->dict:
         return {
             "name": self.name,
-            "location": self.location.to_dict() if self.location else None
+            "monomer_atom": self.monomer_atom.atom_name,
+            "residue_atom": self.residue_atom.atom_name
         }
 
     @classmethod
     def from_dict(cls, data: dict, atoms: List[Atom]):
         name = data["name"]
-        location = Bond.from_dict(data["location"], atoms)
-        return cls(name, location)
-    
+        from polytop.atoms import Atom
+        monomer_atom_name = data["monomer_atom"]
+        monomer_atom = next(atom for atom in atoms if atom.atom_name == monomer_atom_name)
+        residue_atom_name = data["residue_atom"]
+        residue_atom = next(atom for atom in atoms if atom.atom_name == residue_atom_name)
+        return cls(monomer_atom,residue_atom,name)
 
-class Junctions:
-    def __init__(self):
-        self.junctions = []
-        
-    def __len__(self):
-        return len(self.junctions)
-    
-    def __getitem__(self, index):
-        return self.junctions[index]
+    @classmethod
+    def from_topology(cls, topology: "Topology", monomer_atom_name, residue_atom_name, name: str = None):
+        monomer_atom = topology.get_atom(monomer_atom_name)
+        residue_atom = topology.get_atom(residue_atom_name)
+        return cls(monomer_atom, residue_atom, name)
 
+    def __repr__(self) -> str:
+        return f"(\"{self.name}\":{self.monomer_atom.atom_name}-{self.residue_atom.atom_name})"
+    
+class Junctions(list):
     def add(self, junction: Junction):
-        self.junctions.append(junction)
+        self.append(junction)
 
     def get_junctions(self):
-        return self.junctions
-    
+        return self
+
     def remove(self, junction: Junction):
-        self.junctions.remove(junction)
-    
+        super().remove(junction)
+
     def named(self, name: str):
-        return [junction for junction in self.junctions if junction.name == name]
+        return [junction for junction in self if junction.name == name]
 
     def to_dict(self):
-        return [junction.to_dict() for junction in self.junctions]
+        return [junction.to_dict() for junction in self]
 
+    from polytop.atoms import Atom
     @classmethod
     def from_dict(cls, data: list, atoms: List[Atom]):
         junctions = cls()
@@ -60,12 +72,56 @@ class Junctions:
             junction = Junction.from_dict(junction_dict, atoms)
             junctions.add(junction)
         return junctions
-    
-    @classmethod
-    def from_list(cls, junctions_list: list["Junction"]):
-        junctions = cls()
-        for junction in junctions_list:
-            junctions.add(junction)
-        return junctions
+
+    # @classmethod
+    # def from_list(cls, junctions_list: list["Junction"]):
+    #     junctions = cls()
+    #     for junction in junctions_list:
+    #         junctions.add(junction)
+    #     return junctions
+
     def __repr__(self) -> str:
-        return f"Junctions({len(self.junctions)})"
+        return f"Junctions({len(self)})"
+    
+    
+# class Junctions:
+#     def __init__(self):
+#         self.junctions = []
+        
+#     def __len__(self):
+#         return len(self.junctions)
+    
+#     def __getitem__(self, index):
+#         return self.junctions[index]
+
+#     def add(self, junction: Junction):
+#         self.junctions.append(junction)
+
+#     def get_junctions(self):
+#         return self.junctions
+    
+#     def remove(self, junction: Junction):
+#         self.junctions.remove(junction)
+    
+#     def named(self, name: str):
+#         return [junction for junction in self.junctions if junction.name == name]
+
+#     def to_dict(self):
+#         return [junction.to_dict() for junction in self.junctions]
+
+#     @classmethod
+#     def from_dict(cls, data: list, atoms: List[Atom]):
+#         junctions = cls()
+#         for junction_dict in data:
+#             junction = Junction.from_dict(junction_dict, atoms)
+#             junctions.add(junction)
+#         return junctions
+    
+#     @classmethod
+#     def from_list(cls, junctions_list: list["Junction"]):
+#         junctions = cls()
+#         for junction in junctions_list:
+#             junctions.add(junction)
+#         return junctions
+#     def __repr__(self) -> str:
+#         return f"Junctions({len(self.junctions)})"

@@ -22,9 +22,11 @@ class Monomer:
         new_topology = self.topology.copy()
         new_junctions = Junctions()
         for junction in self.junctions:
-            atom_a_id = junction.location.atom_a.atom_id
-            atom_b_id = junction.location.atom_b.atom_id
-            new_junctions.add(Junction(junction.name, new_topology.get_bond(atom_a_id, atom_b_id)))
+            monomer_atom_id = junction.monomer_atom.atom_id
+            residue_id = junction.residue_atom.atom_id
+            monomer_atom = new_topology.get_atom(monomer_atom_id)
+            residue_atom = new_topology.get_atom(residue_id)
+            new_junctions.add(Junction(monomer_atom, residue_atom, junction.name))
         new_monomer = Monomer(new_topology, new_junctions)
         return new_monomer
     

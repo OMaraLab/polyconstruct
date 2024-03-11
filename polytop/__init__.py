@@ -8,7 +8,7 @@ Website: https://aibn.uq.edu.au/omara
 Author: Richard Morris
 """
 
-__version__ = "0.1 alpha"
+__version__ = "1.0"
 __author__ = "Richard Morris"
 __license__ = "MIT"
 __website__ = "https://aibn.uq.edu.au/omara"

@@ -7,18 +7,29 @@ from polytop.junction import Junction, Junctions
 
 def test_junctions(data_dir: Path):
     arg = Topology.from_ITP(data_dir / "arginine.itp")
-    carboxylic_junction = Junction("carboxylic",arg.get_bond('C11','O1'))
-    amine1_junction = Junction("amine",arg.get_bond('N3','H20'))
-    amine2_junction = Junction("amine",arg.get_bond('N6','H23'))
-    junctions = Junctions.from_list([carboxylic_junction, amine1_junction, amine2_junction]) 
-    assert len(junctions) == 3
+    # 3 different ways of creating a junction
+    amine1_junction = Junction(arg.get_atom('N6'), arg.get_atom('H24'),"amine")
+    amine2_junction = arg.junction('N6','H23').named("amine")
+    amine3_junction = Junction(arg.get_atom('N5'), arg.get_atom('H26'))
+    carboxylic_junction = Junction.from_topology(arg,'C11','O1').named("carboxylic")
+    junctions = Junctions([carboxylic_junction, amine1_junction, amine2_junction, amine3_junction])
+    assert len(junctions) == 4
     assert junctions.named("carboxylic") == [carboxylic_junction]
     assert junctions.named("amine") == [amine1_junction, amine2_junction]
+    assert junctions.named("N5-H26") == [amine3_junction]
+    assert junctions[0].monomer_atom.atom_name == 'C11'
+    assert junctions[0].residue_atom.atom_name == 'O1'
+    assert junctions[1].monomer_atom.atom_name == 'N6'
+    assert junctions[1].residue_atom.atom_name == 'H24'
+    assert junctions[2].monomer_atom.atom_name == 'N6'
+    assert junctions[2].residue_atom.atom_name == 'H23'
+    assert junctions[3].monomer_atom.atom_name == 'N5'
+    assert junctions[3].residue_atom.atom_name == 'H26'
 
 def test_junction_serialization(data_dir: Path, output_dir: Path):
     arg = Topology.from_ITP(data_dir / "arginine.itp")
     atoms = arg.atoms
-    carboxylic_junction = Junction("carboxylic",arg.get_bond('C11','O1'))
+    carboxylic_junction = arg.junction('C11','O1').named("carboxylic")
     
     # Write to the file
     (output_dir / "junction.json").write_text(json.dumps(carboxylic_junction.to_dict()))
@@ -27,17 +38,17 @@ def test_junction_serialization(data_dir: Path, output_dir: Path):
     new_junction = Junction.from_dict(json.loads((output_dir / "junction.json").read_text()),atoms)
     
     assert carboxylic_junction.name == new_junction.name
-    assert carboxylic_junction.location.atom_a.atom_name == new_junction.location.atom_a.atom_name
-    assert carboxylic_junction.location.atom_b.atom_name == new_junction.location.atom_b.atom_name
+    assert carboxylic_junction.monomer_atom.atom_name == new_junction.monomer_atom.atom_name
+    assert carboxylic_junction.residue_atom.atom_name == new_junction.residue_atom.atom_name
     
     
     
 def test_junctions_serialization(data_dir: Path, output_dir: Path):
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     atoms = arg.atoms
-    carboxylic_junction = Junction("carboxylic",arg.get_bond('C11','O1'))
-    amine1_junction = Junction("amine",arg.get_bond('N3','H20'))
-    amine2_junction = Junction("amine",arg.get_bond('N6','H23'))
+    carboxylic_junction = arg.junction('C11','O1').named("carboxylic")
+    amine1_junction = arg.junction("N6","H23").named("amine")
+    amine2_junction = arg.junction("N6","H24").named("amine")
     junctions = Junctions()
     junctions.add(carboxylic_junction)
     junctions.add(amine1_junction)
@@ -53,10 +64,11 @@ def test_junctions_serialization(data_dir: Path, output_dir: Path):
     assert junctions[0].name == new_junctions[0].name
     assert junctions[1].name == new_junctions[1].name
     assert junctions[2].name == new_junctions[2].name
-    assert junctions[0].location.atom_a.atom_name == new_junctions[0].location.atom_a.atom_name
-    assert junctions[0].location.atom_b.atom_name == new_junctions[0].location.atom_b.atom_name
-    assert junctions[1].location.atom_a.atom_name == new_junctions[1].location.atom_a.atom_name
-    assert junctions[1].location.atom_b.atom_name == new_junctions[1].location.atom_b.atom_name
-    assert junctions[2].location.atom_a.atom_name == new_junctions[2].location.atom_a.atom_name
-    assert junctions[2].location.atom_b.atom_name == new_junctions[2].location.atom_b.atom_name
+    assert junctions[0].monomer_atom.atom_name == new_junctions[0].monomer_atom.atom_name
+    assert junctions[1].monomer_atom.atom_name == new_junctions[1].monomer_atom.atom_name
+    assert junctions[2].monomer_atom.atom_name == new_junctions[2].monomer_atom.atom_name
+    assert junctions[0].residue_atom.atom_name == new_junctions[0].residue_atom.atom_name
+    assert junctions[1].residue_atom.atom_name == new_junctions[1].residue_atom.atom_name
+    
+    
     

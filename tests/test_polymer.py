@@ -9,14 +9,14 @@ from polytop.topology import Topology
 
 def test_simple_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
-    arg_N = Junction("N1", arg.get_bond('N3','H20'))
-    arg_C = Junction("C", arg.get_bond('C11','O1'))
+    arg_N = arg.junction('N3','H20').named("N")
+    arg_C = arg.junction('C11','O1').named("C")
     arg_monomer = Monomer(arg, [arg_N, arg_C])
     Visualize.monomer(arg_monomer).draw2D(output_dir/'arginine_monomer.png',(400,200))
     
     glu = Topology.from_ITP(data_dir/"glutamine.itp")
-    glu_N = Junction("N1", glu.get_bond('N1','H6'))
-    glu_C = Junction("C", glu.get_bond('C4','O1'))
+    glu_N = glu.junction('N1','H6').named("N")
+    glu_C = glu.junction('C4','O1').named("C")
     glu_monomer = Monomer(glu, [glu_N, glu_C])
     Visualize.monomer(glu_monomer).draw2D(output_dir/'glutamine_monomer.png',(400,200))
     

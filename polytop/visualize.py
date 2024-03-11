@@ -133,18 +133,19 @@ class Visualize:
             else:
                 if not element == "C": # don't label carbons
                     atom_label = element
-                    count_h = sum([1 for neighbour in atom.bond_neighbours() if neighbour.element == "H"])
-                    if count_h == 1:
-                        atom_label += f"H"
-                    elif count_h > 1:
-                        atom_label += f"H<sub>{count_h}</sub>"
+                    if options["remove_explicit_H"]:
+                        count_h = sum([1 for neighbour in atom.bond_neighbours() if neighbour.element == "H"])
+                        if count_h == 1:
+                            atom_label += f"H"
+                        elif count_h > 1:
+                            atom_label += f"H<sub>{count_h}</sub>"
             mol_atom.SetProp("atomLabel", atom_label)
         
         if options.get("highlight_junctions",False):
             # Draw bonds that represent junction locations in a different colour
             for junction in self.junctions:
-                atom_a = junction.location.atom_a
-                atom_b = junction.location.atom_b
+                atom_a = junction.monomer_atom
+                atom_b = junction.residue_atom
                 bond = mol.GetBondBetweenAtoms(self.atom_mapping[atom_a.atom_id], self.atom_mapping[atom_b.atom_id])
                 index = bond.GetIdx()
                 bond.SetProp("Junction", junction.name)
@@ -154,12 +155,12 @@ class Visualize:
 
         return mol
 
-    def draw3D(self, view=None, options: dict[str,any] = None):
-        if options is None:
-            options = {
-                "highlight_junctions":False, 
-                "show_atom_ID":False,
-                }
+    def draw3D(self, view=None, highlight_junctions: bool = False,show_atom_ID:bool= False, remove_explicit_H:bool = True):
+        options = {
+            "highlight_junctions":highlight_junctions, 
+            "show_atom_ID":show_atom_ID,
+            "remove_explicit_H": remove_explicit_H
+            }
         mol = self.to_rdKit_Chem_mol(options=options)  # Removed the MolToMolBlock conversion
         Chem.SanitizeMol(mol)
         AllChem.EmbedMolecule(mol)

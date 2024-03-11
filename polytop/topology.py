@@ -3,13 +3,12 @@ from functools import singledispatchmethod
 import re
 import warnings
 from typing import Dict, List, Optional, Tuple
-
 import numpy as np
 import numpy.linalg as la
-
 from .angles import Angle
 from .atoms import Atom
 from .bonds import Bond
+from .junction import Junction, Junctions
 from .dihedrals import Dihedral, Dihedral_type
 from .exclusions import Exclusion
 from .molecule_type import MoleculeType
@@ -284,6 +283,11 @@ class Topology:
                 max_atom_index[atom.element] = max(max_atom_index[atom.element], atom.index)
         return max_atom_index
             
+    def junction(self, monomer_atom_name:str, residue_atom_name:str, name:str = None) -> Junction:
+        monomer_atom = self.get_atom(monomer_atom_name)
+        residue_atom = self.get_atom(residue_atom_name)
+        return Junction(monomer_atom, residue_atom, name)
+    
     @property
     def residue_id(self):
         return self.atoms[0].residue_id
