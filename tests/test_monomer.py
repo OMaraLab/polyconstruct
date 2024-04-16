@@ -35,16 +35,19 @@ def test_monomer_GLN(data_dir: Path ):
 def test_monomer_GLU(data_dir: Path ):
     glu = Topology.from_ITP(data_dir/"glucose.itp")
     
-    glu_1 = glu.junction("O6","H5").named("1")
-    glu_4 = glu.junction("C6","O2").named("4")
-    monomer = Monomer(glu, [glu_1, glu_4])
+    glu_1 = glu.junction("C1","O3").named("1")
+    glu_4 = glu.junction("C4","HC3").named("4")
+    glu_6 = glu.junction("C6","HC11").named("6")
+    monomer = Monomer(glu, [glu_1, glu_4, glu_6])
     
     assert len(monomer.topology.atoms) == 24
-    assert len(monomer.junctions.get_junctions()) == 2
-    assert monomer.junctions.named("1")[0].monomer_atom.atom_name == 'O6'
-    assert monomer.junctions.named("1")[0].residue_atom.atom_name == 'H5'
-    assert monomer.junctions.named("4")[0].monomer_atom.atom_name == 'C6'
-    assert monomer.junctions.named("4")[0].residue_atom.atom_name == 'O2'
+    assert len(monomer.junctions.get_junctions()) == 3
+    assert monomer.junctions.named("1")[0].monomer_atom.atom_name == 'C1'
+    assert monomer.junctions.named("1")[0].residue_atom.atom_name == 'O3'
+    assert monomer.junctions.named("4")[0].monomer_atom.atom_name == 'C4'
+    assert monomer.junctions.named("4")[0].residue_atom.atom_name == 'HC3'
+    assert monomer.junctions.named("6")[0].monomer_atom.atom_name == 'C6'
+    assert monomer.junctions.named("6")[0].residue_atom.atom_name == 'HC11'
     
 def test_serializable(data_dir: Path, output_dir: Path):
     arg = Topology.from_ITP(data_dir/"arginine.itp")
