@@ -3,8 +3,8 @@ from functools import singledispatchmethod
 import re
 import warnings
 from typing import Dict, List, Optional, Tuple
-import numpy as np
-import numpy.linalg as la
+# import numpy as np
+# import numpy.linalg as la
 from .angles import Angle
 from .atoms import Atom
 from .bonds import Bond

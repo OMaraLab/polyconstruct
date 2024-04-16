@@ -131,3 +131,6 @@ dmypy.json
 # scratch local paths   
 scratch/
 tests/output/
+
+# virtual environments
+.venv 

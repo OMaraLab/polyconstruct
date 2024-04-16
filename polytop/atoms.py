@@ -1,7 +1,6 @@
 import re
 from typing import Any, List, Optional
 
-import numpy as np
 from polytop.exclusions import Exclusion
 from .bonds import Bond
 from .pairs import Pair
