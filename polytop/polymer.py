@@ -38,7 +38,7 @@ class Polymer:
             if neighbor is not exclude and neighbor not in visited:
                 self.DFS(neighbor, visited, exclude)
 
-    def extend(self, monomer, from_junction_name, to_junction_name, keep_charge = False):
+    def extend(self, monomer, from_junction_name, to_junction_name, keep_charge = False, bond_length_func = None):
         """
         Extend the polymer by adding a monomer to the polymerization junctions of the polymer
         Args:
@@ -47,10 +47,15 @@ class Polymer:
             to_junction_name (str): the name of the junction in the monomer to extend to
             keep_charge (bool): if True, the charge of the polymer is kept the same by forcing the final topology to be 
                 the same net charge as the sum charge of the initial topology and the monomer 
+            bond_length_func (function): a function that takes 2 bonds (the junction bond on the polymer, and the 
+            junction bond on the monomer) and returns a bond length for the junction bond of the extended polymer
         """
+        if bond_length_func is None:
+            bond_length_func = lambda bond1, bond2: (bond1.bond_length + bond2.bond_length) / 2
+
         if keep_charge:
-            monomer_charge = monomer.topology.charge
-            polymer_charge = self.topology.charge
+            monomer_charge = monomer.topology.netcharge
+            polymer_charge = self.topology.netcharge
         
         # take a copy of the topology of the monomer 
         new_monomer = monomer.copy()
@@ -61,8 +66,8 @@ class Polymer:
         atom_index_dict = self.topology.max_atom_index()
         
         # renumber all atom indexes for each atom type above the max atom index for that atom type in the polymer
-        for atom_type in atom_index_dict:
-            new_monomer.topology.renumber_atom_indexes({atom_type: atom_index_dict[atom_type]+1})
+        for atom_type, new_index in atom_index_dict.items():
+            new_monomer.topology.renumber_atom_indexes(atom_type,new_index+1)
 
         # choose the first polymerization junction of the monomer named to_junction_name to extend this monomer from
         to_junction = next((junction for junction in new_monomer.junctions if junction.name == to_junction_name), None)
@@ -107,7 +112,7 @@ class Polymer:
             
         if keep_charge:
             new_charge = monomer_charge + polymer_charge 
-            self.topology.charge = new_charge
+            self.topology.netcharge = new_charge
 
         
     def save_to_file(self, filename: str) -> None:

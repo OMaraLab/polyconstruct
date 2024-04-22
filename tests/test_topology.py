@@ -81,7 +81,7 @@ def test_topology_max_atom_index(data_dir: Path, output_dir: Path):
 def test_topology_reorder_atom_indexes(data_dir: Path, output_dir: Path):
     arginine = Topology.from_ITP(data_dir/"arginine.itp")
     for element, number in { "H": 26, "C": 12, "N": 6, "O": 2 }.items(): 
-        arginine.reorder_atom_indexes(element, number)
+        arginine.renumber_atom_indexes(element, number)
     arg_max_atom_index = arginine.max_atom_index()
     assert arg_max_atom_index["H"] == 39
     assert arg_max_atom_index["C"] == 17

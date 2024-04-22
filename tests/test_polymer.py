@@ -9,7 +9,7 @@ from polytop.visualize import Visualize
 from polytop.polymer import Polymer
 from polytop.topology import Topology
 
-@pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")
+# @pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")
 def test_simple_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     arg_N = arg.junction('N3','H20').named("N")
@@ -24,12 +24,18 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     Visualize.monomer(glu_monomer).draw2D(output_dir/'glutamine_monomer.png',(400,200))
     
     polymer = Polymer(arg_monomer)
-    polymer.extend(glu_monomer, from_junction_name= 'N1', to_junction_name= 'C')
-    
+    polymer.extend(glu_monomer, 
+                   from_junction_name= 'N', # there must be a junction named 'N' in the polymer
+                   to_junction_name= 'C', # there must be a junction named 'C' in the monomer 
+                   keep_charge=True, # keep the charge of the polymer the same by distributing the charge change once the residues are removed
+                   bond_length_func = lambda bond1, bond2: (bond1.bond_length + bond2.bond_length)) # double the bond length
+    assert len(polymer.topology.atoms) == len(arg.topology.atoms) + len(glu.topology.atoms) - 3 # 3 atoms are residual in the dehydration 
+    assert polymer.topology.charge == arg.topology.charge # charge remains the same
+
     polymer.save_to_file(output_dir/'simple_polymer.json')
     polymer_topology = polymer.topology
     polymer_topology.to_ITP(output_dir/'simple_polymer.itp')
-    Visualize.polymer(polymer).draw2D(output_dir/'simple_polymer.png',(400,200))
+    # Visualize.polymer(polymer).draw2D(output_dir/'simple_polymer.png',(400,200))
 
 
 @pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")

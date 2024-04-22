@@ -259,9 +259,9 @@ class Topology:
         This compresses the namespace of atom names to the minimum possible while preserving the element and order of atoms in the topology.
         """
         for atom_symbol in self.atom_elements():
-            self.reorder_atom_indexes(atom_symbol,1)
+            self.renumber_atom_indexes(atom_symbol,1)
         
-    def reorder_atom_indexes(self,atom_symbol: str,new_first_index: int):
+    def renumber_atom_indexes(self,atom_symbol: str,new_first_index: int):
         """
         Reorder the atom indexes of all atoms with a given symbol to start from a given index.
         """
@@ -302,7 +302,6 @@ class Topology:
 
     @property
     def netcharge(self):
-        # Implementation code here
         return sum(atom.partial_charge for atom in self.atoms)
 
     @netcharge.setter
