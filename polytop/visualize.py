@@ -95,7 +95,7 @@ class Visualize:
         for atom in self.topology.atoms:
             atom_name = atom.atom_name
             # if the atom is a virtual atom (X), then set the element to H for rdKit 
-            element = "H" if atom.atom_type == "X" else re.sub("[^a-zA-Z]", "", atom_name)
+            element = atom.element
             new_atom = Chem.Atom(element)
             self.atom_mapping[atom.atom_id] = mol.AddAtom(new_atom)
 
