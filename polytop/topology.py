@@ -41,7 +41,7 @@ class Topology:
 
     Methods
     -------
-    from_ITP(cls, itp_file: str) -> 'Topology'
+    from_ITP(cls, itp_file: str, preprocess) -> 'Topology'
         Class method to create a Topology object from a GROMACS ITP file.
 
     """
@@ -125,9 +125,11 @@ class Topology:
                 if exclusion not in exclusions:
                     exclusions.append(exclusion)
         return exclusions
+    
+    preprocess = lambda section, line: re.sub(r'(\bO[A-Z]\b)', lambda match: 'O' + str(ord(match.group(1)[-1]) - ord('A') + 1), line) if section == 'atoms' else line
 
     @classmethod
-    def from_ITP(cls, file_path: str)->'Topology':
+    def from_ITP(cls, file_path: str, preprocess=preprocess)->'Topology': #TO DO: Make using preprocess adjustable
         """
         Class method to create a Topology object from a GROMACS ITP file.
 
@@ -135,6 +137,8 @@ class Topology:
         ----------
         itp_file : str
             The path to the GROMACS ITP file.
+        preprocess : lambda function
+            Function to preprocess the topology.
 
         Returns
         -------
@@ -159,6 +163,8 @@ class Topology:
             if line.startswith("["):
                 section = line.strip("[] ").lower()
                 continue
+            if preprocess is not None:
+                line = preprocess(section, line)
             if section == "moleculetype":
                 molecule_type = MoleculeType.from_line(line)
                 continue
