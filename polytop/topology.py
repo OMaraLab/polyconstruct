@@ -189,7 +189,6 @@ class Topology:
                 continue
             if preprocess is not None:
                 line = preprocess(section, line)
-                print(line)
             if section == "moleculetype":
                 molecule_type = MoleculeType.from_line(line)
                 continue
