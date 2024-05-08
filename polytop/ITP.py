@@ -60,8 +60,6 @@ class atom:
         self.charge = columns[6]
         if ";" in line:
             self.comment = line.split(";")[-1]
-        if not any(chr.isdigit() for chr in columns[4]):
-            warnings.warn(f"No index in atom {columns[4]}, atom id {self.id}. Please check your ITP file.")
         return self
 
     def summary(self):

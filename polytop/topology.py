@@ -126,10 +126,34 @@ class Topology:
                     exclusions.append(exclusion)
         return exclusions
     
-    preprocess = lambda section, line: re.sub(r'(\bO[A-Z]\b)', lambda match: 'O' + str(ord(match.group(1)[-1]) - ord('A') + 1), line) if section == 'atoms' else line
-
     @classmethod
-    def from_ITP(cls, file_path: str, preprocess=preprocess)->'Topology': #TO DO: Make using preprocess adjustable
+    def numerically_order_oxygens(instance: 'Topology', section: str, line: str)->str:
+        """
+        Preprocesses oxygen atoms with alphanumeric ordering to numeric 
+        ordering. For example: OD becomes O4.
+
+        Parameters
+        ----------
+        instance : Topology
+            The Topology class being called.
+        section : str
+            The itp file section, for example "molecule".
+        line : str
+            A line from the itp file.
+
+        Returns
+        -------
+        new_line : str
+            The processed line with oxygen atoms renamed numerically.
+        """
+        if section == 'atoms':
+            new_line = re.sub(r'(\bO[A-Z]\b)', lambda match: 'O' + str(ord(match.group(1)[-1]) - ord('A') + 1), line) 
+        else:
+            new_line = line
+        return new_line
+    
+    @classmethod
+    def from_ITP(cls, file_path: str, preprocess=None)->'Topology':
         """
         Class method to create a Topology object from a GROMACS ITP file.
 

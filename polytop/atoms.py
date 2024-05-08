@@ -61,8 +61,7 @@ class Atom:
         self.z = z
         self.visited = False
         if not any(chr.isdigit() for chr in self.atom_name):
-            warnings.warn(f"No index in atom {self.atom_name}, id {self.atom_id}. " \
-                          "Please check your ITP file.")
+            raise(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
             
     @property
     def element(self) -> str:
