@@ -189,6 +189,7 @@ class Topology:
                 continue
             if preprocess is not None:
                 line = preprocess(section, line)
+                print(line)
             if section == "moleculetype":
                 molecule_type = MoleculeType.from_line(line)
                 continue
@@ -203,7 +204,12 @@ class Topology:
             elif section == "dihedrals":
                 Dihedral.from_line(line, atoms)
             elif section == "exclusions":
-                Exclusion.from_line(line, atoms)
+                if len(line.split()) > 2:
+                    for second_atom in range(1, len(line.split())):
+                        indexes = [0, second_atom]
+                        Exclusion.from_line(line, atoms, indexes=indexes)
+                else:
+                    Exclusion.from_line(line, atoms)
             else:
                 warnings.warn(f"Unknown section {section} in {file_path}")
         return cls(atoms, preamble, molecule_type)

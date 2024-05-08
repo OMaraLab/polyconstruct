@@ -65,9 +65,15 @@ class Atom:
             
     @property
     def element(self) -> str:
-        element_name = re.sub("[^a-zA-Z]", "", self.atom_name)
-        if element_name == "HC":
-            element_name = "H"
+        # element_name = re.sub("[^a-zA-Z]", "", self.atom_name)
+        # if element_name == "HC":
+        #     element_name = "H"
+        # compatible with GROMOS 54a7 forcefield
+        element_types = {"H": ["HC", "H"], 
+                         "O": ["O", "OM", "OA", "OE", "OW"], 
+                         "C": ["C", "CH0", "CH1", "CH2", "CH3", "CH4", "CH2r", "CR1"],
+                         "N": ["N", "NT", "NL", "NR", "NZ", "NE"]}
+        element_name = [key for key, val in element_types.items() if self.atom_type in val]
         return element_name
 
     @element.setter
