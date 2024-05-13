@@ -1,5 +1,6 @@
 import re
 from typing import Any, List, Optional
+import warnings
 
 from polytop.exclusions import Exclusion
 from .bonds import Bond
@@ -59,12 +60,22 @@ class Atom:
         self.y = y
         self.z = z
         self.visited = False
-
+        if not any(chr.isdigit() for chr in self.atom_name):
+            raise(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
+            
     @property
     def element(self) -> str:
-        element_name = re.sub("[^a-zA-Z]", "", self.atom_name)
-        if element_name == "HC":
-            element_name = "H"
+        # compatible with GROMOS 54a7 forcefield, ATB and test files
+        element_types = {"H": ["HC", "H", "HS14"], 
+                         "O": ["O", "OM", "OA", "OE", "OW", "OEOpt", "OAlc", "OA"], 
+                         "C": ["C", "CH0", "CH1", "CH2", "CH3", "CH4", "CH2r", "CR1", "CPos", "CAro"],
+                         "N": ["N", "NT", "NL", "NR", "NZ", "NE", "NOpt", "NPri"]}
+        element_name = [key for key, val in element_types.items() if self.atom_type in val]
+        if len(element_name) == 0:
+            warnings.warn(f"Atom type '{self.atom_type}' not supported, attempting to derive element from atom name.")
+            element_name = self.atom_name[0]
+            if element_name not in list(element_types.keys()):
+                raise(f"Unable to derive element from atom name.")
         return element_name
 
     @element.setter

@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 from polytop import *
+from polytop.topology import Topology
+from polytop.visualize import Visualize
 import pytest
 
 def test_invalid_file(data_dir: Path):

@@ -41,7 +41,7 @@ class Topology:
 
     Methods
     -------
-    from_ITP(cls, itp_file: str) -> 'Topology'
+    from_ITP(cls, itp_file: str, preprocess) -> 'Topology'
         Class method to create a Topology object from a GROMACS ITP file.
 
     """
@@ -125,9 +125,35 @@ class Topology:
                 if exclusion not in exclusions:
                     exclusions.append(exclusion)
         return exclusions
-
+    
     @classmethod
-    def from_ITP(cls, file_path: str)->'Topology':
+    def numerically_order_oxygens(instance: 'Topology', section: str, line: str)->str:
+        """
+        Preprocesses oxygen atoms with alphanumeric ordering to numeric 
+        ordering. For example: OD becomes O4.
+
+        Parameters
+        ----------
+        instance : Topology
+            The Topology class being called.
+        section : str
+            The itp file section, for example "molecule".
+        line : str
+            A line from the itp file.
+
+        Returns
+        -------
+        new_line : str
+            The processed line with oxygen atoms renamed numerically.
+        """
+        if section == 'atoms':
+            new_line = re.sub(r'(\bO[A-Z]\b)', lambda match: 'O' + str(ord(match.group(1)[-1]) - ord('A') + 1), line) 
+        else:
+            new_line = line
+        return new_line
+    
+    @classmethod
+    def from_ITP(cls, file_path: str, preprocess=None)->'Topology':
         """
         Class method to create a Topology object from a GROMACS ITP file.
 
@@ -135,6 +161,8 @@ class Topology:
         ----------
         itp_file : str
             The path to the GROMACS ITP file.
+        preprocess : lambda function
+            Function to preprocess the topology.
 
         Returns
         -------
@@ -159,6 +187,8 @@ class Topology:
             if line.startswith("["):
                 section = line.strip("[] ").lower()
                 continue
+            if preprocess is not None:
+                line = preprocess(section, line)
             if section == "moleculetype":
                 molecule_type = MoleculeType.from_line(line)
                 continue
@@ -173,7 +203,12 @@ class Topology:
             elif section == "dihedrals":
                 Dihedral.from_line(line, atoms)
             elif section == "exclusions":
-                Exclusion.from_line(line, atoms)
+                if len(line.split()) > 2:
+                    for second_atom in range(1, len(line.split())):
+                        indexes = [0, second_atom]
+                        Exclusion.from_line(line, atoms, indexes=indexes)
+                else:
+                    Exclusion.from_line(line, atoms)
             else:
                 warnings.warn(f"Unknown section {section} in {file_path}")
         return cls(atoms, preamble, molecule_type)
