@@ -4,4 +4,6 @@ Install python 3
 
 Install pip, setuptools, wheel per https://packaging.python.org/en/latest/tutorials/installing-packages/
 
-pip install nbconvert
+TLDR; `pip install --upgrade setuptools wheel
+
+pip install -e polytop 

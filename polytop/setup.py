@@ -11,10 +11,6 @@ setup(
         "py3Dmol",
         "rdkit",
     ],
-    entry_points="""
-        [console_scripts]
-        polytop=polytop.cli:cli
-    """,
     python_requires=">=3.10",
 )
 
