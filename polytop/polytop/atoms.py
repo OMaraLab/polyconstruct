@@ -62,7 +62,10 @@ class Atom:
 
     @property
     def element(self) -> str:
-        return re.sub("[^a-zA-Z]", "", self.atom_name)
+        element_name = re.sub("[^a-zA-Z]", "", self.atom_name)
+        if element_name == "HC":
+            element_name = "H"
+        return element_name
 
     @element.setter
     def element(self, value: str):
@@ -74,7 +77,7 @@ class Atom:
     
     @index.setter
     def index(self, value: int):
-        self.atom_name = f"{self.element}{value}"
+        self.atom_type = f"{self.element}{value}"
     
     @property
     def is_virtual(self):
