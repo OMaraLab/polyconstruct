@@ -71,16 +71,31 @@ class Atom:
                          "C": ["C", "CH0", "CH1", "CH2", "CH3", "CH4", "CH2r", "CR1", "CPos", "CAro"],
                          "N": ["N", "NT", "NL", "NR", "NZ", "NE", "NOpt", "NPri"]}
         element_name = [key for key, val in element_types.items() if self.atom_type in val]
-        if len(element_name) == 0:
-            warnings.warn(f"Atom type '{self.atom_type}' not supported, attempting to derive element from atom name.")
-            element_name = self.atom_name[0]
-            if element_name not in list(element_types.keys()):
-                raise(f"Unable to derive element from atom name.")
-        return element_name
+        # if len(element_name) == 0:
+        #     warnings.warn(f"Atom type '{self.atom_type}' not supported, attempting to derive element from atom name.")
+        #     element_name = self.atom_name[0]
+        #     if element_name not in list(element_types.keys()):
+        #         warnings.warn(f"Unable to derive element from atom name.")
+        # else:
+        #     element_name = element_name[0]
+        # return element_name
 
+        if len(element_name) == 0:
+            if self.atom_name[1:].isnumeric():
+                element_name = self.atom_name[0] #TO DO: enable 2 letter elements
+            else:
+                warnings.warn(f"Atom type '{self.atom_type}' not supported, attempting to derive element from atom name.")
+                element_name = self.atom_name[0]
+                if element_name not in list(element_types.keys()):
+                    raise(f"Unable to derive element from atom name.")
+        else:
+            element_name = element_name[0]
+        return element_name
+    
+    #TO DO: deconvulute following 3 functions, and atom_name, atom_id and index properties...
     @element.setter
     def element(self, value: str):
-        self.atom_name = f"{value}{self.index}"
+        self.atom_name = f"{value}{self.index}" # or self.atom_id?
 
     @property 
     def index(self) -> int:
@@ -88,7 +103,8 @@ class Atom:
     
     @index.setter
     def index(self, value: int):
-        self.atom_type = f"{self.element}{value}"
+        #self.atom_id = value # does this work?
+        self.atom_name = f"{self.element}{value}" #self.atom_type = ...
     
     @property
     def is_virtual(self):

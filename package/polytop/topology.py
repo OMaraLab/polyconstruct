@@ -304,6 +304,7 @@ class Topology:
         atoms_with_this_symbol.sort(key=lambda atom: atom.index)
         for atom in atoms_with_this_symbol:
             atom.index = new_first_index
+            atom.element = atom_symbol
             new_first_index += 1
 
     def max_atom_index(self) -> dict[str, int]:
