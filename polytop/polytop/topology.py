@@ -193,7 +193,10 @@ class Topology:
                 molecule_type = MoleculeType.from_line(line)
                 continue
             elif section == "atoms":
-                atoms.append(Atom.from_line(line))
+                atom = Atom.from_line(line)
+                # check for issues with atom type or name
+                atom.element
+                atoms.append(atom)
             elif section == "bonds":
                 Bond.from_line(line, atoms)
             elif section == "angles":
