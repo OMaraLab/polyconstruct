@@ -83,11 +83,14 @@ class Atom:
         if len(element_name) == 0:
             if self.atom_name[1:].isnumeric():
                 element_name = self.atom_name[0] #TO DO: enable 2 letter elements
+                warnings.warn(f"Have extracted element from atom name ({self.atom_name}) instead of type. Element set to {element_name}.")
             else:
                 warnings.warn(f"Atom type '{self.atom_type}' not supported, attempting to derive element from atom name.")
                 element_name = self.atom_name[0]
                 if element_name not in list(element_types.keys()):
                     raise(f"Unable to derive element from atom name.")
+                else:
+                    warnings.warn(f"Atom element set to {element_name}.")
         else:
             element_name = element_name[0]
         return element_name

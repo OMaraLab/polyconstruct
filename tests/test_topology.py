@@ -9,11 +9,38 @@ def test_invalid_file(data_dir: Path):
     with pytest.raises(FileNotFoundError):
         Topology.from_ITP(data_dir/"non_existent.itp")
 
-
 def test_invalid_section_warning(data_dir: Path):
     with pytest.warns(UserWarning, match="Unknown section"):
         Topology.from_ITP(data_dir/"invalid_section.itp")
 
+def test_glucose_missing_index(data_dir: Path):
+    with pytest.raises(ValueError, match="No index"):
+        Topology.from_ITP(data_dir/"glucose_faulty.itp")
+
+def test_bad_name_warning(data_dir: Path):
+    with pytest.warns(UserWarning, match="Atom type"):
+        Topology.from_ITP(data_dir/"glucose_badname.itp")
+
+def test_bad_type_warning(data_dir: Path):
+    with pytest.warns(UserWarning, match="Have extracted"):
+        Topology.from_ITP(data_dir/"glucose_badtype.itp")
+
+def test_preprocess_numeric_oxygens(data_dir: Path):
+    with pytest.warns(UserWarning, match="Have extracted"):
+        glucose = Topology.from_ITP(data_dir/"glucose_numeric_oxygens.itp", preprocess=Topology.numerically_order_oxygens)
+        assert glucose.atoms[1].atom_name == "O6"
+
+def test_ph1_gromos_54a7_forcefieldbonds_angles_dihedrals(data_dir: Path):
+    ph1 = Topology.from_ITP(data_dir/"PH1.itp")
+    assert len(ph1.bonds) == 59
+    assert len(ph1.angles) == 80
+    assert len(ph1.dihedrals) == 60
+
+def test_glucose_bonds_angles_dihedrals(data_dir: Path):
+    glucose = Topology.from_ITP(data_dir/"glucose.itp")
+    assert len(glucose.bonds) == 24
+    assert len(glucose.angles) == 42
+    assert len(glucose.dihedrals) == 12
 
 def test_arginine_bonds_angles_dihedrals(data_dir: Path):
     arginine = Topology.from_ITP(data_dir/"arginine.itp")
@@ -21,25 +48,31 @@ def test_arginine_bonds_angles_dihedrals(data_dir: Path):
     assert len(arginine.angles) == 41
     assert len(arginine.dihedrals) == 12
 
-
 def test_glutamine_bonds_angles_dihedrals(data_dir: Path):
     glutamine = Topology.from_ITP(data_dir/"glutamine.itp")
     assert len(glutamine.bonds) == 19
     assert len(glutamine.angles) == 31
     assert len(glutamine.dihedrals) == 10
 
+def test_glucose_molecule_type(data_dir: Path):
+    glucose = Topology.from_ITP(data_dir/"glucose.itp")
+    assert glucose.molecule_type.name == "NWU6"
+    assert glucose.molecule_type.nrexcl == 3
+
+def test_ph1_molecule_type(data_dir: Path):
+    ph1 = Topology.from_ITP(data_dir/"PH1.itp")
+    assert ph1.molecule_type.name == "G36Q"
+    assert ph1.molecule_type.nrexcl == 3
 
 def test_arginine_molecule_type(data_dir: Path):
     arginine = Topology.from_ITP(data_dir/"arginine.itp")
     assert arginine.molecule_type.name == "AE97"
     assert arginine.molecule_type.nrexcl == 3
 
-
 def test_glutamine_molecule_type(data_dir: Path):
     glutamine = Topology.from_ITP(data_dir/"glutamine.itp")
     assert glutamine.molecule_type.name == "9NF5"
     assert glutamine.molecule_type.nrexcl == 3
-
 
 def test_arginine(data_dir: Path, output_dir: Path):
     arginine = Topology.from_ITP(data_dir/"arginine.itp")
@@ -61,7 +94,6 @@ def test_arginine(data_dir: Path, output_dir: Path):
     assert loaded_arginine.get_dihedral(
         2, 4, 8, 9
     )  # verify that the proper dihedral between atoms 2, 4, 8 and 9 exists
-
 
 def test_glutamine(data_dir: Path, output_dir: Path):
     glutamine = Topology.from_ITP(data_dir/"glutamine.itp")

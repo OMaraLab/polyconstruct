@@ -24,5 +24,7 @@ pip install -r requirements.txt
 conda uninstall python
 conda install "python=3.10" 
 
+cd polytop
+
 pip install -e .
 ```
