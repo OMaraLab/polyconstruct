@@ -54,3 +54,8 @@ class Monomer:
             data = json.load(f)
 
         return cls.from_dict(data)
+
+    def set_residue_id(self, residue_id: int):
+        for atom in self.topology.atoms:
+            atom.residue_id = residue_id
+

@@ -62,12 +62,9 @@ class Polymer:
         
         # renumber all atoms above the max atom id of the polymer
         new_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms)+1)
-        
-        atom_index_dict = self.topology.max_atom_index()
-        
-        # renumber all atom indexes for each atom type above the max atom index for that atom type in the polymer
-        for atom_type, new_index in atom_index_dict.items():
-            new_monomer.topology.renumber_atom_indexes(atom_type,new_index+1)
+        new_monomer.set_residue_id(max(atom.residue_id for atom in self.topology.atoms)+1)  
+
+        # renumber all atom indexes is unnecessary as the atom index is recapitlaued from the atom_id plus element char and should not collide
 
         # choose the first polymerization junction of the monomer named to_junction_name to extend this monomer from
         to_junction = next((junction for junction in new_monomer.junctions if junction.name == to_junction_name), None)

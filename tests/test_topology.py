@@ -217,4 +217,4 @@ def test_net_charge(data_dir: Path, output_dir: Path):
     arg.to_ITP(output_dir/"arginine_negative_charge_proportional.itp")
     
     
-    
+

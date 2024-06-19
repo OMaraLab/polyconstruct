@@ -9,7 +9,8 @@ from polytop.visualize import Visualize
 from polytop.polymer import Polymer
 from polytop.topology import Topology
 
-# @pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")
+
+#@pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")
 def test_simple_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     arg_N = arg.junction('N3','H20').named("N")

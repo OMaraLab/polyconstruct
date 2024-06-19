@@ -3,6 +3,7 @@ from pathlib import Path
 from polytop.monomer import Monomer
 from polytop.topology import Topology
 from polytop.junction import Junction, Junctions
+from polytop.visualize import Visualize
 
 
 def test_monomer_ARG(data_dir: Path ):
@@ -66,3 +67,27 @@ def test_serializable(data_dir: Path, output_dir: Path):
     assert monomer.junctions.get_junctions()[0].residue_atom.atom_name == new_monomer.junctions.get_junctions()[0].residue_atom.atom_name
     assert monomer.junctions.get_junctions()[1].monomer_atom.atom_name == new_monomer.junctions.get_junctions()[1].monomer_atom.atom_name
     assert monomer.junctions.get_junctions()[1].residue_atom.atom_name == new_monomer.junctions.get_junctions()[1].residue_atom.atom_name
+
+def test_renumber_monomer_and_change_residue_id(data_dir: Path, output_dir: Path):
+    glu = Topology.from_ITP(data_dir/"glutamine.itp")
+    glu_N = glu.junction('N1','H6').named("N")
+    glu_C = glu.junction('C4','O1').named("C")
+    glu_monomer = Monomer(glu, [glu_N, glu_C])
+    Visualize.monomer(glu_monomer).draw2D(output_dir/'glutamine_before_renumber.png',(400,200))
+    glu_copy = glu_monomer.copy()
+    glu_copy.topology.renumber_atoms(100)
+    glu_copy.set_residue_id(100)
+    glu_copy.topology.to_ITP(output_dir/'glutamine_renumbered.itp')
+    Visualize.monomer(glu_copy).draw2D(output_dir/'glutamine_after_renumber.png',(400,200))    
+    for i,atom in enumerate(glu_copy.topology.atoms):
+        assert atom.atom_id == glu_monomer.topology.atoms[i].atom_id + 100
+        assert atom.residue_id == 100
+        assert atom.residue_name == glu_monomer.topology.atoms[i].residue_name
+        assert atom.atom_name == glu_monomer.topology.atoms[i].atom_name
+        assert atom.atom_type == glu_monomer.topology.atoms[i].atom_type
+        assert atom.charge_group_num == glu_monomer.topology.atoms[i].charge_group_num
+        assert atom.partial_charge == glu_monomer.topology.atoms[i].partial_charge
+        assert atom.mass == glu_monomer.topology.atoms[i].mass
+        for bond in atom.bonds:
+            assert glu_monomer.topology.get_bond(bond.atom_a.atom_id-100, bond.atom_b.atom_id-100)
+        
