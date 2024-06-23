@@ -99,6 +99,24 @@ class Angle:
         if self in self.bond_bc.angles:
             self.bond_bc.angles.remove(self)
 
+    def change_atom(self, old_atom: Atom, new_atom: Atom):
+        if old_atom not in [self.atom_a, self.atom_b, self.atom_c]:
+            raise ValueError(f"Atom {old_atom} is not in angle {self}")
+        if new_atom in [self.atom_a, self.atom_b, self.atom_c]:
+            raise ValueError(f"Atom {new_atom} is already in angle {self}")
+        if old_atom == self.atom_a:
+            self.atom_a = new_atom
+        elif old_atom == self.atom_b:
+            self.atom_b = new_atom
+        elif old_atom == self.atom_c:
+            self.atom_c = new_atom
+        self.bond_ab, self.bond_bc = Angle.find_bonds(self.atom_a, self.atom_b, self.atom_c)
+        if self.bond_ab is None or self.bond_bc is None:
+            raise ValueError(f"Could not find bonds for angle: {self}")
+        self.bond_ab.angles.add(self)
+        self.bond_bc.angles.add(self)
+
+
     def __str__(self):
         return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5} {self.angle_value:>10.4f} {self.force_constant:.4e}"
 

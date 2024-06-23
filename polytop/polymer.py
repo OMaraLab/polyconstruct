@@ -43,7 +43,7 @@ class Polymer:
         Extend the polymer by adding a monomer to the polymerization junctions of the polymer
         Args:
             monomer (Monomer): the monomer to add to the polymer
-            from_junction_name (str): the name of the junction in the polymer to extend from
+            from_junction_name (str): the name of the junction in the polymer to extend from (a random junction is chosen if multiple with this name are present)
             to_junction_name (str): the name of the junction in the monomer to extend to
             keep_charge (bool): if True, the charge of the polymer is kept the same by forcing the final topology to be 
                 the same net charge as the sum charge of the initial topology and the monomer 
@@ -64,7 +64,7 @@ class Polymer:
         new_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms)+1)
         new_monomer.set_residue_id(max(atom.residue_id for atom in self.topology.atoms)+1)  
 
-        # renumber all atom indexes is unnecessary as the atom index is recapitlaued from the atom_id plus element char and should not collide
+        # renumber all atom indexes is unnecessary as the atom index is recapitulated from the atom_id plus element char and should not collide
 
         # choose the first polymerization junction of the monomer named to_junction_name to extend this monomer from
         to_junction = next((junction for junction in new_monomer.junctions if junction.name == to_junction_name), None)
@@ -75,7 +75,7 @@ class Polymer:
 
         # do a depth first search of the monomer to find all atoms connected to the to_junction including the first atom in the junction
         discard_from_monomer=set()
-        self.DFS(to_junction.location.atom_a, discard_from_monomer, exclude=to_junction.location.atom_b)
+        self.DFS(to_junction.residue_atom, discard_from_monomer, exclude=to_junction.monomer_atom)
 
         # choose a random polymerization junction of the polymer with from_junction_name to extend this monomer into
         from_junction = random.choice([junction for junction in self.junctions if junction.name == from_junction_name])
@@ -86,20 +86,26 @@ class Polymer:
         
         # do a depth first search of the polymer to find all atoms connected to the from_junction including the second atom in the junction
         discard_from_polymer=set()
-        self.DFS(from_junction.location.atom_b, discard_from_polymer, exclude=from_junction.location.atom_a)
+        self.DFS(from_junction.residue_atom, discard_from_polymer, exclude=from_junction.monomer_atom)
         
         # Add the monomer's topology to the polymer
         self.topology.add(new_monomer.topology)
+
+        # add the junctions remaining in the monomer to the polymer's junctions
         for junction in new_monomer.junctions:
-            atom_a_id = junction.location.atom_a.atom_id
-            atom_b_id = junction.location.atom_b.atom_id
-            self.junctions.add(Junction(junction.name, self.topology.get_bond(atom_a_id, atom_b_id)))
+            monomer_atom = self.topology.get_atom(junction.monomer_atom.atom_id) 
+            residue_atom = self.topology.get_atom(junction.residue_atom.atom_id)
+            junction_name = junction.name
+            self.junctions.add(Junction(name=junction_name, monomer_atom=monomer_atom, residue_atom=residue_atom))
         
         # bond the two outer atoms at the junctions
-        self.topology.bonds.append(Bond(from_junction.location.atom_a, to_junction.location.atom_b, 1, 1, 1))
+        polymer_bond = Bond(from_junction.monomer_atom, to_junction.monomer_atom, 1, 1, 1)
+        self.topology.bonds.append(polymer_bond)
 
-        # TODO: copy the average of the 2 lost bond angles over the junction
-        
+        # find every angle that includes the lost bond in the polymer
+        # find every angle that includes the lost bond in the monomer
+        # fix these angles to include the new bond
+
         # remove the redundant atoms and bonds
         for atom in discard_from_monomer:
             self.topology.remove_atom(atom)

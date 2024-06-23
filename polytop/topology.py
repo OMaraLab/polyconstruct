@@ -428,8 +428,12 @@ class Topology:
         '''Remove an atom and all bonds, angles and dihedrals associated with it - ignore errors if the atom is not present'''
         try:
             atom.remove()
-            self.atoms.remove(atom)        
-        except ValueError:
+            # get the atom id of the atom to be removed
+            atom_id = atom.atom_id
+
+            # remove any atom with that id from the list of atoms
+            self.atoms = [atom for atom in self.atoms if atom.atom_id != atom_id]
+        except ValueError as e:
             pass
         
 
