@@ -165,6 +165,23 @@ class Dihedral:
         common_dihedrals = angle_a.dihedrals & angle_b.dihedrals
         return next(iter(common_dihedrals), None)
 
+    def contains_atom(self, atom: Atom) -> bool:
+        return atom in [self.atom_a, self.atom_b, self.atom_c, self.atom_d]
+    
+    def clone_dihedral_changing(self, from_atom: Atom, to_atom: Atom):
+        """ Clone the dihedral, changing the atom that is being replaced """
+        if self.atom_a == from_atom:
+            new_dihedral = Dihedral(to_atom, self.atom_b, self.atom_c, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+        elif self.atom_b == from_atom:
+            new_dihedral = Dihedral(self.atom_a, to_atom, self.atom_c, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+        elif self.atom_c == from_atom:
+            new_dihedral = Dihedral(self.atom_a, self.atom_b, to_atom, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+        elif self.atom_d == from_atom:
+            new_dihedral = Dihedral(self.atom_a, self.atom_b, self.atom_c, to_atom, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+        else:
+            raise ValueError(f"Atom {from_atom} is not in dihedral {self}")
+        return new_dihedral
+
     def __str__(self):
         if self.dihedral_type == Dihedral_type.proper:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e} {self.multiplicity:>5}"

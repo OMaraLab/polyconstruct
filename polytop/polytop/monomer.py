@@ -29,7 +29,13 @@ class Monomer:
             new_junctions.add(Junction(monomer_atom, residue_atom, junction.name))
         new_monomer = Monomer(new_topology, new_junctions)
         return new_monomer
-    
+
+    def renumber_atoms(self, start):
+        """
+            Renumber the atoms.ids in the topology starting from a given starting number.
+        """
+        self.topology.renumber_atoms(start)
+
     def to_dict(self):
         return{
             "topology": self.topology.to_dict(),

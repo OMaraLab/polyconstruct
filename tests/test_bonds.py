@@ -1,5 +1,7 @@
 import json
 from pathlib import Path
+
+import pytest
 from polytop.atoms import Atom
 from polytop.bonds import Bond
 from polytop.topology import Topology
@@ -34,6 +36,37 @@ def test_bond_creation()->None:
     assert bond.bond_type == "1"
     assert bond.bond_length == 0.147
     assert bond.force_constant == 265265.0
+
+def test_deduplicate_bonds():
+    atom1 = Atom(
+        atom_id=20,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C20",
+        charge_group_num=20,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    atom2 = Atom(
+        atom_id=22,
+        atom_type="C",
+        residue_id=1,
+        residue_name="ARG",
+        atom_name="C22",
+        charge_group_num=22,
+        partial_charge=0.5,
+        mass=12.011,
+    )
+    bond1 = Bond(
+        atom1, atom2, bond_type="1", bond_length=0.147, force_constant=265265.0
+    )
+    bond2 = Bond(
+        atom1, atom2, bond_type="1", bond_length=0.147, force_constant=265265.0
+    )
+    assert len(atom1.bonds) == 2
+    atom1.deduplicate_bonds()
+    assert len(atom1.bonds) == 1    
 
 def test_bond_traversal(data_dir: Path):
     arg = Topology.from_ITP(data_dir / "arginine.itp")

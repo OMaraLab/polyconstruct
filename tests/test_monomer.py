@@ -66,3 +66,19 @@ def test_serializable(data_dir: Path, output_dir: Path):
     assert monomer.junctions.get_junctions()[0].residue_atom.atom_name == new_monomer.junctions.get_junctions()[0].residue_atom.atom_name
     assert monomer.junctions.get_junctions()[1].monomer_atom.atom_name == new_monomer.junctions.get_junctions()[1].monomer_atom.atom_name
     assert monomer.junctions.get_junctions()[1].residue_atom.atom_name == new_monomer.junctions.get_junctions()[1].residue_atom.atom_name
+
+def test_renumber_monomer(data_dir: Path):
+    glu = Topology.from_ITP(data_dir/"glucose.itp")
+    glu_1 = glu.junction("C1","O3").named("1")
+    glu_4 = glu.junction("C4","HC3").named("4")
+    monomer = Monomer(glu, [glu_1, glu_4])
+
+    monomer.renumber_atoms(100)
+    assert monomer.topology.atoms[0].atom_id == 101
+    assert monomer.topology.atoms[1].atom_id == 102
+    assert len(monomer.junctions) == 2
+    assert monomer.junctions.get_junctions()[0].monomer_atom.atom_name == 'C1'
+    assert monomer.junctions.get_junctions()[0].residue_atom.atom_name == 'O3'
+    assert monomer.junctions.get_junctions()[1].monomer_atom.atom_name == 'C4'
+    assert monomer.junctions.get_junctions()[1].residue_atom.atom_name == 'HC3'
+

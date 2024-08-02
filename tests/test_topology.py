@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 from polytop import *
+from polytop.polytop.atoms import Atom
+from polytop.polytop.bonds import Bond
 from polytop.topology import Topology
 from polytop.visualize import Visualize
 import pytest
@@ -232,7 +234,6 @@ def test_serialization(data_dir: Path, output_dir: Path):
 def is_close(actual,expected) -> bool:
     return abs(actual-expected) < 1e-6
     
-    
 def test_net_charge(data_dir: Path, output_dir: Path):
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     assert is_close(arg.netcharge, 0)
@@ -250,5 +251,54 @@ def test_net_charge(data_dir: Path, output_dir: Path):
     assert not is_close(new_arg.atoms[0].partial_charge, arg.atoms[0].partial_charge)
     arg.to_ITP(output_dir/"arginine_negative_charge_proportional.itp")
     
-    
-    
+def test_deduplicate_topology(data_dir:Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    bonds = arg.bonds
+    assert len(bonds) == 25
+    # replicate the first bond
+    bond1 = bonds[0]
+    atom1 = bond1.atom_a
+    atom2 = bond1.atom_b
+    bond2 = Bond(atom1, atom2, bond_type="1", bond_length=0.147, force_constant=265265.0)
+    assert len(arg.bonds) == 26
+    arg.deduplicate()
+    assert len(arg.bonds) == 25
+
+def test_clone_topology_changing(data_dir : Path):
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    old_atom = arg.get_atom(1)
+    # add a new hydrogen atom - use rubbish values for the remaining fields
+    new_atom = Atom(atom_id=27, atom_type="H", residue_id=1, residue_name="ARG", atom_name="CL0", charge_group_num=26, partial_charge=0.412, mass=1.0080)
+
+    # collect original topology around old_atom
+    old_bonds = old_atom.bonds
+    old_otheratoms = []
+    old_angles = []
+    old_dihedrals = []
+    for bond in old_bonds:
+        old_otheratoms.append(bond.other_atom(old_atom))
+        for angle in bond.angles:
+            if angle.contains_atom(old_atom):
+                old_angles.append(angle)
+                for dihedral in angle.dihedrals:
+                    if dihedral.contains_atom(old_atom):
+                        old_dihedrals.append(dihedral)
+
+    arg.change_atom(old_atom, new_atom)
+
+    # assert that the old atom is no longer in the topology, and new_atom is
+    assert not arg.contains_atom(old_atom)
+    assert arg.contains_atom(new_atom)
+
+    # assert that the bonds, angles and dihedrals have been updated
+    for bond in new_atom.bonds:
+        assert bond.contains_atom(new_atom)
+        assert not bond.contains_atom(old_atom)
+        assert bond.other_atom(new_atom) in old_otheratoms
+        for angle in bond.angles:
+            assert angle.contains_atom(new_atom)
+            assert not angle.contains_atom(old_atom)
+            for dihedral in angle.dihedrals:
+                assert dihedral.contains_atom(new_atom)
+                assert not dihedral.contains_atom(old_atom)
+

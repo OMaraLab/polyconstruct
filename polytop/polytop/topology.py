@@ -376,7 +376,11 @@ class Topology:
         return next((atom for atom in self.atoms if atom.atom_name == atom_name), None)
 
     @singledispatchmethod
-    def get_bond(self, atom_a_id: int, atom_b_id: int) -> Bond:
+    def get_bond(self, atom_a: Atom, atom_b: Atom) -> Bond:
+        return Bond.from_atoms(atom_a, atom_b)
+
+    @get_bond.register
+    def _(self, atom_a_id: int, atom_b_id: int) -> Bond:
         atom_a = self.get_atom(atom_a_id)
         atom_b = self.get_atom(atom_b_id)
         return Bond.from_atoms(atom_a, atom_b)
@@ -478,17 +482,54 @@ class Topology:
             self.atoms[i].atom_id = i + 1  # note atom id's are 1 indexed
             
     def renumber_atoms(self, start):
+        """
+            Renumber the atoms.ids in the topology starting from a given starting number.
+            This is used when extending a polymer with a new monomer.
+
+            note: this is the only function that sets the formerly attribute of an atom
+        """
         for atom in self.atoms:
-            atom.atom_id = atom.atom_id + start
+            atom.formerly = atom.atom_id
+            atom.atom_id = atom.atom_id + start 
 
     def add(self, topology):
         new_topology = copy.deepcopy(topology)
         self.atoms.extend(new_topology.atoms)
 
+    def deduplicate(self):
+        """
+        Remove any duplicate bonds from the topology
+        """
+        # for each atom in the topology remove any duplicate bonds
+        for atom in self.atoms:
+            atom.deduplicate_bonds()
+
+    def change_atom(self, old_atom: Atom, new_atom: Atom):
+        """
+        Change an atom in the topology to a new atom at the same position in the atom list
+        """
+        if not old_atom in self.atoms:
+            raise ValueError("Atom not in topology")
+        
+        for bond in old_atom.bonds:
+            bond.clone_bond_changing(old_atom, new_atom)
+        
+        # Find the index of old_atom
+        index = self.atoms.index(old_atom)
+        
+        # Remove old_atom and insert new_atom at the same index
+        self.atoms[index] = new_atom
+
+        # remove pairs exclusions bonds (and associated angles, dihedrals) associated with the old atom
+        old_atom.remove()
+
     def reverse(self) -> "Topology":
         copied_atoms = copy.deepcopy(self.atoms)
         reversed_atoms = copied_atoms[::-1]
         return Topology(reversed_atoms, self.preamble, self.molecule_type) 
+    
+    def contains_atom(self, candidate: Atom) -> bool:
+        return any(atom for atom in self.atoms if atom == candidate)
     
     def contains_bond(self, candidate: Bond) -> bool:
         return any(bond for bond in self.bonds if bond == candidate)

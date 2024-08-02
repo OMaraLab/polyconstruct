@@ -74,6 +74,24 @@ class Bond:
             None,
         )
 
+    def contains_atom(self, atom: Atom) -> bool:
+        return atom in [self.atom_a, self.atom_b]
+
+    def clone_bond_changing(self, from_atom: Atom, to_atom: Atom):
+        """ Clone the bond, changing the atom that is being replaced """
+        if self.atom_a == from_atom: # first atom is being replaced
+            new_bond = Bond(to_atom, self.atom_b, self.bond_type, self.bond_length, self.force_constant, self.order)
+        elif self.atom_b == from_atom: # second atom is being replaced
+            new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order)
+        else:
+            raise ValueError(f"Atom {from_atom} is not in bond {self}")
+        for angle in self.angles:
+            if angle.contains_atom(from_atom):
+                new_bond.angles.add(angle.clone_angle_changing(from_atom, to_atom))
+            else:
+                new_bond.angles.add(angle) # add a copy of the old angle is none of it's atoms are changing
+        return new_bond
+
     def references_atom(self, atom: Atom) -> bool:
         return atom in [self.atom_a, self.atom_b]
 

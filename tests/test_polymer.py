@@ -9,7 +9,6 @@ from polytop.visualize import Visualize
 from polytop.polymer import Polymer
 from polytop.topology import Topology
 
-@pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")
 def test_simple_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     arg_N = arg.junction('N3','H20').named("N")
@@ -24,7 +23,7 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     Visualize.monomer(glu_monomer).draw2D(output_dir/'glutamine_monomer.png',(400,200))
     
     polymer = Polymer(arg_monomer)
-    polymer.extend(glu_monomer, from_junction_name= 'N1', to_junction_name= 'C')
+    polymer.extend(glu_monomer, from_junction_name= 'N', to_junction_name= 'C')
     
     polymer.save_to_file(output_dir/'simple_polymer.json')
     polymer_topology = polymer.topology
@@ -32,7 +31,6 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     Visualize.polymer(polymer).draw2D(output_dir/'simple_polymer.png',(400,200))
 
 
-@pytest.mark.xfail(reason="Polymerization requires resolution of the choice of bond dihedral across the junction not inferable from the toplogy of the monomers residues")
 def test_complex_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     arg_a1 = Junction("N1", arg.get_bond('N3','H20'))
