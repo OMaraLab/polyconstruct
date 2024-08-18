@@ -9,26 +9,42 @@ from polytop.visualize import Visualize
 from polytop.polymer import Polymer
 from polytop.topology import Topology
 
+
+
 def test_simple_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     arg_N = arg.junction('N3','H20').named("N")
     arg_C = arg.junction('C11','O1').named("C")
     arg_monomer = Monomer(arg, [arg_N, arg_C])
     Visualize.monomer(arg_monomer).draw2D(output_dir/'arginine_monomer.png',(400,200))
-    
+
     glu = Topology.from_ITP(data_dir/"glutamine.itp")
     glu_N = glu.junction('N1','H6').named("N")
     glu_C = glu.junction('C4','O1').named("C")
     glu_monomer = Monomer(glu, [glu_N, glu_C])
     Visualize.monomer(glu_monomer).draw2D(output_dir/'glutamine_monomer.png',(400,200))
-    
+
     polymer = Polymer(arg_monomer)
+
+    assert len(arg.atoms) == 26 # arginine has 26 atoms
+    assert len(glu.atoms) == 20 # glutamine has 20 atoms
+    arg_glu = arg + glu
+    assert len(arg_glu.atoms) == 46 # a naive join contains 46 atoms
+
     polymer.extend(glu_monomer, from_junction_name= 'N', to_junction_name= 'C')
     
     polymer.save_to_file(output_dir/'simple_polymer.json')
     polymer_topology = polymer.topology
     polymer_topology.to_ITP(output_dir/'simple_polymer.itp')
     Visualize.polymer(polymer).draw2D(output_dir/'simple_polymer.png',(400,200))
+
+    assert polymer.has_junction("N") # we still have an N terminal junction
+    assert polymer.has_junction("C") # we still have a C terminal junction
+    assert len(polymer.junction) == 2 # we have 2 junctions left after 2 were joined
+    assert len(polymer.topology.atoms) == 43 # we have 43 atoms in the polymer after 3 left
+    assert len(polymer.topology.bonds) < len(arg_glu.bonds) # we have fewer bonds than the naive join
+    assert len(polymer.topology.angle) < len(arg_glu.angle) # we have fewer angles than the naive join
+    assert len(polymer.topology.dihedral) < len(arg_glu.dihedral) # we have fewer dihedrals than the naive join
 
 
 def test_complex_polymer(data_dir: Path, output_dir: Path):    

@@ -62,10 +62,6 @@ class Polymer:
         # take a copy of the topology of the monomer 
         new_monomer = monomer.copy()
         
-        # renumber all atoms above the max atom id of the polymer setting the formerly attribute of each atom to the old value
-        new_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms)+1)
-        # renumber all atom indexes is unnecessary as the atom index is recapitulated from the atom_id plus element char and should not collide
-
         # choose a random polymerization junction of the monomer named to_junction_name to extend this monomer from
         to_junctions = [junction for junction in new_monomer.junctions if junction.name == to_junction_name]
         if not to_junctions:
@@ -111,15 +107,31 @@ class Polymer:
         # remove the atom in the residue of the junction from the discard_from_polymer set
         discard_from_polymer.remove(from_junction.residue_atom)
 
-        # remove the leaving atoms and associated bonds, angles, pairs, and dihedrals from the monomer and polymer
-        for atom in discard_from_monomer:
-            self.topology.remove_atom(atom)
         for atom in discard_from_polymer:
             self.topology.remove_atom(atom)
+        self.topology.reorder_atoms() # renumber the atoms in the polymer so the ids are corrected
         # Note, we still have one atom on both topologies that will be removed to_junction.residue_atom in the monomer and from_junction.residue_atom in the polymer
+
+        # remove the leaving atoms and associated bonds, angles, pairs, and dihedrals from the monomer and polymer
+        for atom in discard_from_monomer:
+            new_monomer.topology.remove_atom(atom)
+        new_monomer.topology.reorder_atoms() # renumber the atoms in the monomer so the ids are corrected
+        # renumber all atoms above the max atom id of the polymer setting the formerly attribute of each atom to the old value
+        new_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms))
 
         # Add the monomer's topology to the polymer
         self.topology.add(new_monomer.topology)
+
+        # Add the monomer's junctions to the polymer fixing up where the id has changed
+        for junction in new_monomer.junctions:
+            new_monomer_atom = self.topology.get_former_atom(junction.monomer_atom.formerly)
+            new_residue_atom = self.topology.get_former_atom(junction.residue_atom.formerly)
+            new_junction = Junction(monomer_atom=new_monomer_atom, residue_atom=new_residue_atom, name=junction.name)
+            self.junctions.add(new_junction)
+
+        # fix up the to_junction atoms to use the former atom ids
+        to_junction.monomer_atom = self.topology.get_former_atom(to_junction.monomer_atom.atom_id)
+        to_junction.residue_atom = self.topology.get_former_atom(to_junction.residue_atom.atom_id)
 
         # Dihedrals containing a residue atom need to be copied with the remaining atom of the other monomer
         # Angles containing a residue need to be copied with the remaining atom of the other monomer
@@ -137,17 +149,17 @@ class Polymer:
         # deduplicate bonds in the polymer (removing the extra bonds, angles, dihedrals)
         self.topology.deduplicate()
 
-        # add the junctions remaining in the monomer to the polymer's junctions
-        for junction in new_monomer.junctions:
-            monomer_atom = self.topology.get_atom(junction.monomer_atom.atom_id) 
-            residue_atom = self.topology.get_atom(junction.residue_atom.atom_id)
-            junction_name = junction.name
-            self.junctions.add(Junction(name=junction_name, monomer_atom=monomer_atom, residue_atom=residue_atom))
-        
+        # reset all the former attributes from the atoms in the polymer
+        for atom in self.topology.atoms:
+            atom.formerly = None
+
         # if keep_charge is set then we need to adjust the net charge of the polymer to match the sum of the monomer and polymer charges           
         if keep_charge:
             new_charge = monomer_charge + polymer_charge 
             self.topology.netcharge = new_charge
+
+
+
 
         
     def save_to_file(self, filename: str) -> None:

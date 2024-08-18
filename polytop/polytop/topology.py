@@ -366,7 +366,10 @@ class Topology:
         
         for atom in self.atoms:
             atom.partial_charge += charge_difference * (abs(atom.partial_charge) / total_absolute_charge)
-        
+
+    def get_former_atom(self, former_atom_id) -> Atom:
+        return next((atom for atom in self.atoms if atom.formerly == former_atom_id), None)
+
     @singledispatchmethod
     def get_atom(self, atom_id: int) -> Atom:
         return next((atom for atom in self.atoms if atom.atom_id == atom_id), None)
@@ -492,9 +495,15 @@ class Topology:
             atom.formerly = atom.atom_id
             atom.atom_id = atom.atom_id + start 
 
+    def __add__(self, other: "Topology") -> "Topology":
+        this_topology = copy.deepcopy(self)
+        this_topology.add(other)
+        return this_topology
+    
     def add(self, topology):
         new_topology = copy.deepcopy(topology)
         self.atoms.extend(new_topology.atoms)
+        self.reorder_atoms()  # reorder atoms so the atom_ids are correct
 
     def deduplicate(self):
         """
@@ -535,4 +544,6 @@ class Topology:
         return any(bond for bond in self.bonds if bond == candidate)
     
     def __repr__(self) -> str:
-        return f"Topology: ({len(self.atoms)} atoms, netcharge={self.netcharge})"
+        atom_names = [atom.atom_name for atom in self.atoms]
+        atom_names_str = ",".join(atom_names)
+        return f"({len(self.atoms)}) [{atom_names_str}] netcharge={self.netcharge}"

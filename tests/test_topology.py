@@ -302,3 +302,18 @@ def test_clone_topology_changing(data_dir : Path):
                 assert dihedral.contains_atom(new_atom)
                 assert not dihedral.contains_atom(old_atom)
 
+def test_add_topologies(data_dir: Path):
+    # test of operator overloading used in debugging polymer extension
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    glu = Topology.from_ITP(data_dir/"glutamine.itp")
+    arg_glu = arg+glu
+    assert len(arg_glu.atoms) == len(arg.atoms) + len(glu.atoms)
+    arg += glu
+    assert len(arg.atoms) == len(arg_glu.atoms)
+
+def test_topology_repr(data_dir: Path):
+    # test of repr used in debugging polymer extend
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    assert arg.__repr__() == "(26) [H26,N5,H25,C12,N6,H23,H24,N4,C10,H18,H19,C8,H15,H16,C7,H13,H14,C9,H17,N3,H20,H21,C11,O2,O1,H22] netcharge=-1.0581813203458523e-16"
+
+
