@@ -43,8 +43,8 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     assert len(polymer.junctions) == 2 # we have 2 junctions left after 2 were joined
     assert len(polymer.topology.atoms) == 43 # we have 43 atoms in the polymer after 3 left
     assert len(polymer.topology.bonds) < len(arg_glu.bonds) # we have fewer bonds than the naive join
-    assert len(polymer.topology.angle) < len(arg_glu.angle) # we have fewer angles than the naive join
-    assert len(polymer.topology.dihedral) < len(arg_glu.dihedral) # we have fewer dihedrals than the naive join
+    assert len(polymer.topology.angles) < len(arg_glu.angles) # we have fewer angles than the naive join
+    assert len(polymer.topology.dihedrals) < len(arg_glu.dihedrals) # we have fewer dihedrals than the naive join
 
 
 def test_complex_polymer(data_dir: Path, output_dir: Path):    

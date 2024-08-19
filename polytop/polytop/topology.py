@@ -530,9 +530,6 @@ class Topology:
         # Find the index of old_atom
         index = self.atoms.index(old_atom)
         
-        # Remove old_atom and insert new_atom at the same index
-        self.atoms[index] = new_atom
-
         # remove pairs exclusions bonds (and associated angles, dihedrals) associated with the old atom
         old_atom.remove()
 
