@@ -118,6 +118,9 @@ class Visualize:
                 )
             except KeyError as e:
                 print(f"KeyError for bond: {bond}, KeyError: {e}")
+            except Exception as e:
+                print(f"Ignoring rdKit error for bond: {bond}, Error: {e}")
+                continue
 
         # Sanitize the molecule without virtual atoms
         Chem.SanitizeMol(mol)
