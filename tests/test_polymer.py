@@ -40,7 +40,7 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
 
     assert polymer.has_junction("N") # we still have an N terminal junction
     assert polymer.has_junction("C") # we still have a C terminal junction
-    assert len(polymer.junction) == 2 # we have 2 junctions left after 2 were joined
+    assert len(polymer.junctions) == 2 # we have 2 junctions left after 2 were joined
     assert len(polymer.topology.atoms) == 43 # we have 43 atoms in the polymer after 3 left
     assert len(polymer.topology.bonds) < len(arg_glu.bonds) # we have fewer bonds than the naive join
     assert len(polymer.topology.angle) < len(arg_glu.angle) # we have fewer angles than the naive join

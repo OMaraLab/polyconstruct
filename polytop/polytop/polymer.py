@@ -130,8 +130,8 @@ class Polymer:
             self.junctions.add(new_junction)
 
         # fix up the to_junction atoms to use the former atom ids
-        to_junction.monomer_atom = self.topology.get_former_atom(to_junction.monomer_atom.atom_id)
-        to_junction.residue_atom = self.topology.get_former_atom(to_junction.residue_atom.atom_id)
+        to_junction.monomer_atom = self.topology.get_former_atom(to_junction.monomer_atom.formerly)
+        to_junction.residue_atom = self.topology.get_former_atom(to_junction.residue_atom.formerly)
 
         # Dihedrals containing a residue atom need to be copied with the remaining atom of the other monomer
         # Angles containing a residue need to be copied with the remaining atom of the other monomer
@@ -150,18 +150,13 @@ class Polymer:
         self.topology.deduplicate()
 
         # reset all the former attributes from the atoms in the polymer
-        for atom in self.topology.atoms:
-            atom.formerly = None
+        self.topology.clear_former_ids()
 
         # if keep_charge is set then we need to adjust the net charge of the polymer to match the sum of the monomer and polymer charges           
         if keep_charge:
             new_charge = monomer_charge + polymer_charge 
             self.topology.netcharge = new_charge
 
-
-
-
-        
     def save_to_file(self, filename: str) -> None:
         """Save the polymer to a json file"""
         with open(filename, "w") as f:

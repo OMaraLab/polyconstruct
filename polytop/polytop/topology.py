@@ -495,6 +495,10 @@ class Topology:
             atom.formerly = atom.atom_id
             atom.atom_id = atom.atom_id + start 
 
+    def clear_former_ids(self):
+        for atom in self.atoms:
+            atom.formerly = None
+            
     def __add__(self, other: "Topology") -> "Topology":
         this_topology = copy.deepcopy(self)
         this_topology.add(other)
