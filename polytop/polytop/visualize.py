@@ -19,7 +19,7 @@ class Visualize:
         junctions: Junctions = None,
         infer_bond_order = True,
     ):
-        self.topology = copy.deepcopy(topology)
+        self.topology = topology
         self.junctions = Junctions() if junctions is None else junctions
         self.atom_mapping = {}
 
