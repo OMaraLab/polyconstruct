@@ -223,8 +223,16 @@ class Topology:
             file_path (str): The path to the GROMACS ITP file.
         """
         with open(file_path, "w") as f:
+            if self.title:
+                f.write(f";----------------------------TITLE -----------------------------------------------------------------------------------------\n")
+                f.write(f"; {self.title}\n")
+                f.write(f";\n")
+
             for line in self.preamble:
-                f.write(line + "\n")
+                if line.startswith(";"):
+                    f.write(line + "\n")
+                else:
+                    f.write("; " + line + "\n")
 
             f.write("\n[ moleculetype ]\n")
             f.write(str(self.molecule_type) + "\n")
