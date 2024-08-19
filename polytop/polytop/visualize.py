@@ -1,3 +1,4 @@
+import copy
 import logging
 import re
 from typing import Tuple
@@ -18,7 +19,7 @@ class Visualize:
         junctions: Junctions = None,
         infer_bond_order = True,
     ):
-        self.topology = topology.copy()
+        self.topology = topology
         self.junctions = Junctions() if junctions is None else junctions
         self.atom_mapping = {}
 

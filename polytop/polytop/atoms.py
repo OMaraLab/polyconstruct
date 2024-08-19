@@ -60,6 +60,7 @@ class Atom:
         self.y = y
         self.z = z
         self.visited = False
+        self.formerly = None # when renumbering atoms to extend a polymer we need to keep track of where the atom came from
         if not any(chr.isdigit() for chr in self.atom_name):
             raise ValueError(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
             
@@ -145,7 +146,7 @@ class Atom:
         return f"{self.atom_id:5} {self.atom_type:5} {self.residue_id:5} {self.residue_name:5} {self.atom_name:5} {self.charge_group_num:5} {self.partial_charge:9.3f} {self.mass:9.4f}"
 
     def __repr__(self) -> str:
-        return f"Atom({self.atom_id}{self.element})->[{','.join([str(bond.other_atom(self).atom_id) for bond in self.bonds])}] charge={self.partial_charge}"
+        return f"{self.residue_name}.{self.atom_name}->[{','.join([f'{bond.other_atom(self).residue_name}.{bond.other_atom(self).atom_name}' for bond in self.bonds])}]"
 
     def remove(self):
         while self.bonds:
@@ -154,18 +155,22 @@ class Atom:
             self.pairs.pop().remove()
         while self.exclusions:
             self.exclusions.pop().remove()
-            
-    def bond_neighbor(self, bond: Bond = None):
-        if not bond:
-            if len(self.bonds) != 1:
-                raise ValueError(
-                    f"Can't infer a neighbour from an atom with {len(self.bonds)} bonds"
-                )
-            bond = self.bonds[0]
-        return bond.other_atom(self)
 
     def bond_neighbours(self) -> set["Atom"]:
+        """ List all the atoms that this atom bonds with """
         return {bond.other_atom(self) for bond in self.bonds}
+
+    def deduplicate_bonds(self):
+        """ Remove any bonds from this atom that are duplicates """
+        neighbours = []  # list of all atoms this atom bonds to 
+        bonds_to_remove = [] 
+        for bond in self.bonds:
+            if bond.other_atom(self) in neighbours:
+                bonds_to_remove.append(bond)
+            else:
+                neighbours.append(bond.other_atom(self))
+        for bond in bonds_to_remove:
+            self.bonds.remove(bond)
 
     def angle_neighbours(self) -> set["Atom"]:
         neighbours = set()

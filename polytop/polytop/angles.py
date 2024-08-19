@@ -81,6 +81,26 @@ class Angle:
             return None
         return next((angle for angle in bond_a.angles if angle in bond_b.angles), None)
 
+    def contains_atom(self, atom: Atom) -> bool:
+        return atom in [self.atom_a, self.atom_b, self.atom_c]
+
+    def clone_angle_changing(self, from_atom: Atom, to_atom: Atom):
+        """ Clone the angle, changing the atom that is being replaced """
+        if self.atom_a == from_atom:  # first atom is being replaced
+            new_angle = Angle(to_atom, self.atom_b, self.atom_c, self.angle_type, self.angle_value, self.force_constant)
+        elif self.atom_b == from_atom:  # second atom is being replaced
+            new_angle = Angle(self.atom_a, to_atom, self.atom_c, self.angle_type, self.angle_value, self.force_constant)
+        elif self.atom_c == from_atom:  # third atom is being replaced
+            new_angle = Angle(self.atom_a, self.atom_b, to_atom, self.angle_type, self.angle_value, self.force_constant)
+        else:
+            raise ValueError(f"Atom {from_atom} is not in angle {self}")
+        for dihedral in self.dihedrals:
+            if dihedral.contains_atom(from_atom):
+                new_angle.dihedrals.add(dihedral.clone_dihedral_changing(from_atom, to_atom))
+            else:
+                new_angle.dihedrals.add(dihedral) # add a copy of the old dihedral is none of it's atoms are changing
+        return new_angle
+
     def references_atom(self, atom: Atom) -> bool:
         return atom in [self.atom_a, self.atom_b, self.atom_c]
 
