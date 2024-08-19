@@ -283,7 +283,6 @@ def test_clone_topology_changing(data_dir : Path):
                 for dihedral in angle.dihedrals:
                     if dihedral.contains_atom(old_atom):
                         old_dihedrals.append(dihedral)
-
     arg.change_atom(old_atom, new_atom)
 
     # assert that the old atom is no longer in the topology, and new_atom is

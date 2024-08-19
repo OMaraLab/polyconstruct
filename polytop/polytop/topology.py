@@ -503,6 +503,10 @@ class Topology:
             atom.formerly = atom.atom_id
             atom.atom_id = atom.atom_id + start 
 
+    def set_former_ids(self):
+        for atom in self.atoms:
+            atom.formerly = atom.atom_id
+
     def clear_former_ids(self):
         for atom in self.atoms:
             atom.formerly = None
@@ -537,6 +541,8 @@ class Topology:
         
         # Find the index of old_atom
         index = self.atoms.index(old_atom)
+
+        self.atoms[index] = new_atom
         
         # remove pairs exclusions bonds (and associated angles, dihedrals) associated with the old atom
         old_atom.remove()

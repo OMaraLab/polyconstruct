@@ -139,6 +139,10 @@ class Polymer:
         self.topology.change_atom(from_junction.residue_atom, to_junction.monomer_atom)
         self.topology.change_atom(to_junction.residue_atom, from_junction.monomer_atom)
 
+        # this will double up to_junction.monomer_atom, and from_junction.monomer_atom so we remove the original
+        self.topology.atoms.remove(to_junction.monomer_atom) # remove the original to_junction.monomer_atom
+        self.topology.atoms.remove(from_junction.monomer_atom) # remove the original from_junction.monomer_atom
+        
         # discard both the remaining residue atoms on either side of the junction
         self.topology.remove_atom(from_junction.residue_atom)
         self.topology.remove_atom(to_junction.residue_atom)
