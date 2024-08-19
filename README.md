@@ -30,7 +30,7 @@ ARG = Topology.from_ITP('tests/data/arginine.itp')
 print(ARG.atoms)
 ```
 
-    [AE97.H26->[AE97.N5], AE97.N5->[AE97.C12,AE97.H26,AE97.H25], AE97.H25->[AE97.N5], AE97.C12->[AE97.N5,AE97.N4,AE97.N6], AE97.N6->[AE97.H23,AE97.C12,AE97.H24], AE97.H23->[AE97.N6], AE97.H24->[AE97.N6], AE97.N4->[AE97.C12,AE97.C10], AE97.C10->[AE97.H18,AE97.N4,AE97.H19,AE97.C8], AE97.H18->[AE97.C10], AE97.H19->[AE97.C10], AE97.C8->[AE97.C7,AE97.H15,AE97.C10,AE97.H16], AE97.H15->[AE97.C8], AE97.H16->[AE97.C8], AE97.C7->[AE97.H14,AE97.C8,AE97.C9,AE97.H13], AE97.H13->[AE97.C7], AE97.H14->[AE97.C7], AE97.C9->[AE97.N3,AE97.C7,AE97.C11,AE97.H17], AE97.H17->[AE97.C9], AE97.N3->[AE97.C9,AE97.H21,AE97.H20], AE97.H20->[AE97.N3], AE97.H21->[AE97.N3], AE97.C11->[AE97.O1,AE97.C9,AE97.O2], AE97.O2->[AE97.C11], AE97.O1->[AE97.C11,AE97.H22], AE97.H22->[AE97.O1]]
+    [AE97.H26->[AE97.N5], AE97.N5->[AE97.H26,AE97.H25,AE97.C12], AE97.H25->[AE97.N5], AE97.C12->[AE97.N6,AE97.N4,AE97.N5], AE97.N6->[AE97.H24,AE97.C12,AE97.H23], AE97.H23->[AE97.N6], AE97.H24->[AE97.N6], AE97.N4->[AE97.C10,AE97.C12], AE97.C10->[AE97.C8,AE97.N4,AE97.H19,AE97.H18], AE97.H18->[AE97.C10], AE97.H19->[AE97.C10], AE97.C8->[AE97.H15,AE97.C10,AE97.C7,AE97.H16], AE97.H15->[AE97.C8], AE97.H16->[AE97.C8], AE97.C7->[AE97.H14,AE97.H13,AE97.C8,AE97.C9], AE97.H13->[AE97.C7], AE97.H14->[AE97.C7], AE97.C9->[AE97.H17,AE97.C7,AE97.C11,AE97.N3], AE97.H17->[AE97.C9], AE97.N3->[AE97.H20,AE97.H21,AE97.C9], AE97.H20->[AE97.N3], AE97.H21->[AE97.N3], AE97.C11->[AE97.O2,AE97.O1,AE97.C9], AE97.O2->[AE97.C11], AE97.O1->[AE97.C11,AE97.H22], AE97.H22->[AE97.O1]]
     
 
 We can visualize the topology as a 2D structure to make sure that this is the molecule we want to use.
@@ -127,20 +127,64 @@ GLN_C = GLN.junction('C4','O1').named('C')
 GLN_monomer = Monomer(GLN, [GLN_N, GLN_C])
 Visualize.monomer(GLN_monomer).draw2D('tests/output/GLN_monomer.png',(400,200),highlight_junctions=True)
 
+```
 
-GLN_pipeline = ['tests/output/GLN.png','tests/output/GLN_unordered.png','tests/output/GLN_ordered.png','tests/output/GLN_monomer.png']
+## Glutamine pipeline
 
-html = '<h1>Glutamine pipeline</h1>'
-html += '<div style="display:flex">'
-for image in GLN_pipeline:
-    html += f'<div style="display:inline-flex"><figure><img src="{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
-html += '</div>'
 
-display(HTML(html))
+```python
+Image(filename="tests/output/GLN.png")
 ```
 
 
-<h1>Glutamine pipeline</h1><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/output/GLN.png" style="margin:0 10px" width="300"><figcaption>tests/output/GLN.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/GLN_unordered.png" style="margin:0 10px" width="300"><figcaption>tests/output/GLN_unordered.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/GLN_ordered.png" style="margin:0 10px" width="300"><figcaption>tests/output/GLN_ordered.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/GLN_monomer.png" style="margin:0 10px" width="300"><figcaption>tests/output/GLN_monomer.png</figcaption></figure></div></div>
+
+
+    
+![png](README_files/README_16_0.png)
+    
+
+
+
+
+```python
+Image(filename="tests/output/GLN_unordered.png")
+```
+
+
+
+
+    
+![png](README_files/README_17_0.png)
+    
+
+
+
+
+```python
+Image(filename="tests/output/GLN_ordered.png")
+```
+
+
+
+
+    
+![png](README_files/README_18_0.png)
+    
+
+
+
+
+```python
+Image(filename='tests/output/GLN_monomer.png')
+```
+
+
+
+
+    
+![png](README_files/README_19_0.png)
+    
+
 
 
 # Construct a polymer from a set of monomers
@@ -160,7 +204,7 @@ Image(filename='tests/output/dipeptide.png')
 
 
     
-![png](README_files/README_16_0.png)
+![png](README_files/README_21_0.png)
     
 
 
@@ -191,7 +235,7 @@ Image(filename='tests/output/glucose.png')
 
 
     
-![png](README_files/README_19_0.png)
+![png](README_files/README_24_0.png)
     
 
 
@@ -217,22 +261,50 @@ Visualize.monomer(Glucose_14).draw2D('tests/output/glucose_14.png',(400,200),hig
 Visualize.monomer(Glucose_16).draw2D('tests/output/glucose_16.png',(400,200),highlight_junctions=True)
 Visualize.monomer(Glucose_146).draw2D('tests/output/glucose_146.png',(400,200),highlight_junctions=True)
 
+```
 
-Glucose_monomers = ['tests/output/glucose_14.png','tests/output/glucose_16.png','tests/output/glucose_146.png']
-
-html = '<h1>Glucose monomers</h1>'
-html += '<div style="display:flex">'
-for image in Glucose_monomers:
-    html += f'<div style="display:inline-flex"><figure><img src="{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
-html += '</div>'
-
-display(HTML(html))
+## Glucose monomers
 
 
+```python
+Image(filename='tests/output/glucose_14.png')
 ```
 
 
-<h1>Glucose monomers</h1><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/output/glucose_14.png" style="margin:0 10px" width="300"><figcaption>tests/output/glucose_14.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/glucose_16.png" style="margin:0 10px" width="300"><figcaption>tests/output/glucose_16.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/glucose_146.png" style="margin:0 10px" width="300"><figcaption>tests/output/glucose_146.png</figcaption></figure></div></div>
+
+
+    
+![png](README_files/README_28_0.png)
+    
+
+
+
+
+```python
+Image(filename='tests/output/glucose_16.png')
+```
+
+
+
+
+    
+![png](README_files/README_29_0.png)
+    
+
+
+
+
+```python
+Image(filename='tests/output/glucose_16.png')
+```
+
+
+
+
+    
+![png](README_files/README_30_0.png)
+    
+
 
 
 # Create A chains
@@ -259,31 +331,87 @@ for i in range(4):
     Visualize.monomer(chain_as_monomer).draw2D(f'tests/output/alpha{i}.png',(400,200),highlight_junctions=True)
     A_chains.append(f'tests/output/alpha{i}.png')
 
-html = '<h1>A chains</h1>'
-html += '<div style="display:flex">'
-for image in A_chains:
-    html += f'<div style="display:inline-flex"><figure><img src="{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
-html += '</div>'
-
-display(HTML(html))
 
 ```
 
     Ignoring rdKit error for bond:    33    32     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    54    53     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   117   116     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   138   137     2     0.1181 1.9581e+07
     Ignoring rdKit error for bond:    54    53     2     0.1181 8.6600e+06
     Ignoring rdKit error for bond:    75    74     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    96    95     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   159   158     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   180   179     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   189   202     2     0.1181 1.9581e+07
+    
+
+    Ignoring rdKit error for bond:    75    74     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   117   116     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    33    32     2     0.1181 1.9581e+07
     Ignoring rdKit error for bond:    54    53     2     0.1181 8.6600e+06
     Ignoring rdKit error for bond:   117   116     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   147   160     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   117   116     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   138   137     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    54    53     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    75    74     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    96    95     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   117   116     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   159   158     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   168   181     2     0.1181 1.9581e+07
+    
+
+## A Chains
+
+
+```python
+Image(filename='tests/output/alpha0.png')
+```
+
+
+
+
+    
+![png](README_files/README_34_0.png)
     
 
 
-<h1>A chains</h1><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/output/alpha0.png" style="margin:0 10px" width="300"><figcaption>tests/output/alpha0.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/alpha1.png" style="margin:0 10px" width="300"><figcaption>tests/output/alpha1.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/alpha2.png" style="margin:0 10px" width="300"><figcaption>tests/output/alpha2.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/alpha3.png" style="margin:0 10px" width="300"><figcaption>tests/output/alpha3.png</figcaption></figure></div></div>
+
+
+```python
+Image(filename='tests/output/alpha1.png')
+```
+
+
+
+
+    
+![png](README_files/README_35_0.png)
+    
+
+
+
+
+```python
+Image(filename='tests/output/alpha2.png')
+```
+
+
+
+
+    
+![png](README_files/README_36_0.png)
+    
+
+
+
+
+```python
+Image(filename='tests/output/alpha3.png')
+```
+
+
+
+
+    
+![png](README_files/README_37_0.png)
+    
+
 
 
 ## Create B Chains
@@ -300,74 +428,84 @@ def create_146_chain(n):
 
 # Construct 2 B chains with 4 A chains branched from each B chain
 B_chains=[]
-B_images=[]
 for i in range(2):
     chain = create_146_chain(random.randint(8,10))
     for j in range(4):
         A_chain = create_14_chain(random.randint(8,10))
         A_chain_as_monomer = Monomer.from_Polymer(A_chain)
         chain.extend(A_chain_as_monomer, from_junction_name = "6", to_junction_name = "1")
-    chain.topology.title = f"Alpha chain of length {n}"
+    chain.topology.title = f"Beta chain {i}"
     chain_as_monomer = Monomer.from_Polymer(chain)
     B_chains.append(chain_as_monomer)
     Visualize.monomer(chain_as_monomer).draw2D(f'tests/output/beta{i}.png',(400,200),highlight_junctions=True)
-    B_images.append(f'tests/output/beta{i}.png')
-
-html = '<h1>B chains</h1>'
-html += '<div style="display:flex">'
-for image in B_images:
-    html += f'<div style="display:inline-flex"><figure><img src="{image}" style="margin:0 10px" width="300"><figcaption>{image}</figcaption></figure></div>'
-html += '</div>'
-
-display(HTML(html))
 
 ```
 
-    Ignoring rdKit error for bond:    31    30     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   113   112     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    92    91     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   113   112     2     0.1181 1.9581e+07
     Ignoring rdKit error for bond:   132   131     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   153   152     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   174   173     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   261   260     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   282   281     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   303   302     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   324   323     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   153   152     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   240   239     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   387   386     2     0.1181 8.6600e+06
     Ignoring rdKit error for bond:   408   407     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   515   514     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   578   577     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   620   619     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   631   629     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   664   663     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   452   451     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   473   472     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   620   619     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   685   684     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   706   705     2     0.1181 1.9581e+07
     Ignoring rdKit error for bond:   748   747     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   801   799     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   769   768     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   790   789     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   855   854     2     0.1181 1.9581e+07
     Ignoring rdKit error for bond:   876   875     2     0.1181 8.6600e+06
     Ignoring rdKit error for bond:   897   896     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   981   980     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:  1002  1001     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    56  1011     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    33    32     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    94    93     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   176   175     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   261   260     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   282   281     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   324   323     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   377   375     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   410   409     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   473   472     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   557   556     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   622   621     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   643   642     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   664   663     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   748   747     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   792   791     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   834   833     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   855   854     2     0.1181 1.9581e+07
     Ignoring rdKit error for bond:   918   917     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   161   927     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   981   980     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:  1002  1001     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    56  1011     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:    33    32     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:    73    72     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   115   114     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   134   133     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   219   218     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   345   344     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   431   430     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   452   451     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   494   493     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   643   642     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   706   705     2     0.1181 8.6600e+06
+    Ignoring rdKit error for bond:   918   917     2     0.1181 1.9581e+07
+    Ignoring rdKit error for bond:   161   927     2     0.1181 1.9581e+07
+    
+
+## B Chains
+
+
+```python
+Image(filename='tests/output/beta0.png')
+```
+
+
+
+
+    
+![png](README_files/README_41_0.png)
     
 
 
-<h1>B chains</h1><div style="display:flex"><div style="display:inline-flex"><figure><img src="tests/output/beta0.png" style="margin:0 10px" width="300"><figcaption>tests/output/beta0.png</figcaption></figure></div><div style="display:inline-flex"><figure><img src="tests/output/beta1.png" style="margin:0 10px" width="300"><figcaption>tests/output/beta1.png</figcaption></figure></div></div>
+
+
+```python
+Image(filename='tests/output/beta1.png')
+```
+
+
+
+
+    
+![png](README_files/README_42_0.png)
+    
+
 
 
 # Create glycogen polymer
