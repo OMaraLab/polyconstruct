@@ -8,6 +8,7 @@ from polytop.bonds import Bond
 from polytop.junction import Junction, Junctions
 from .topology import Topology
 import datetime
+import copy
 
 class Polymer:
 
@@ -17,7 +18,7 @@ class Polymer:
         Args:
             monomer (Monomer): the monomer to create the polymer from
         """
-        new_monomer = monomer.copy()
+        new_monomer = copy.deepcopy(monomer)
         self.topology = new_monomer.topology
         self.junctions = new_monomer.junctions
 

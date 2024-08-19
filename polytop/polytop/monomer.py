@@ -18,14 +18,24 @@ class Monomer:
                 junctions_obj.add(junction)
             self.junctions = junctions_obj
 
+    from polytop.polymer import Polymer
+
+    @classmethod
+    def from_Polymer(cls, polymer: Polymer):
+        return cls(polymer.topology, polymer.junctions)
+
     def copy(self):
-        new_topology = self.topology.copy()
+        new_topology = copy.deepcopy(self.topology)
         new_junctions = Junctions()
         for junction in self.junctions:
             monomer_atom_id = junction.monomer_atom.atom_id
             residue_id = junction.residue_atom.atom_id
             monomer_atom = new_topology.get_atom(monomer_atom_id)
             residue_atom = new_topology.get_atom(residue_id)
+            if residue_atom is None:
+                raise ValueError(f"Could not find atom {monomer_atom_id}")
+            if residue_atom is None:
+                raise ValueError(f"Could not find atom {residue_id}")
             new_junctions.add(Junction(monomer_atom, residue_atom, junction.name))
         new_monomer = Monomer(new_topology, new_junctions)
         return new_monomer
