@@ -34,6 +34,19 @@ class Pair:
         pair_type = int(parts[2])
         return cls(atom_a, atom_b, pair_type)
 
+    @staticmethod
+    def from_atoms(atom_a: Atom, atom_b: Atom):
+        if atom_a is None or atom_b is None:
+            return None
+        return next(
+            (
+                pair
+                for pair in atom_a.pairs
+                if pair.atom_b == atom_b or pair.atom_a == atom_b
+            ),
+            None,
+        )
+    
     def remove(self):
         if self in self.atom_a.pairs:
             self.atom_a.pairs.remove(self)

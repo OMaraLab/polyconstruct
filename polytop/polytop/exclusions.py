@@ -11,8 +11,8 @@ class Exclusion:
     def __init__(self, atom_a: Atom, atom_b: Atom):
         self.atom_a = atom_a
         self.atom_b = atom_b
-        atom_a.pairs.add(self)
-        atom_b.pairs.add(self)
+        atom_a.exclusions.add(self)
+        atom_b.exclusions.add(self)
 
     @classmethod
     def from_line(cls, line: str, atoms: List[Atom], indexes=[0, 1]):

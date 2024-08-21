@@ -214,6 +214,7 @@ class Topology:
                     Exclusion.from_line(line, atoms)
             else:
                 warnings.warn(f"Unknown section {section} in {file_path}")
+            # Note: we don't explicitly check that moleculetype.nrexcl = number of exclusions associated with atoms
         return cls(atoms, preamble, molecule_type)
 
     def to_ITP(self, file_path: str):
@@ -401,6 +402,22 @@ class Topology:
         atom_a = self.get_atom(atom_a_name)
         atom_b = self.get_atom(atom_b_name)
         return Bond.from_atoms(atom_a, atom_b)
+
+    @singledispatchmethod
+    def get_pair(self, atom_a: Atom, atom_b: Atom) -> Bond:
+        return Pair.from_atoms(atom_a, atom_b)
+
+    @get_pair.register
+    def _(self, atom_a_id: int, atom_b_id: int) -> Bond:
+        atom_a = self.get_atom(atom_a_id)
+        atom_b = self.get_atom(atom_b_id)
+        return Pair.from_atoms(atom_a, atom_b)
+
+    @get_pair.register
+    def _(self, atom_a_name: str, atom_b_name: str) -> Bond:
+        atom_a = self.get_atom(atom_a_name)
+        atom_b = self.get_atom(atom_b_name)
+        return Pair.from_atoms(atom_a, atom_b)
 
     @singledispatchmethod
     def get_angle(self, atom_a_id: int, atom_b_id: int, atom_c_id: int) -> Angle:

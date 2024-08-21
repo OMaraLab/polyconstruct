@@ -315,4 +315,68 @@ def test_topology_repr(data_dir: Path):
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     assert arg.__repr__() == "(26) [H26,N5,H25,C12,N6,H23,H24,N4,C10,H18,H19,C8,H15,H16,C7,H13,H14,C9,H17,N3,H20,H21,C11,O2,O1,H22] netcharge=-1.0581813203458523e-16"
 
+def test_copy_toplology(data_dir: Path):
+    # test of copy used in debugging polymer extend
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    arg_copy = arg.copy()
+    assert len(arg.atoms) == len(arg_copy.atoms)
+    assert arg.netcharge == arg_copy.netcharge
+    for atom in arg.atoms:
+        atom_copy = arg_copy.get_atom(atom.atom_id)
+        assert atom.atom_id == atom_copy.atom_id, "atom id mismatch"
+        assert atom.atom_type == atom_copy.atom_type, "atom type mismatch"
+        assert atom.residue_id == atom_copy.residue_id, "residue id mismatch"
+        assert atom.residue_name == atom_copy.residue_name, "residue name mismatch"
+        assert atom.charge_group_num == atom_copy.charge_group_num, "charge group number mismatch"
+        assert atom.partial_charge == atom_copy.partial_charge, "partial charge mismatch"
+        assert atom.mass == atom_copy.mass, "mass mismatch"
+        assert len(atom.bonds) == len(atom_copy.bonds), "number of bonds mismatch"
+        for bond in atom.bonds:
+            bond_copy = arg_copy.get_bond(bond.atom_a.atom_id, bond.atom_b.atom_id)
+            # that there exists a bond between the same atoms in the copy
+            assert bond_copy is not None, "bond not found in copy"
+            # that the bond in the copy is a different object than the bond in the original
+            assert bond is not bond_copy, "bond is the same object in copy"
+            for angle in bond.angles:
+                angle_copy = arg_copy.get_angle(angle.atom_a.atom_id, angle.atom_b.atom_id, angle.atom_c.atom_id)
+                # that there exists an angle between the same atoms in the copy
+                assert angle_copy is not None, "angle not found in copy"
+                # that the angle in the copy is a different object than the angle in the original
+                assert angle is not angle_copy, "angle is the same object in copy"
+                for dihedral in angle.dihedrals:
+                    dihedral_copy = arg_copy.get_dihedral(dihedral.atom_a.atom_id, dihedral.atom_b.atom_id, dihedral.atom_c.atom_id, dihedral.atom_d.atom_id)
+                    # that there exists a dihedral between the same atoms in the copy
+                    assert dihedral_copy is not None, "dihedral not found in copy"
+                    # that the dihedral in the copy is a different object than the dihedral in the original
+                    assert dihedral is not dihedral_copy, "dihedral is the same object in copy"
+        for pair in atom.pairs:
+            pair_copy = arg_copy.get_pair(pair.atom_a.atom_id, pair.atom_b.atom_id)
+            # that there exists a pair between the same atoms in the copy
+            assert pair_copy is not None, "pair not found in copy"
+            # that the pair in the copy is a different object than the pair in the original
+            assert pair is not pair_copy, "pair is the same object in copy"
+        for exclusion in atom.exclusions:
+            exclusion_copy = arg_copy.get_exclusion(exclusion.atom_a.atom_id, exclusion.atom_b.atom_id)
+            # that there exists an exclusion between the same atoms in the copy
+            assert exclusion_copy is not None, "exclusion not found in copy"
+            # that the exclusion in the copy is a different object than the exclusion in the original
+            assert exclusion is not exclusion_copy, "exclusion is the same object in copy"
+    # check arg.preamble is a different object than arg_copy.preamble
+    assert arg.preamble is not arg_copy.preamble, "preamble is the same object in copy"
+    for i in range(len(arg.preamble)):
+        # assert the string in the preamble has teh same content but are independent objects 
+        assert arg.preamble[i] == arg_copy.preamble[i], "preamble content is different in copy"
+    # check arg.molecule_type is not the same object as arg_copy.molecule_type
+    assert not arg.molecule_type is arg_copy.molecule_type, "molecule type is same object"
+    # check arg.molecule_type attributes are the same as arg_copy.molecule_types
+    assert arg.molecule_type.name == arg_copy.molecule_type.name, "molecule type name mismatch"
+    assert arg.molecule_type.nrexcl == arg_copy.molecule_type.nrexcl, "molecule type nrexcl mismatch"
 
+def test_topology_with_exclusions(data_dir: Path):
+    eth = Topology.from_ITP(data_dir/"ethylene_terephthalate.itp")
+    assert len(eth.atoms) == 25, "number of atoms mismatch"
+    assert len(eth.bonds) == 25, "number of bonds mismatch"
+    assert len(eth.angles) == 39, "number of angles mismatch"
+    assert len(eth.dihedrals) == 21, "number of dihedrals mismatch"
+    assert len(eth.pairs) == 45 , "number of pairs mismatch"
+    assert len(eth.exclusions) == 3 == eth.molecule_type.nrexcl, "number of exclusions mismatch or mismatch in molecule type nrexcl"
