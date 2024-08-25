@@ -79,6 +79,10 @@ class Topology:
         return {atom.index: atom for atom in self.atoms if atom.is_virtual}
 
     @property
+    def carbons(self) -> List[Atom]:
+        return {atom.index: atom for atom in self.atoms if atom.element == "C"}
+
+    @property
     def bonds(self) -> List[Bond]:
         bonds = []
         for atom in self.atoms:
