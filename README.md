@@ -284,12 +284,10 @@ polymer = Polymer(ETH_monomer)
 for i in range(monomer_number-1):
     polymer.extend(ETH_monomer, from_junction_name = "B", to_junction_name = "A")
 polymer.topology.title = f"PET polymer ({monomer_number} units)"
-Visualize.polymer(polymer, infer_bond_order=False).draw2D('tests/output/PET_polymer.png',(800,200), show_legend=False)
+Visualize.polymer(polymer, infer_bond_order=False).draw2D('tests/output/PET_polymer.png',(800,200), show_legend=True)
 Image(filename='tests/output/PET_polymer.png')
 ```
 
-    Ignoring rdKit error for bond:    67    64     2     0.1201 8.1800e+06
-    Ignoring rdKit error for bond:    91    88     2     0.1201 8.1800e+06
     Ignoring rdKit error for bond:    69   112     2     0.1201 1.9581e+07
     
 
