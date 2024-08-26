@@ -30,7 +30,7 @@ ARG = Topology.from_ITP('tests/data/arginine.itp')
 print(ARG.atoms)
 ```
 
-    [AE97.H26->[AE97.N5], AE97.N5->[AE97.H26,AE97.H25,AE97.C12], AE97.H25->[AE97.N5], AE97.C12->[AE97.N6,AE97.N4,AE97.N5], AE97.N6->[AE97.H24,AE97.C12,AE97.H23], AE97.H23->[AE97.N6], AE97.H24->[AE97.N6], AE97.N4->[AE97.C10,AE97.C12], AE97.C10->[AE97.C8,AE97.N4,AE97.H19,AE97.H18], AE97.H18->[AE97.C10], AE97.H19->[AE97.C10], AE97.C8->[AE97.H15,AE97.C10,AE97.C7,AE97.H16], AE97.H15->[AE97.C8], AE97.H16->[AE97.C8], AE97.C7->[AE97.H14,AE97.H13,AE97.C8,AE97.C9], AE97.H13->[AE97.C7], AE97.H14->[AE97.C7], AE97.C9->[AE97.H17,AE97.C7,AE97.C11,AE97.N3], AE97.H17->[AE97.C9], AE97.N3->[AE97.H20,AE97.H21,AE97.C9], AE97.H20->[AE97.N3], AE97.H21->[AE97.N3], AE97.C11->[AE97.O2,AE97.O1,AE97.C9], AE97.O2->[AE97.C11], AE97.O1->[AE97.C11,AE97.H22], AE97.H22->[AE97.O1]]
+    [AE97.H26->[AE97.N5], AE97.N5->[AE97.H25,AE97.C12,AE97.H26], AE97.H25->[AE97.N5], AE97.C12->[AE97.N6,AE97.N5,AE97.N4], AE97.N6->[AE97.H23,AE97.C12,AE97.H24], AE97.H23->[AE97.N6], AE97.H24->[AE97.N6], AE97.N4->[AE97.C12,AE97.C10], AE97.C10->[AE97.H19,AE97.C8,AE97.H18,AE97.N4], AE97.H18->[AE97.C10], AE97.H19->[AE97.C10], AE97.C8->[AE97.H15,AE97.C10,AE97.H16,AE97.C7], AE97.H15->[AE97.C8], AE97.H16->[AE97.C8], AE97.C7->[AE97.C9,AE97.H13,AE97.H14,AE97.C8], AE97.H13->[AE97.C7], AE97.H14->[AE97.C7], AE97.C9->[AE97.C7,AE97.C11,AE97.H17,AE97.N3], AE97.H17->[AE97.C9], AE97.N3->[AE97.H20,AE97.C9,AE97.H21], AE97.H20->[AE97.N3], AE97.H21->[AE97.N3], AE97.C11->[AE97.C9,AE97.O2,AE97.O1], AE97.O2->[AE97.C11], AE97.O1->[AE97.H22,AE97.C11], AE97.H22->[AE97.O1]]
     
 
 We can visualize the topology as a 2D structure to make sure that this is the molecule we want to use.
@@ -209,6 +209,98 @@ Image(filename='tests/output/dipeptide.png')
 
 
 
+# large polymer 
+
+We'll take a monomer like ethylene terephthalate and polymerize it to a large polymer PET.  There appears to be a problem with inferring bond orders in benzene rings, but this is just a problem for visualization.  We'll show it without inferring bond orders (so no double or triple bonds) to make sure we get the right atom numbers for the polymerization junctions.  The produced ITP should still be correct as bond order is not stored in the ITP file.
+
+
+```python
+eth_topology = Topology.from_ITP('tests/data/ethylene_terephthalate.itp')
+Visualize.topology(eth_topology, infer_bond_order=False).draw2D('tests/output/ethylene_terephthalate.png',(400,200), remove_explicit_H=False, show_atom_ID=True)
+Image(filename='tests/output/ethylene_terephthalate.png')
+```
+
+
+
+
+    
+![png](README_files/README_23_0.png)
+    
+
+
+
+## Manually construct double bonds 
+
+
+```python
+eth_topology.get_bond('C2','O1').order = 2
+eth_topology.get_bond('C8','O9').order = 2
+eth_topology.get_bond('C4','C15').order = 2
+eth_topology.get_bond('C7','C14').order = 2
+eth_topology.get_bond('C5','C6').order = 2
+
+Visualize.topology(eth_topology, infer_bond_order=False).draw2D('tests/output/ethylene_terephthalate_double_bond.png',(400,200), remove_explicit_H=False, show_atom_ID=True)
+Image(filename='tests/output/ethylene_terephthalate_double_bond.png')
+```
+
+
+
+
+    
+![png](README_files/README_25_0.png)
+    
+
+
+
+## Set the junctions to create a monomer
+
+
+```python
+ETH_A = eth_topology.junction('C12','O13').named('A')
+ETH_B = eth_topology.junction('O3','H16').named('B')
+ETH_monomer = Monomer(eth_topology, [ETH_A, ETH_B])
+Visualize.monomer(ETH_monomer, infer_bond_order=False).draw2D('tests/output/ETH_monomer.png',(400,200),highlight_junctions=True)
+Image(filename='tests/output/ETH_monomer.png')
+```
+
+
+
+
+    
+![png](README_files/README_27_0.png)
+    
+
+
+
+## Create polymer from 3-5 monomers
+
+PET is usually made from 100-200 monomers but that would not be visible so we'll just make a small one here.
+
+
+```python
+import random
+monomer_number = random.randint(3,5)
+polymer = Polymer(ETH_monomer)
+for i in range(monomer_number-1):
+    polymer.extend(ETH_monomer, from_junction_name = "B", to_junction_name = "A")
+polymer.topology.title = f"PET polymer ({monomer_number} units)"
+Visualize.polymer(polymer, infer_bond_order=False).draw2D('tests/output/PET_polymer.png',(800,200), show_legend=False)
+Image(filename='tests/output/PET_polymer.png')
+```
+
+    Ignoring rdKit error for bond:    47    44     2     0.1201 8.1800e+06
+    Ignoring rdKit error for bond:    25    68     2     0.1201 1.9581e+07
+    
+
+
+
+
+    
+![png](README_files/README_29_1.png)
+    
+
+
+
 # More complex polymers
 
 We'll model a simple form of glycogen (skipping the glycogenin protein nucleating the **C** chain in the center of the polymer), which is a complex polymer of glucose molecules.  https://chem.libretexts.org/Bookshelves/Biological_Chemistry/Supplemental_Modules_(Biological_Chemistry)/Carbohydrates/Polysaccharides/Glycogen
@@ -235,7 +327,7 @@ Image(filename='tests/output/glucose.png')
 
 
     
-![png](README_files/README_24_0.png)
+![png](README_files/README_32_0.png)
     
 
 
@@ -274,7 +366,7 @@ Image(filename='tests/output/glucose_14.png')
 
 
     
-![png](README_files/README_28_0.png)
+![png](README_files/README_36_0.png)
     
 
 
@@ -288,7 +380,7 @@ Image(filename='tests/output/glucose_16.png')
 
 
     
-![png](README_files/README_29_0.png)
+![png](README_files/README_37_0.png)
     
 
 
@@ -302,7 +394,7 @@ Image(filename='tests/output/glucose_16.png')
 
 
     
-![png](README_files/README_30_0.png)
+![png](README_files/README_38_0.png)
     
 
 
@@ -367,7 +459,7 @@ Image(filename='tests/output/alpha0.png')
 
 
     
-![png](README_files/README_34_0.png)
+![png](README_files/README_42_0.png)
     
 
 
@@ -381,7 +473,7 @@ Image(filename='tests/output/alpha1.png')
 
 
     
-![png](README_files/README_35_0.png)
+![png](README_files/README_43_0.png)
     
 
 
@@ -395,7 +487,7 @@ Image(filename='tests/output/alpha2.png')
 
 
     
-![png](README_files/README_36_0.png)
+![png](README_files/README_44_0.png)
     
 
 
@@ -409,7 +501,7 @@ Image(filename='tests/output/alpha3.png')
 
 
     
-![png](README_files/README_37_0.png)
+![png](README_files/README_45_0.png)
     
 
 
@@ -489,7 +581,7 @@ Image(filename='tests/output/beta0.png')
 
 
     
-![png](README_files/README_41_0.png)
+![png](README_files/README_49_0.png)
     
 
 
@@ -503,7 +595,7 @@ Image(filename='tests/output/beta1.png')
 
 
     
-![png](README_files/README_42_0.png)
+![png](README_files/README_50_0.png)
     
 
 
