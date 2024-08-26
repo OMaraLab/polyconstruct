@@ -22,8 +22,8 @@ def test_2D_monomer(data_dir: Path, output_dir: Path):
     
     # delete image first if it exists
     image_path = output_dir/'arginine_monomer.png'
-    # if os.path.exists(image_path):
-    #     os.remove(image_path)
+    if os.path.exists(image_path):
+        os.remove(image_path)
 
     Visualize.monomer(arg_monomer).draw2D(image_path,size=(800,300),show_legend=True)
 

@@ -352,6 +352,23 @@ class Topology:
         for atom in self.atoms:
             atom.residue_id = new_id
 
+    def max_residue_id(self) -> int:
+        """ find the maximum residue id in the topology """
+        return max(atom.residue_id for atom in self.atoms)
+
+    def renumber_residues(self, starting_from : int):
+        """
+        Renumber the residues in the topology starting from a given number
+        """
+        # every existing residue_id must be greater than 1
+        if starting_from < 1:
+            raise ValueError("Residue id to start from must be greater than zero")
+        for atom in self.atoms:
+            if atom.residue_id < 1:
+                raise ValueError("All residue ids must be greater than zero")
+        for atom in self.atoms:
+            atom.residue_id += starting_from
+
     @property
     def netcharge(self):
         # Implementation code here
@@ -385,11 +402,30 @@ class Topology:
 
     @singledispatchmethod
     def get_atom(self, atom_id: int) -> Atom:
-        return next((atom for atom in self.atoms if atom.atom_id == atom_id), None)
+        atom = next((atom for atom in self.atoms if atom.atom_id == atom_id), None)
+        if atom is None:
+            raise ValueError(f"No atom with id {atom_id} in the topology.")
+        return atom
+
     
     @get_atom.register
-    def _(self, atom_name: str) -> Atom:
-        return next((atom for atom in self.atoms if atom.atom_name == atom_name), None)
+    def _(self, atom_name: str, residue_id : int = None) -> Atom:
+        """ 
+        get an atom by it's atom name if unique 
+        if not unique specify the residue_id 
+        """
+        atoms = [atom for atom in self.atoms if atom.atom_name == atom_name]
+        if len(atoms) == 0:
+            raise ValueError(f"No atom with name {atom_name} in the topology.")
+        if residue_id is None:
+            if len(atoms) > 1:
+                raise ValueError(f"Multiple atoms with id {atom_name} in the topology. Please specify the residue id.")
+            return atoms[0]
+        else:
+            atom = next((atom for atom in atoms if atom.residue_id == residue_id), None)
+            if atom is None:
+                raise ValueError(f"No atom with name {atom_name} and residue id {residue_id} in the topology.")
+            return atom
 
     @singledispatchmethod
     def get_bond(self, atom_a: Atom, atom_b: Atom) -> Bond:

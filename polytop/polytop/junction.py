@@ -40,9 +40,9 @@ class Junction:
         return cls(monomer_atom,residue_atom,name)
 
     @classmethod
-    def from_topology(cls, topology: "Topology", monomer_atom_name, residue_atom_name, name: str = None):
-        monomer_atom = topology.get_atom(monomer_atom_name)
-        residue_atom = topology.get_atom(residue_atom_name)
+    def from_topology(cls, topology: "Topology", monomer_atom_name, residue_atom_name, residue_id: int = None, name: str = None):
+        monomer_atom = topology.get_atom(monomer_atom_name, residue_id)
+        residue_atom = topology.get_atom(residue_atom_name, residue_id)
         return cls(monomer_atom, residue_atom, name)
 
     def __repr__(self) -> str:

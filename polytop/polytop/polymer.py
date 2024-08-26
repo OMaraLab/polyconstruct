@@ -62,6 +62,9 @@ class Polymer:
         
         # take a copy of the topology of the monomer 
         new_monomer = monomer.copy()
+
+        # renumber residues in the monomer to avoid conflicts with the polymer
+        new_monomer.topology.renumber_residues(self.topology.max_residue_id())
         
         # choose a random polymerization junction of the monomer named to_junction_name to extend this monomer from
         to_junctions = [junction for junction in new_monomer.junctions if junction.name == to_junction_name]

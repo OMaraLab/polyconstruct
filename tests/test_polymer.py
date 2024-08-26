@@ -48,6 +48,12 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     assert len(polymer.topology.angles) < len(arg_glu.angles) # we have fewer angles than the naive join
     assert len(polymer.topology.dihedrals) < len(arg_glu.dihedrals) # we have fewer dihedrals than the naive join
 
+    with pytest.raises(ValueError):
+        polymer.topology.get_atom("O2")
+
+    assert polymer.topology.get_atom("O2",1), "we should be able to get the O2 atom from the arg monomer if we specify the residue"
+    assert polymer.topology.get_atom("O2",2), "we should be able to get the O2 atom from the glu monomer if we specify the residue"
+
 
 def test_complex_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
