@@ -288,8 +288,9 @@ Visualize.polymer(polymer, infer_bond_order=False).draw2D('tests/output/PET_poly
 Image(filename='tests/output/PET_polymer.png')
 ```
 
-    Ignoring rdKit error for bond:    47    44     2     0.1201 8.1800e+06
-    Ignoring rdKit error for bond:    25    68     2     0.1201 1.9581e+07
+    Ignoring rdKit error for bond:    67    64     2     0.1201 8.1800e+06
+    Ignoring rdKit error for bond:    91    88     2     0.1201 8.1800e+06
+    Ignoring rdKit error for bond:    69   112     2     0.1201 1.9581e+07
     
 
 
@@ -387,7 +388,7 @@ Image(filename='tests/output/glucose_16.png')
 
 
 ```python
-Image(filename='tests/output/glucose_16.png')
+Image(filename='tests/output/glucose_146.png')
 ```
 
 
