@@ -21,6 +21,7 @@ class Polymer:
         new_monomer = copy.deepcopy(monomer)
         self.topology = new_monomer.topology
         self.junctions = new_monomer.junctions
+        self.joined_monomer = None
 
     def has_junction(self, name):
         """Returns True if the polymer has a junction with the given name """
@@ -38,6 +39,77 @@ class Polymer:
         for neighbor in atom.bond_neighbours():
             if neighbor is not exclude and neighbor not in visited:
                 self.DFS(neighbor, visited, exclude)
+
+    def join_here(self, from_junction, to_junction, adding_monomer = True):
+        # residue atoms other than the first residue atom as identified in the junctions from the polymer and monomer are discarded
+
+        # do a depth first search of the monomer to find all atoms connected to the to_junction 
+        discard_from_monomer=set()
+        self.DFS(to_junction.residue_atom, discard_from_monomer, exclude=to_junction.monomer_atom)
+
+        # remove the atom in the residue of the junction from the discard_from_monomer set
+        discard_from_monomer.remove(to_junction.residue_atom)
+
+        # do a depth first search of the polymer to find all atoms connected to the from_junction including the second atom in the junction
+        discard_from_polymer=set()
+        self.DFS(from_junction.residue_atom, discard_from_polymer, exclude=from_junction.monomer_atom)
+
+        # remove the atom in the residue of the junction from the discard_from_polymer set
+        discard_from_polymer.remove(from_junction.residue_atom)
+
+        for atom in discard_from_polymer:
+            self.topology.remove_atom(atom)
+        self.topology.reorder_atoms() # renumber the atoms in the polymer so the ids are corrected
+        # Note, we still have one atom on both topologies that will be removed to_junction.residue_atom in the monomer and from_junction.residue_atom in the polymer
+
+        # remove the leaving atoms and associated bonds, angles, pairs, and dihedrals from the monomer and polymer
+        if adding_monomer:
+            for atom in discard_from_monomer:
+                self.joined_monomer.topology.remove_atom(atom)
+            self.joined_monomer.topology.reorder_atoms() # renumber the atoms in the monomer so the ids are corrected
+            # renumber all atoms above the max atom id of the polymer setting the formerly attribute of each atom to the old value
+            self.joined_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms))
+        else:
+            for atom in discard_from_monomer:
+                self.topology.remove_atom(atom)
+            self.topology.reorder_atoms() # renumber the atoms in the monomer so the ids are corrected
+    
+    def extra_bond(self, from_junction_name, to_junction_name, bond_length_func = None):
+        # set up a default bond length function that averages leaving bonds if none is provided
+        if bond_length_func is None:
+            bond_length_func = lambda bond1, bond2: (bond1.bond_length + bond2.bond_length) / 2
+        
+        # choose a random polymerization junction of the polymer named to_junction_name to create new bond to
+        to_junctions = [junction for junction in self.junctions if junction.name == to_junction_name]
+        if not to_junctions:
+            raise ValueError(f"No junction named {to_junction_name} found in the monomer")
+        to_junction = random.choice(to_junctions)
+        if to_junction is None:
+            raise ValueError(f"No junction named {to_junction_name} found in the monomer")
+        else:
+            self.junctions.remove(to_junction)
+
+        # choose a random polymerization junction of the polymer with from_junction_name to creat new bond from
+        from_junctions = [junction for junction in self.junctions if junction.name == from_junction_name]
+        if not from_junctions:
+            raise ValueError(f"No junction named {from_junction_name} found in the polymer")
+        from_junction = random.choice(from_junctions)
+        if from_junction is None:
+            raise ValueError(f"No junction named {from_junction_name} found in the polymer")
+        else:
+            self.junctions.remove(from_junction)
+
+        # calculate the new bond length for the junction bond between the polymer and monomer
+        from_junction_bond = self.topology.get_bond(from_junction.monomer_atom, from_junction.residue_atom)
+        to_junction_bond = self.topology.get_bond(to_junction.monomer_atom, to_junction.residue_atom)
+        new_bond_length = bond_length_func(from_junction_bond, to_junction_bond)
+
+        # set both junction bonds (polymer and incoming monomer) bond lengths to the new bond length
+        from_junction_bond.bond_length = new_bond_length
+        to_junction_bond.bond_length = new_bond_length
+
+        self.join_here(from_junction, to_junction, adding_monomer=False)
+
 
     def extend(self, monomer, from_junction_name, to_junction_name, keep_charge = False, bond_length_func = None):
         """
@@ -61,20 +133,20 @@ class Polymer:
         polymer_charge = self.topology.netcharge
         
         # take a copy of the topology of the monomer 
-        new_monomer = monomer.copy()
+        self.joined_monomer = monomer.copy()
 
         # renumber residues in the monomer to avoid conflicts with the polymer
-        new_monomer.topology.renumber_residues(self.topology.max_residue_id())
+        self.joined_monomer.topology.renumber_residues(self.topology.max_residue_id())
         
         # choose a random polymerization junction of the monomer named to_junction_name to extend this monomer from
-        to_junctions = [junction for junction in new_monomer.junctions if junction.name == to_junction_name]
+        to_junctions = [junction for junction in self.joined_monomer.junctions if junction.name == to_junction_name]
         if not to_junctions:
             raise ValueError(f"No junction named {to_junction_name} found in the monomer")
         to_junction = random.choice(to_junctions)
         if to_junction is None:
             raise ValueError(f"No junction named {to_junction_name} found in the monomer")
         else:
-            new_monomer.junctions.remove(to_junction)
+            self.joined_monomer.junctions.remove(to_junction)
 
         # choose a random polymerization junction of the polymer with from_junction_name to extend this monomer into
         from_junctions = [junction for junction in self.junctions if junction.name == from_junction_name]
@@ -88,46 +160,58 @@ class Polymer:
 
         # calculate the new bond length for the junction bond between the polymer and monomer
         from_junction_bond = self.topology.get_bond(from_junction.monomer_atom, from_junction.residue_atom)
-        to_junction_bond = new_monomer.topology.get_bond(to_junction.monomer_atom, to_junction.residue_atom)
+        to_junction_bond = self.joined_monomer.topology.get_bond(to_junction.monomer_atom, to_junction.residue_atom)
         new_bond_length = bond_length_func(from_junction_bond, to_junction_bond)
 
         # set both junction bonds (polymer and incoming monomer) bond lengths to the new bond length
         from_junction_bond.bond_length = new_bond_length
         to_junction_bond.bond_length = new_bond_length
 
-        # residue atoms other than the first residue atom as identified in the junctions from the polymer and monomer are discarded
 
-        # do a depth first search of the monomer to find all atoms connected to the to_junction 
-        discard_from_monomer=set()
-        self.DFS(to_junction.residue_atom, discard_from_monomer, exclude=to_junction.monomer_atom)
+        # # calculate the new bond length for the junction bond between the polymer and monomer
+        # from_junction_bond = self.topology.get_bond(from_junction.monomer_atom, from_junction.residue_atom)
+        # to_junction_bond = new_monomer.topology.get_bond(to_junction.monomer_atom, to_junction.residue_atom)
+        # new_bond_length = bond_length_func(from_junction_bond, to_junction_bond)
 
-        # remove the atom in the residue of the junction from the discard_from_monomer set
-        discard_from_monomer.remove(to_junction.residue_atom)
+        # # set both junction bonds (polymer and incoming monomer) bond lengths to the new bond length
+        # from_junction_bond.bond_length = new_bond_length
+        # to_junction_bond.bond_length = new_bond_length
 
-        # do a depth first search of the polymer to find all atoms connected to the from_junction including the second atom in the junction
-        discard_from_polymer=set()
-        self.DFS(from_junction.residue_atom, discard_from_polymer, exclude=from_junction.monomer_atom)
+        # # residue atoms other than the first residue atom as identified in the junctions from the polymer and monomer are discarded
 
-        # remove the atom in the residue of the junction from the discard_from_polymer set
-        discard_from_polymer.remove(from_junction.residue_atom)
+        # # do a depth first search of the monomer to find all atoms connected to the to_junction 
+        # discard_from_monomer=set()
+        # self.DFS(to_junction.residue_atom, discard_from_monomer, exclude=to_junction.monomer_atom)
 
-        for atom in discard_from_polymer:
-            self.topology.remove_atom(atom)
-        self.topology.reorder_atoms() # renumber the atoms in the polymer so the ids are corrected
-        # Note, we still have one atom on both topologies that will be removed to_junction.residue_atom in the monomer and from_junction.residue_atom in the polymer
+        # # remove the atom in the residue of the junction from the discard_from_monomer set
+        # discard_from_monomer.remove(to_junction.residue_atom)
 
-        # remove the leaving atoms and associated bonds, angles, pairs, and dihedrals from the monomer and polymer
-        for atom in discard_from_monomer:
-            new_monomer.topology.remove_atom(atom)
-        new_monomer.topology.reorder_atoms() # renumber the atoms in the monomer so the ids are corrected
-        # renumber all atoms above the max atom id of the polymer setting the formerly attribute of each atom to the old value
-        new_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms))
+        # # do a depth first search of the polymer to find all atoms connected to the from_junction including the second atom in the junction
+        # discard_from_polymer=set()
+        # self.DFS(from_junction.residue_atom, discard_from_polymer, exclude=from_junction.monomer_atom)
+
+        # # remove the atom in the residue of the junction from the discard_from_polymer set
+        # discard_from_polymer.remove(from_junction.residue_atom)
+
+        # for atom in discard_from_polymer:
+        #     self.topology.remove_atom(atom)
+        # self.topology.reorder_atoms() # renumber the atoms in the polymer so the ids are corrected
+        # # Note, we still have one atom on both topologies that will be removed to_junction.residue_atom in the monomer and from_junction.residue_atom in the polymer
+
+        # # remove the leaving atoms and associated bonds, angles, pairs, and dihedrals from the monomer and polymer
+        # for atom in discard_from_monomer:
+        #     new_monomer.topology.remove_atom(atom)
+        # new_monomer.topology.reorder_atoms() # renumber the atoms in the monomer so the ids are corrected
+        # # renumber all atoms above the max atom id of the polymer setting the formerly attribute of each atom to the old value
+        # new_monomer.topology.renumber_atoms(max(atom.atom_id for atom in self.topology.atoms))
+
+        self.join_here(from_junction, to_junction)
 
         # Add the monomer's topology to the polymer
-        self.topology.add(new_monomer.topology)
+        self.topology.add(self.joined_monomer.topology)
 
         # Add the monomer's junctions to the polymer fixing up where the id has changed
-        for junction in new_monomer.junctions:
+        for junction in self.joined_monomer.junctions:
             new_monomer_atom = self.topology.get_former_atom(junction.monomer_atom.formerly)
             new_residue_atom = self.topology.get_former_atom(junction.residue_atom.formerly)
             new_junction = Junction(monomer_atom=new_monomer_atom, residue_atom=new_residue_atom, name=junction.name)

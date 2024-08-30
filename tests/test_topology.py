@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 from polytop import *
-from polytop.polytop.atoms import Atom
-from polytop.polytop.bonds import Bond
+from polytop.atoms import Atom
+from polytop.bonds import Bond
 from polytop.topology import Topology
 from polytop.visualize import Visualize
 import pytest

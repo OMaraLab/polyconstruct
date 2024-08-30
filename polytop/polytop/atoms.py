@@ -61,8 +61,8 @@ class Atom:
         self.z = z
         self.visited = False
         self.formerly = None # when renumbering atoms to extend a polymer we need to keep track of where the atom came from
-        if not any(chr.isdigit() for chr in self.atom_name):
-            raise ValueError(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
+        # if not any(chr.isdigit() for chr in self.atom_name):
+        #     raise ValueError(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
             
     @property
     def element(self) -> str:
