@@ -103,7 +103,12 @@ class Atom:
 
     @property 
     def index(self) -> int:
-        return int(re.sub("[^0-9]", "", self.atom_name))
+        index = re.sub("[^0-9]", "", self.atom_name)
+        if index != "":
+            return int(index)
+        else:
+            return self.atom_id
+        #return int(re.sub("[^0-9]", "", self.atom_name))
     
     @index.setter
     def index(self, value: int):
