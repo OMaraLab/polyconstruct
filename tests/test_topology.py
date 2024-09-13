@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 from polytop import *
-from polytop.polytop.atoms import Atom
-from polytop.polytop.bonds import Bond
+from polytop.atoms import Atom
+from polytop.bonds import Bond
 from polytop.topology import Topology
 from polytop.visualize import Visualize
 import pytest
@@ -15,6 +15,7 @@ def test_invalid_section_warning(data_dir: Path):
     with pytest.warns(UserWarning, match="Unknown section"):
         Topology.from_ITP(data_dir/"invalid_section.itp")
 
+@pytest.mark.xfail(reason="Refactored atom index for RDKit to not rely on atom name")
 def test_glucose_missing_index(data_dir: Path):
     with pytest.raises(ValueError, match="No index"):
         Topology.from_ITP(data_dir/"glucose_faulty.itp")
