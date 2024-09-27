@@ -54,6 +54,18 @@ def test_angle_creation()->None:
     assert angle.angle_value == 109.5
     assert angle.force_constant == 29288.0
 
+    # test contains other atom 
+    assert angle.contains_atom(atom_a) == True
+    assert angle.contains_atom(atom_b) == True
+    assert angle.contains_atom(atom_c) == True
+
+    # test from atoms
+    assert Angle.from_atoms(atom_a,atom_b, atom_c) == angle 
+    atoms=[atom_a,atom_b,atom_c]
+    #test serialization works and doesn't create new Angles when there is an existing angle
+    assert Angle.from_dict(angle.to_dict(),atoms) == angle 
+
+
 def test_angle_serialization(output_dir: Path):
     atomlist = [
         Atom(

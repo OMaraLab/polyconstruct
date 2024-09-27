@@ -165,14 +165,21 @@ class Bond:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]):
-        return cls(
-            atom_a = next((atom for atom in atoms if atom.atom_id == data['atom_a']), None),
-            atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None),
-            bond_type=data["bond_type"],
-            bond_length=data["bond_length"],
-            force_constant=data["force_constant"],
-            order=data["order"],
-        )
+        atom_a = next((atom for atom in atoms if atom.atom_id == data['atom_a']),None)
+        atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None)
+        # check for existing bond
+        existing_bond = Bond.from_atoms(atom_a,atom_b)
+        if existing_bond:
+            return existing_bond
+        else:
+            return cls(
+                atom_a = atom_a,
+                atom_b = atom_b,
+                bond_type=data["bond_type"],
+                bond_length=data["bond_length"],
+                force_constant=data["force_constant"],
+                order=data["order"],
+            )
         
     # def __eq__(self, __value: object) -> bool:
     #     if isinstance(__value, Bond):

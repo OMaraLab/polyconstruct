@@ -10,12 +10,32 @@ from polytop.angles import Angle
 class Atom:
     ...
 
-
 class Dihedral_type(IntEnum):
-    proper = 1  # The two angles are A-B-C and B-C-D
-    improper = 2  # The two angles are C-A-D and B-A-C
+    proper = 1  
+    improper = 2  
+    # add additional dihedral types here
+    # remember to update the constraint properties
 
+    @property
+    def is_rotational_constraint(self) ->bool:
+        '''
+        Proper dihedral: constrains torsional rotation around the BC bond
+        A -◟B
+          /
+        C◝- D 
+        '''
+        return self in [Dihedral_type.proper]
 
+    @property
+    def is_planar_constraint(self) ->bool: # The two angles are B-A-C and B-A-D
+        '''
+        Improper dihedral: constrains orientation of D WRT the CAB plane
+            B
+            |
+        C -◜A◝ - D
+        '''
+        return self in [Dihedral_type.improper]
+    
 class Dihedral:
     """
     Represents a dihedral angle formed by four atoms in a molecular system.
@@ -46,7 +66,7 @@ class Dihedral:
         atom_b: Atom,
         atom_c: Atom,
         atom_d: Atom,
-        dihedral_type: int,
+        dihedral_type: Dihedral_type,
         phase_angle: float,
         force_constant: float,
         multiplicity: int,
@@ -55,11 +75,11 @@ class Dihedral:
         self.atom_b = atom_b
         self.atom_c = atom_c
         self.atom_d = atom_d
-        self.dihedral_type = dihedral_type
+        self.dihedral_type = Dihedral_type(dihedral_type)
         self.phase_angle = phase_angle
         self.force_constant = force_constant
         self.multiplicity = multiplicity
-        if self.dihedral_type == Dihedral_type.proper.value:
+        if self.dihedral_type.is_rotational_constraint:
             if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
                 angle_abc.dihedrals.add(self)
                 self.angle_a = angle_abc
@@ -70,17 +90,19 @@ class Dihedral:
                 self.angle_b = angle_bcd
             else:
                 raise ValueError(f"Could not find angle for dihedral: {self}")
-        elif self.dihedral_type == Dihedral_type.improper.value:
-            if angle_cad := Angle.from_atoms(atom_c, atom_a, atom_d):
-                angle_cad.dihedrals.add(self)
-                self.angle_a = angle_cad
-            else:
-                raise ValueError(f"Could not find angle for dihedral: {self}")
+        elif self.dihedral_type.is_planar_constraint:
             if angle_bac := Angle.from_atoms(atom_b, atom_a, atom_c):
                 angle_bac.dihedrals.add(self)
-                self.angle_b = angle_bac
+                self.angle_a = angle_bac
             else:
                 raise ValueError(f"Could not find angle for dihedral: {self}")
+            if angle_bad := Angle.from_atoms(atom_b, atom_a, atom_d):
+                angle_bad.dihedrals.add(self)
+                self.angle_b = angle_bad
+            else:
+                raise ValueError(f"Could not find angle for dihedral: {self}")
+        else:
+            raise ValueError(f"Unknown dihedral type: {dihedral_type}")
 
     @classmethod
     def from_line(cls, line: str, atoms):
@@ -89,13 +111,13 @@ class Dihedral:
         atom_b = atoms[int(parts[1]) - 1]
         atom_c = atoms[int(parts[2]) - 1]
         atom_d = atoms[int(parts[3]) - 1]
-        dihedral_type = int(parts[4])
+        dihedral_type = Dihedral_type(int(parts[4]))
         phase_angle = float(parts[5])
         force_constant = float(parts[6])
-        if dihedral_type == Dihedral_type.proper.value:
+        if dihedral_type.is_rotational_constraint:
             multiplicity = int(parts[7])
-        elif dihedral_type == Dihedral_type.improper.value:
-            multiplicity = None
+        elif dihedral_type.is_planar_constraint:
+            multiplicity = None # multiplicity is not required for improper dihedrals
         else:
             warnings.warn(f"Unknown dihedral type: {dihedral_type}")
 
@@ -120,17 +142,17 @@ class Dihedral:
         angle_abc = Angle.from_atoms(atom_a, atom_b, atom_c)
         angle_bcd = Angle.from_atoms(atom_b, atom_c, atom_d)
 
-        angle_cad = Angle.from_atoms(atom_c, atom_a, atom_d)
         angle_bac = Angle.from_atoms(atom_b, atom_a, atom_c)
+        angle_bad = Angle.from_atoms(atom_b, atom_a, atom_d)
 
         if (
             angle_abc and angle_bcd and angle_abc.dihedrals & angle_bcd.dihedrals
-        ):  # proper dihedral
+        ):  # rotational constraint - proper dihedral
             return angle_abc, angle_bcd
         if (
-            angle_cad and angle_bac and angle_cad.dihedrals & angle_bac.dihedrals
-        ):  # improper dihedral
-            return angle_cad, angle_bac
+            angle_bac and angle_bad and angle_bac.dihedrals & angle_bad.dihedrals
+        ):  # planar constraint - improper dihedral
+            return angle_bac, angle_bad
         return None, None
 
     def references_atom(self, atom: Atom) -> bool:
@@ -158,9 +180,6 @@ class Dihedral:
     ):
         angle_a, angle_b = Dihedral.find_angles(atom_a, atom_b, atom_c, atom_d)
         if angle_a is None or angle_b is None:
-            warnings.warn(
-                f"Could not find angles for dihedral: ({atom_a.atom_id} {atom_b.atom_id} {atom_c.atom_id} {atom_d.atom_id})"
-            )
             return None
         common_dihedrals = angle_a.dihedrals & angle_b.dihedrals
         return next(iter(common_dihedrals), None)
@@ -183,9 +202,9 @@ class Dihedral:
         return new_dihedral
 
     def __str__(self):
-        if self.dihedral_type == Dihedral_type.proper:
+        if self.dihedral_type.is_rotational_constraint:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e} {self.multiplicity:>5}"
-        elif self.dihedral_type == Dihedral_type.improper:
+        elif self.dihedral_type.is_planar_constraint:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e}"
 
     def __repr__(self) -> str:
@@ -209,10 +228,14 @@ class Dihedral:
         atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None)
         atom_c = next((atom for atom in atoms if atom.atom_id == data['atom_c']), None)
         atom_d = next((atom for atom in atoms if atom.atom_id == data['atom_d']), None)
-        dihedral_type = data['dihedral_type']
-        phase_angle = data['phase_angle']
-        force_constant = data['force_constant']
-        multiplicity = data['multiplicity']
-
-        return cls(atom_a, atom_b, atom_c, atom_d, dihedral_type, phase_angle, force_constant, multiplicity)
+        # check for existing dihedrals
+        dihedral = Dihedral.from_atoms(atom_a, atom_b, atom_c, atom_d)
+        if dihedral is not None:
+            return dihedral
+        else:
+            return cls(atom_a, atom_b, atom_c, atom_d, 
+                    dihedral_type = data['dihedral_type'], 
+                    phase_angle = data['phase_angle'], 
+                    force_constant = data['force_constant'], 
+                    multiplicity = data['multiplicity'])
 

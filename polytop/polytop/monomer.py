@@ -22,20 +22,32 @@ class Monomer:
 
     @classmethod
     def from_Polymer(cls, polymer: Polymer):
-        return cls(polymer.topology, polymer.junctions)
+        topology_copy = polymer.topology.copy()
+        junctions_copy = []
+        for junction in polymer.junctions:
+            monomer_atom_id = junction.monomer_atom.atom_id
+            residue_atom_id = junction.residue_atom.atom_id
+            monomer_atom = topology_copy.get_atom(monomer_atom_id)
+            residue_atom = topology_copy.get_atom(residue_atom_id)
+            if monomer_atom is None:
+                raise ValueError(f"Could not find atom {monomer_atom_id} for junction")
+            if residue_atom is None:
+                raise ValueError(f"Could not find atom {residue_atom_id} for junction")
+            junctions_copy.append(Junction(monomer_atom, residue_atom, junction.name))
+        return cls(topology_copy, junctions_copy)
 
     def copy(self):
-        new_topology = copy.deepcopy(self.topology)
+        new_topology = self.topology.copy()
         new_junctions = Junctions()
         for junction in self.junctions:
             monomer_atom_id = junction.monomer_atom.atom_id
-            residue_id = junction.residue_atom.atom_id
+            residue_atom_id = junction.residue_atom.atom_id
             monomer_atom = new_topology.get_atom(monomer_atom_id)
-            residue_atom = new_topology.get_atom(residue_id)
-            if residue_atom is None:
+            residue_atom = new_topology.get_atom(residue_atom_id)
+            if monomer_atom is None:
                 raise ValueError(f"Could not find atom {monomer_atom_id}")
             if residue_atom is None:
-                raise ValueError(f"Could not find atom {residue_id}")
+                raise ValueError(f"Could not find atom {residue_atom_id}")
             new_junctions.add(Junction(monomer_atom, residue_atom, junction.name))
         new_monomer = Monomer(new_topology, new_junctions)
         return new_monomer

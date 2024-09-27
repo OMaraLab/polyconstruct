@@ -75,9 +75,6 @@ class Angle:
     def from_atoms(atom_a: Atom, atom_b: Atom, atom_c: Atom):
         bond_a, bond_b = Angle.find_bonds(atom_a, atom_b, atom_c)
         if bond_a is None or bond_b is None:
-            warnings.warn(
-                f"Could not find bonds for angle: ({atom_a.atom_id} {atom_b.atom_id} {atom_c.atom_id})"
-            )
             return None
         return next((angle for angle in bond_a.angles if angle in bond_b.angles), None)
 
@@ -141,7 +138,14 @@ class Angle:
         atom_a = next((atom for atom in atoms if atom.atom_id == data['atom_a']), None)
         atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None)
         atom_c = next((atom for atom in atoms if atom.atom_id == data['atom_c']), None)
-        angle_type = data['angle_type']
-        angle_value = data['angle_value']
-        force_constant = data['force_constant']
-        return cls(atom_a, atom_b, atom_c, angle_type, angle_value, force_constant)
+        # check for existing angle
+        angle = Angle.from_atoms(atom_a, atom_b, atom_c)
+        if angle is not None:
+            return angle
+        else:
+            return cls(atom_a, 
+                       atom_b, 
+                       atom_c, 
+                       angle_type=data['angle_type'], 
+                       angle_value=data['angle_value'], 
+                       force_constant=data['force_constant'])

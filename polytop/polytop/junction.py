@@ -81,7 +81,7 @@ class Junctions(list):
     #     return junctions
 
     def __repr__(self) -> str:
-        return f"Junctions({len(self)})"
+        return f"({len(self)}) {",".join(j.__repr__() for j in self)}"
     
     
 # class Junctions:

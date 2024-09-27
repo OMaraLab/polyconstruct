@@ -60,10 +60,24 @@ class Topology:
         self.reorder_atoms()
         
     def copy(self):
+        # instead of using deepcopy we will create a new topology with the same atoms, bonds, angles, dihedrals etc
+        new_atoms = []
+        for atom in self.atoms:
+            new_atoms.append(Atom.from_dict(atom.to_dict()))
+        for pair in self.pairs:
+            Pair.from_dict(pair.to_dict(),new_atoms)
+        for exclusion in self.exclusions:
+            Exclusion.from_dict(exclusion.to_dict(),new_atoms)
+        for bond in self.bonds:
+            Bond.from_dict(bond.to_dict(),new_atoms)
+        for angle in self.angles:
+            Angle.from_dict(angle.to_dict(),new_atoms)
+        for dihedral in self.dihedrals:
+            Dihedral.from_dict(dihedral.to_dict(),new_atoms)
         new_topology = Topology(
-            atoms=copy.deepcopy(self.atoms),
-            preamble=copy.deepcopy(self.preamble),
-            molecule_type=copy.deepcopy(self.molecule_type)
+            atoms=new_atoms,
+            preamble=self.preamble.copy(),
+            molecule_type=copy.copy(self.molecule_type)
         )
         return new_topology
             
@@ -259,18 +273,18 @@ class Topology:
                 f.write(str(angle) + "\n")
 
             if any(
-                dihedral.dihedral_type is Dihedral_type.improper.value
+                dihedral.dihedral_type.is_planar_constraint
                 for dihedral in self.dihedrals
             ):
                 f.write("\n[ dihedrals ]\n")
                 f.write("; GROMOS improper dihedrals\n")
                 for dihedral in self.dihedrals:
-                    if dihedral.dihedral_type is Dihedral_type.improper.value:
+                    if dihedral.dihedral_type.is_planar_constraint:
                         f.write(str(dihedral) + "\n")
 
             f.write("\n[ dihedrals ]\n")
             for dihedral in self.dihedrals:
-                if dihedral.dihedral_type is Dihedral_type.proper.value:
+                if dihedral.dihedral_type.is_rotational_constraint:
                     f.write(str(dihedral) + "\n")
 
             f.write("\n[ exclusions ]\n")
@@ -403,8 +417,6 @@ class Topology:
     @singledispatchmethod
     def get_atom(self, atom_id: int) -> Atom:
         atom = next((atom for atom in self.atoms if atom.atom_id == atom_id), None)
-        if atom is None:
-            raise ValueError(f"No atom with id {atom_id} in the topology.")
         return atom
 
     
