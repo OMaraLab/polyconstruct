@@ -175,6 +175,7 @@ class Atom:
             else:
                 neighbours.append(bond.other_atom(self))
         for bond in bonds_to_remove:
+            bond.other_atom(self).bonds.remove(bond)  # remove from the other atom first
             self.bonds.remove(bond)
 
     def angle_neighbours(self) -> set["Atom"]:

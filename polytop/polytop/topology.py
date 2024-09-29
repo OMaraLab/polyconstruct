@@ -57,7 +57,7 @@ class Topology:
         self.title = "Unknown molecule"
         if self.preamble and self.preamble[1].startswith(';'):
             self.title = self.preamble[1].lstrip('; ')
-        self.reorder_atoms()
+        # self.reorder_atoms()
         
     def copy(self):
         # instead of using deepcopy we will create a new topology with the same atoms, bonds, angles, dihedrals etc

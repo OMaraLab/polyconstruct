@@ -138,9 +138,20 @@ def test_convert_to_monomer(data_dir:Path):
     
     def no_duplicate_bonds(t: Topology) -> bool:
         bond_set = set()
+        duplicate_bonds = []
+        
         for bond in t.bonds:
-            bond_set.add((bond.atom_a.atom_id,bond.atom_b.atom_id))
-        return len(t.bonds) == len(bond_set)
+            bond_tuple = (bond.atom_a.atom_id, bond.atom_b.atom_id)
+            if bond_tuple in bond_set:
+                duplicate_bonds.append(bond_tuple)
+            else:
+                bond_set.add(bond_tuple)
+        
+        if duplicate_bonds:
+            print(f"Duplicate bonds found: {duplicate_bonds}")
+        
+        no_duplicates = len(t.bonds) == len(bond_set)
+        return no_duplicates
 
     chain = create_14_chain(2)
     assert no_duplicate_bonds(chain.topology), "Duplicate bonds in polymer"
