@@ -29,6 +29,8 @@ class Atom:
         The partial charge of the atom.
     mass : float
         The mass of the atom.
+    formerly : int [optional]
+        The atom id of the atom this atom was before renumbering. 
 
     """
     def __init__(
@@ -44,6 +46,7 @@ class Atom:
         x: float = 0.0,
         y: float = 0.0,
         z: float = 0.0,
+        formerly = None
     ) -> None:
         self.atom_id = atom_id
         self.atom_type = atom_type
@@ -60,7 +63,7 @@ class Atom:
         self.y = y
         self.z = z
         self.visited = False
-        self.formerly = None # when renumbering atoms to extend a polymer we need to keep track of where the atom came from
+        self.formerly = formerly # when renumbering atoms to extend a polymer we need to keep track of where the atom came from
         # if not any(chr.isdigit() for chr in self.atom_name):
         #     raise ValueError(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
             
@@ -202,7 +205,7 @@ class Atom:
         return neighbours
 
     def to_dict(self):
-        return {
+        atom_dict = {
             "atom_id": self.atom_id,
             "atom_type": self.atom_type,
             "residue_id": self.residue_id,
@@ -215,22 +218,32 @@ class Atom:
             "y": self.y,
             "z": self.z,
         }
+        
+        if hasattr(self, 'formerly'): # if we have decorated this atom with a formerly attribute
+            atom_dict["formerly"] = self.formerly
+        
+        return atom_dict
 
     @classmethod
     def from_dict(cls, data):
-        return cls(
-            atom_id=data["atom_id"],
-            atom_name=data["atom_name"],
-            atom_type=data["atom_type"],
-            residue_id=data["residue_id"],
-            residue_name=data["residue_name"],
-            mass=data["mass"],
-            partial_charge=data["partial_charge"],
-            charge_group_num=data["charge_group_num"],
-            x = data["x"],
-            y = data["y"],
-            z = data["z"],            
-        )
+        kwargs = {
+            "atom_id": data["atom_id"],
+            "atom_name": data["atom_name"],
+            "atom_type": data["atom_type"],
+            "residue_id": data["residue_id"],
+            "residue_name": data["residue_name"],
+            "mass": data["mass"],
+            "partial_charge": data["partial_charge"],
+            "charge_group_num": data["charge_group_num"],
+            "x": data["x"],
+            "y": data["y"],
+            "z": data["z"],
+        }
         
+        if "formerly" in data:  # only if this is part of the dictionary
+            kwargs["formerly"] = data["formerly"]
+        
+        return cls(**kwargs)        
+    
     # def __hash__(self) -> int:
     #     return hash((self.residue_name, self.atom_name))

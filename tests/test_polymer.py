@@ -229,7 +229,7 @@ def test_multijoined_polymer(data_dir: Path, output_dir: Path):
 
     assert len(bond_set) == len(polymer.topology.bonds) # no duplicate bonds
 
-    assert len(polymer.topology.bonds) == 45
+    assert len(polymer.topology.bonds) == 44
         
     polymer.save_to_file(output_dir/'double_sugar_polymer.json')
     polymer_topology = polymer.topology

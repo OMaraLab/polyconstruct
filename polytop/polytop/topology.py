@@ -581,12 +581,14 @@ class Topology:
             atom.formerly = None
             
     def __add__(self, other: "Topology") -> "Topology":
-        this_topology = copy.deepcopy(self)
+        this_topology = self.copy()
         this_topology.add(other)
         return this_topology
     
     def add(self, topology):
-        new_topology = copy.deepcopy(topology)
+
+        new_topology = topology.copy()
+        # new_topology = copy.deepcopy(topology)
         self.atoms.extend(new_topology.atoms)
         self.reorder_atoms()  # reorder atoms so the atom_ids are correct
 
@@ -629,7 +631,7 @@ class Topology:
         old_atom.remove()
 
     def reverse(self) -> "Topology":
-        copied_atoms = copy.deepcopy(self.atoms)
+        copied_atoms = self.copy().atoms
         reversed_atoms = copied_atoms[::-1]
         return Topology(reversed_atoms, self.preamble, self.molecule_type) 
     
