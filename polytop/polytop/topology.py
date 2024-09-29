@@ -604,10 +604,22 @@ class Topology:
         """
         if not old_atom in self.atoms:
             raise ValueError("Atom not in topology")
-        
+
+        # change all the bonds
         for bond in old_atom.bonds:
             bond.clone_bond_changing(old_atom, new_atom)
         
+        # change all the angles
+        for bond in old_atom.bonds:
+            for angle in bond.angles:
+                angle.clone_angle_changing(old_atom, new_atom)
+
+        # change all the dihedrals
+        for bond in old_atom.bonds:
+            for angle in bond.angles:
+                for dihedral in angle.dihedrals:
+                    dihedral.clone_dihedral_changing(old_atom, new_atom)
+
         # Find the index of old_atom
         index = self.atoms.index(old_atom)
 

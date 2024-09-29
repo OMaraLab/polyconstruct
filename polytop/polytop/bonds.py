@@ -85,11 +85,6 @@ class Bond:
             new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order)
         else:
             raise ValueError(f"Atom {from_atom} is not in bond {self}")
-        for angle in self.angles:
-            if angle.contains_atom(from_atom):
-                new_bond.angles.add(angle.clone_angle_changing(from_atom, to_atom))
-            else:
-                new_bond.angles.add(angle) # add a copy of the old angle is none of it's atoms are changing
         return new_bond
 
     def references_atom(self, atom: Atom) -> bool:

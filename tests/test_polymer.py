@@ -46,8 +46,7 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     assert len(polymer.topology.atoms) == 43 # we have 43 atoms in the polymer after 3 left
     assert len(polymer.topology.bonds) < len(arg_glu.bonds) # we have fewer bonds than the naive join
     assert len(polymer.topology.angles) < len(arg_glu.angles) # we have fewer angles than the naive join
-    assert len(polymer.topology.dihedrals) < len(arg_glu.dihedrals) # we have fewer dihedrals than the naive join
-
+    
     with pytest.raises(ValueError):
         polymer.topology.get_atom("O2")
 

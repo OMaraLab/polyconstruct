@@ -91,11 +91,6 @@ class Angle:
             new_angle = Angle(self.atom_a, self.atom_b, to_atom, self.angle_type, self.angle_value, self.force_constant)
         else:
             raise ValueError(f"Atom {from_atom} is not in angle {self}")
-        for dihedral in self.dihedrals:
-            if dihedral.contains_atom(from_atom):
-                new_angle.dihedrals.add(dihedral.clone_dihedral_changing(from_atom, to_atom))
-            else:
-                new_angle.dihedrals.add(dihedral) # add a copy of the old dihedral is none of it's atoms are changing
         return new_angle
 
     def references_atom(self, atom: Atom) -> bool:
