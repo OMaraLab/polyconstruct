@@ -8,4 +8,6 @@ py3Dmol
 numpy
 mdanalysis
 click
-py3Dmol 
+py3Dmol
+networkx
+tqdm

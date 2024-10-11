@@ -27,4 +27,8 @@ conda install "python=3.10"
 cd polytop
 
 pip install -e .
+
+cd ../polyconf
+
+pip install -e .
 ```
