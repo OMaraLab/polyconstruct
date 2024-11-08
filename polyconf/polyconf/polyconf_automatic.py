@@ -2,7 +2,7 @@
 from polyconf.monomer import Monomer
 from polyconf.polymer import Polymer
 from polyconf.PDB import PDB
-# from polytop import Automatic
+from polytop.polytop_automatic import Automatic
 
 import numpy as np
 import pandas as pd
@@ -19,97 +19,103 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", default='polymer', help='system name string, used for filenames')
-parser.add_argument("--nconfs", default=3)
-parser.add_argument('--count', action='store_true') # specifies monomers are given by count
-parser.add_argument('--frac', action='store_true') # specifies monomers are as fractions, requires a total length
-parser.add_argument('--length', type=int,required=True) # total polymer legnth
-parser.add_argument("--monomers",type=str,default='monomers.csv',help='path to csv describing monomers, expected columns are \'resname\', \'path\', \'position\', \'fill\', and at least one of \'count\' and \'frac\'') 
-parser.add_argument('--shuffles', type=int,default=20) # specifies monomers are given by count
+parser.add_argument("--nconfs", default=3, )
+parser.add_argument('--count', action='store_true', help='explicit count of how many of each type of monomer to include')
+parser.add_argument('--frac', action='store_true', help='fraction of polymer made up of each type of monomer')
+parser.add_argument('--length', type=int,required=True, help='total polymer length')
+parser.add_argument("--monomers",type=str,default='monomers.csv',help='path to csv describing monomers, expected columns are "resname", "pdb path", "itp path", "position", "fill", and at least one of "count" or "frac"') 
+parser.add_argument('--shuffles', type=int,default=20, help='max number of shuffles before restarting conformation generation')
+parser.add_argument('--rotate', metavar='N', type=str, nargs='*', required=True,
+                    help='which bond pairs to shuffle, e.g. "CA C CA CB" to shuffle CA-C and CA-CB')
+parser.add_argument('--joiners', metavar='N', type=str, nargs='*', required=True,
+                    help='which atoms will be the corresponding dummies for polyconf extend, e.g. "CMA CN"')
+parser.add_argument('--junctions', metavar='N', type=str, nargs='*', required=True,
+                    help='which atoms will be "monomer atoms" for junctions of monomers joined together, e.g. "C CA"')
+parser.add_argument('--dummies', metavar='N', type=str, nargs='*', required=True,
+                    help='which atoms will be the corresponding "residue atoms" for the "monomer atoms" specified in --junctions, e.g. "CP CN"')
 
 # assumes monomer resnames are four letter codes, with the final letter either M for middle, T for terminator, or I for initiator)
-# count = explicit count of how many to include
+# count = 
 # frac = fraction of polymer that is made up of these monomers
 # path = path to coordinate file with bond information, eg pdb file with connect records
 # position = initial, middle, terminal
 # fill = after polymer is extended based on count or frac, gencomp checks if the desired  length is required
 #           if the polymer has not reached the desired length, extends by choosing randomly from monomers where fill = True
 
-args = parser.parse_args()
+def main():
+    args = parser.parse_args()
 
-fname = '_'.join(args.name.split(' '))
-nconfs = int(args.nconfs)
+    fname = '_'.join(args.name.split(' '))
+    nconfs = int(args.nconfs)
 
-df = pd.read_csv(args.monomers) # has paths to all ITP and PDB files
-df.set_index('resname',inplace=True)
-if args.count:
-    df['count'] = df['count'].astype(int) 
-if args.frac:
-    df['frac'] = df['frac'].astype(float) 
-df['fill'] = df['fill'].astype(int).astype(bool)
-mdict = df.to_dict()
+    df = pd.read_csv(args.monomers) # has paths to all ITP and PDB files
+    df.set_index('resname',inplace=True)
+    if args.count:
+        df['count'] = df['count'].astype(int) 
+    elif args.frac:
+        df['frac'] = df['frac'].astype(float)
+    else:
+        raise(ValueError, "Must specify either '--count' or '--frac' for polymer composition")
+    df['fill'] = df['fill'].astype(int).astype(bool)
+    mdict = df.to_dict()
 
-# build iterator lists 
+    # build iterator lists 
 
-monomers = [x for x in mdict['path'].keys()]
+    monomers = [x for x in mdict['pdb path'].keys()]
 
-middle = [x for x in monomers if mdict['position'][x] == 'middle']    
-initial = [x for x in monomers if mdict['position'][x] == 'initial']
-terminal = [x for x in monomers if mdict['position'][x] == 'terminal']
+    middle = [x for x in monomers if mdict['position'][x] == 'middle']    
+    initial = [x for x in monomers if mdict['position'][x] == 'initial']
+    terminal = [x for x in monomers if mdict['position'][x] == 'terminal']
 
-middle.sort()
-initial.sort()
-terminal.sort()
+    middle.sort()
+    initial.sort()
+    terminal.sort()
 
-monomers = [*initial,*middle,*terminal]
+    monomers = [*initial,*middle,*terminal]
 
-fill = [x for x in monomers if mdict['fill'][x]]
-print(fill)
+    fill = [x for x in monomers if mdict['fill'][x]]
 
-polyList = Polymer.gencomp(mdict, args.length, fill, middle, count = args.count, frac = args.frac)
-print(polyList)
+    polyList = Polymer.gencomp(mdict, args.length, fill, middle, count = args.count, frac = args.frac)
+    print(polyList)
 
-# df2 = pd.read_csv(args.monomers) # has paths to all ITP and PDB files
-# ITPLocations = df2['ITPpath'].tolist() #TO DO: create test CSV for this!
-# junctions = df2['junctions'].tolist() # get junctions from polyconf?
+    # has paths to all ITP and PDB files
+    itp_monomers = [x for x in mdict['itp path'].keys()]
 
-# polymerITP = Automatic(polyList, args.length, ITPLocations)
-# polymerITP.build()
-# TO DO: create new class to automate polytop workflow!!
-# now, use the composition to build the polymer
+    polymerITP = Automatic(polyList, mdict['itp path'], args.length, itp_monomers, args.junctions, args.dummies)
+    polymerITP.build()
 
-print('Polymer composition generated\n')
-for l in [initial, middle, terminal]:
-    for m in l:
-        print(m,':',len([x for x in polyList if x == m]))
-    print()
+    print('Polymer composition generated\n')
+    for l in [initial, middle, terminal]:
+        for m in l:
+            print(m,':',len([x for x in polyList if x == m]))
+        print()
 
-polymer = Polymer(Monomer(mdict['path'][polyList[0]]))
-for i in tqdm(range(len(polyList)),desc='Building initial polymer geometry'):
-    print(mdict['path'][polyList[i]])
-    
-
-    if i >= 1:
-        # print(polyList[i])
-        # print(mdict['path'][polyList[i]])
-        
-        
-        #print( pol.residues.resids)
-        #print(pol.select_atoms('resid 1 and name CA').positions[0])
-    # else:
-        rot = (i*45)%360 # not used anymore; replaced with genconf shuffling
-        polymer.extend(Monomer(mdict['path'][polyList[i]]),n=i,nn=i+1,rot=rot)
+    j_a = args.junctions
+    d_a = args.joiners
+    polymer = Polymer(Monomer(mdict['pdb path'][polyList[0]]))
+    for i in tqdm(range(len(polyList)),desc='Building initial polymer geometry'):
+        if i >= 1:
+            rot = (i*45)%360 # not used anymore; replaced with genconf shuffling
+            # names = {'P1':'CA','Q1':'C','P2':'CMA','Q2':'CN'}
+            names = {'P1':j_a[1],'Q1':j_a[0],'P2':d_a[0],'Q2':d_a[1]}
+            j_t = (j_a[0], j_a[1])
+            joins = [j_t]
+            print(joins)
+            polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins)
 
 
-polymerSaver = PDB(polymer)
-polymerSaver.cleanup()
-polymerSaver.save(fname = f'{fname}_linear.gro', selectionString=None)
+    polymerSaver = PDB(polymer)
+    polymerSaver.cleanup()
+    polymerSaver.save(fname = f'{fname}_linear.gro', selectionString=None)
 
-# polymer.genconf(n=nconfs,fname=fname,verbose=False,limit=args.shuffles)
+    # polymer.genconf(n=nconfs,fname=fname,verbose=False,limit=args.shuffles)
 
-atomPairs = [('CA', 'C'), ('CA', 'CB')] # specified by user
-# for i in range(polymer.bonds):
-#     for atom in polymer.atoms:
-#         if atom in polymer.bonds[i]:
-#             atomPairs[i] = (atom, polymer.bonds[i].partner(atom))
+    atomPairs = iter(args.rotate)
+    rotate = list(zip(atomPairs, atomPairs)) # convert list to tuple
+    print(rotate)
+    # for i in range(polymer.bonds):
+    #     for atom in polymer.atoms:
+    #         if atom in polymer.bonds[i]:
+    #             atomPairs[i] = (atom, polymer.bonds[i].partner(atom))
 
-polymer.genconf(atomPairs, length = args.length, runs = 5, cutoff = 0.8, fname = 'polymer_conf')
+    polymer.genconf(rotate, length = args.length, runs = args.shuffles, cutoff = 0.8, fname = 'polymer_conf')

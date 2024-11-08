@@ -130,13 +130,14 @@ class Polymer:
         self.polymer = new.copy()
     
     #REPLACE WITH NAC GENCONF VERSION
-    def genconf(self, atomPairs, length, runs = 5, cutoff = 0.8, fname = 'polymer_conf'):
+    def genconf(self, atomPairs, length, runs = 5, attempts = 20, cutoff = 0.8, fname = 'polymer_conf'):
         # atomPairs is a list of tuples!
         # for bond in self.polymer.bonds: 
             # 
         j=1
         conf = self.polymer.copy()
         while j <= runs:
+            tries = 0
             for i, index in enumerate(self.polymer.residues, start=1):     
                 for a1,a2 in atomPairs:
                     if a1[-1]=='+' or a2[-1]=='+':
@@ -166,7 +167,13 @@ class Polymer:
                         #proceed to next - save at end of a run only
                     else:
                         #redo shuffle (until max trieds reached, then give up)
-                        print(f'genconf {i} clash; retry')
+                        if (tries == attempts):
+                            print('max number of attempts reached; restarting shuffle')
+                            tries = 0
+                            continue
+                        else:
+                            print(f'genconf {i} clash; retrying')
+                            tries+=1
 
 
     # def genconf(self, # universe containing raw polymer conf with bond information
@@ -272,7 +279,6 @@ class Polymer:
    
     def _shuffle(self, u, a1, a1resid, a2, a2resid, mult=3):
         # based on a tutorial by richard j gowers; http://www.richardjgowers.com/2017/08/14/rotating.html
-        print(f'SELECTION: (resid {a1resid} and name {a1}) or (resid {a2resid} and name {a2})')
         pair = u.select_atoms(f'(resid {a1resid} and name {a1}) or (resid {a2resid} and name {a2})' ) 
         #print(pair.atoms)
         bond = u.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
