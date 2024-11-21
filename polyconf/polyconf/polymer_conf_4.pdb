@@ -1,0 +1,445 @@
+TITLE     MDANALYSIS FRAME 0: Created by PDBWriter
+CRYST1   20.621    7.260    3.212  90.00  90.00  90.00 P 1           1
+HETATM    1  CZ  P5DIX   1      -8.009 -14.311   9.836  1.00  0.00      SYST C  
+HETATM    2  O5C P5DIX   1      -7.931 -13.090  10.554  1.00  0.00      SYST O  
+HETATM    3  C5B P5DIX   1      -7.798 -13.293  11.955  1.00  0.00      SYST C  
+HETATM    4  C5A P5DIX   1      -7.627 -11.956  12.666  1.00  0.00      SYST C  
+HETATM    5  O4C P5DIX   1      -6.296 -11.453  12.654  1.00  0.00      SYST O  
+HETATM    6  C4B P5DIX   1      -5.885 -10.864  11.424  1.00  0.00      SYST C  
+HETATM    7  C4A P5DIX   1      -4.404 -10.541  11.567  1.00  0.00      SYST C  
+HETATM    8  O3C P5DIX   1      -3.980  -9.892  10.378  1.00  0.00      SYST O  
+HETATM    9  C3B P5DIX   1      -2.574  -9.714  10.331  1.00  0.00      SYST C  
+HETATM   10  C3A P5DIX   1      -2.224  -9.076   8.992  1.00  0.00      SYST C  
+HETATM   11  O2C P5DIX   1      -0.813  -9.144   8.858  1.00  0.00      SYST O  
+HETATM   12  C2B P5DIX   1      -0.331  -8.583   7.649  1.00  0.00      SYST C  
+HETATM   13  C2A P5DIX   1       1.146  -8.942   7.554  1.00  0.00      SYST C  
+HETATM   14  O1C P5DIX   1       1.694  -8.290   6.418  1.00  0.00      SYST O  
+HETATM   15  C1B P5DIX   1       2.901  -8.893   5.981  1.00  0.00      SYST C  
+HETATM   16  C1A P5DIX   1       3.418  -8.172   4.752  1.00  0.00      SYST C  
+HETATM   17  OG1 P5DIX   1       4.193  -7.024   5.188  1.00  0.00      SYST O  
+HETATM   18  CB  P5DIX   1       4.900  -6.159   4.422  1.00  0.00      SYST C  
+HETATM   19  OG2 P5DIX   1       5.830  -5.591   4.954  1.00  0.00      SYST O  
+HETATM   20  CA  P5DIX   1       4.438  -5.719   2.996  1.00  0.00      SYST C  
+HETATM   21  CB2 P5DIX   1       4.205  -6.982   2.153  1.00  0.00      SYST C  
+HETATM   22  C   P5DIX   1       5.535  -4.774   2.422  1.00  0.00      SYST C  
+HETATM   23  CP  P5DIX   1       6.907  -5.443   2.218  1.00  0.00      SYST C  
+HETATM   24  CQ  P5DIX   1       7.952  -4.451   1.691  1.00  0.00      SYST C  
+HETATM   25  S1  P5DIX   1       2.794  -4.814   3.210  1.00  0.00      SYST S  
+HETATM   26  CIA P5DIX   1       2.105  -4.289   1.673  1.00  0.00      SYST C  
+HETATM   27  S2  P5DIX   1       2.751  -4.403   0.151  1.00  0.00      SYST S  
+HETATM   28  CIB P5DIX   1       0.807  -3.607   1.944  1.00  0.00      SYST C  
+HETATM   29 CIC2 P5DIX   1      -0.094  -4.071   2.925  1.00  0.00      SYST C  
+HETATM   30 H1C2 P5DIX   1       0.114  -4.989   3.466  1.00  0.00      SYST H  
+HETATM   31 CID2 P5DIX   1      -1.269  -3.371   3.193  1.00  0.00      SYST C  
+HETATM   32 HID2 P5DIX   1      -1.955  -3.744   3.950  1.00  0.00      SYST H  
+HETATM   33  CIE P5DIX   1      -1.563  -2.196   2.498  1.00  0.00      SYST C  
+HETATM   34 HIE1 P5DIX   1      -2.471  -1.643   2.718  1.00  0.00      SYST H  
+HETATM   35 CID1 P5DIX   1      -0.683  -1.734   1.513  1.00  0.00      SYST C  
+HETATM   36  H5  P5DIX   1      -0.902  -0.818   0.970  1.00  0.00      SYST H  
+HETATM   37 CIC1 P5DIX   1       0.488  -2.432   1.235  1.00  0.00      SYST C  
+HETATM   38 H1C1 P5DIX   1       1.181  -2.063   0.485  1.00  0.00      SYST H  
+HETATM   39  O1B CODMX   2       7.950  -4.030  -4.569  1.00  0.00      SYST O  
+HETATM   40  C1C CODMX   2       7.210  -4.014  -3.554  1.00  0.00      SYST C  
+HETATM   41  O1A CODMX   2       6.594  -3.024  -3.067  1.00  0.00      SYST O  
+HETATM   42  C1B CODMX   2       7.094  -5.353  -2.759  1.00  0.00      SYST C  
+HETATM   43  C1A CODMX   2       5.737  -5.513  -2.087  1.00  0.00      SYST C  
+HETATM   44  OG1 CODMX   2       5.788  -6.494  -1.011  1.00  0.00      SYST O  
+HETATM   45  CB  CODMX   2       5.837  -6.222   0.309  1.00  0.00      SYST C  
+HETATM   46  OG2 CODMX   2       6.052  -7.167   1.054  1.00  0.00      SYST O  
+HETATM   47  CA  CODMX   2       5.621  -4.814   0.883  1.00  0.00      SYST C  
+HETATM   48  CN  CODMX   2       5.519  -4.787   2.431  1.00  0.00      SYST C  
+HETATM   49  CMA CODMX   2       4.438  -5.719   2.996  1.00  0.00      SYST C  
+HETATM   50  C   CODMX   2       6.567  -3.711   0.337  1.00  0.00      SYST C  
+HETATM   51  CP  CODMX   2       6.439  -2.320   0.989  1.00  0.00      SYST C  
+HETATM   52  CQ  CODMX   2       5.198  -1.509   0.592  1.00  0.00      SYST C  
+HETATM   53  O1B COLMX   3       8.534  -9.370   0.716  1.00  0.00      SYST O  
+HETATM   54  C1C COLMX   3       8.487  -9.675  -0.508  1.00  0.00      SYST C  
+HETATM   55  O1A COLMX   3       8.758 -10.787  -1.033  1.00  0.00      SYST O  
+HETATM   56  C1B COLMX   3       7.997  -8.572  -1.491  1.00  0.00      SYST C  
+HETATM   57  C1A COLMX   3       8.039  -7.172  -0.906  1.00  0.00      SYST C  
+HETATM   58  OG1 COLMX   3       7.430  -6.285  -1.889  1.00  0.00      SYST O  
+HETATM   59  CB  COLMX   3       7.267  -4.959  -1.711  1.00  0.00      SYST C  
+HETATM   60  OG2 COLMX   3       6.697  -4.340  -2.594  1.00  0.00      SYST O  
+HETATM   61  CA  COLMX   3       7.772  -4.256  -0.450  1.00  0.00      SYST C  
+HETATM   62  CN  COLMX   3       6.555  -3.724   0.344  1.00  0.00      SYST C  
+HETATM   63  CMA COLMX   3       5.621  -4.814   0.883  1.00  0.00      SYST C  
+HETATM   64  C   COLMX   3       8.704  -3.093  -0.865  1.00  0.00      SYST C  
+HETATM   65  CP  COLMX   3       9.181  -2.185   0.282  1.00  0.00      SYST C  
+HETATM   66  CQ  COLMX   3       8.094  -1.271   0.860  1.00  0.00      SYST C  
+ATOM     67  CZ  P5DMX   4      -2.124 -19.457   1.697  1.00  0.00      X    C  
+ATOM     68  O5C P5DMX   4      -0.968 -18.648   1.836  1.00  0.00      X    O  
+ATOM     69  C5B P5DMX   4      -1.213 -17.293   1.505  1.00  0.00      X    C  
+ATOM     70  C5A P5DMX   4       0.095 -16.533   1.677  1.00  0.00      X    C  
+ATOM     71  O4C P5DMX   4      -0.150 -15.175   1.348  1.00  0.00      X    O  
+ATOM     72  C4B P5DMX   4       1.006 -14.363   1.472  1.00  0.00      X    C  
+ATOM     73  C4A P5DMX   4       0.617 -12.944   1.082  1.00  0.00      X    C  
+ATOM     74  O3C P5DMX   4       1.776 -12.136   1.201  1.00  0.00      X    O  
+ATOM     75  C3B P5DMX   4       1.551 -10.784   0.837  1.00  0.00      X    C  
+ATOM     76  C3A P5DMX   4       2.875 -10.048   0.981  1.00  0.00      X    C  
+ATOM     77  O2C P5DMX   4       2.668  -8.704   0.579  1.00  0.00      X    O  
+ATOM     78  C2B P5DMX   4       3.848  -7.920   0.654  1.00  0.00      X    C  
+ATOM     79  C2A P5DMX   4       3.518  -6.536   0.114  1.00  0.00      X    C  
+ATOM     80  O1C P5DMX   4       4.721  -5.780   0.133  1.00  0.00      X    O  
+ATOM     81  C1B P5DMX   4       4.584  -4.499  -0.454  1.00  0.00      X    C  
+ATOM     82  C1A P5DMX   4       5.973  -3.872  -0.464  1.00  0.00      X    C  
+ATOM     83  OG1 P5DMX   4       5.816  -2.600  -1.117  1.00  0.00      X    O  
+ATOM     84  CB  P5DMX   4       6.743  -1.624  -1.330  1.00  0.00      X    C  
+ATOM     85  OG2 P5DMX   4       6.373  -0.710  -2.042  1.00  0.00      X    O  
+ATOM     86  CA  P5DMX   4       8.130  -1.618  -0.646  1.00  0.00      X    C  
+ATOM     87  CB2 P5DMX   4       7.885  -1.421   0.867  1.00  0.00      X    C  
+ATOM     88  CN  P5DMX   4       8.749  -3.037  -0.885  1.00  0.00      X    C  
+ATOM     89  CMA P5DMX   4       7.772  -4.256  -0.450  1.00  0.00      X    C  
+ATOM     90  C   P5DMX   4       9.067  -0.489  -1.163  1.00  0.00      X    C  
+ATOM     91  CP  P5DMX   4      10.350  -0.265  -0.344  1.00  0.00      X    C  
+ATOM     92  CQ  P5DMX   4      11.233   0.842  -0.931  1.00  0.00      X    C  
+ATOM     93  CZ  P5LMX   5      12.043  17.238   8.325  1.00  0.00      X    C  
+ATOM     94  O5C P5LMX   5      12.248  16.305   7.278  1.00  0.00      X    O  
+ATOM     95  C5B P5LMX   5      13.513  15.671   7.362  1.00  0.00      X    C  
+ATOM     96  C5A P5LMX   5      13.639  14.655   6.246  1.00  0.00      X    C  
+ATOM     97  O4C P5LMX   5      12.748  13.576   6.492  1.00  0.00      X    O  
+ATOM     98  C4B P5LMX   5      12.777  12.592   5.473  1.00  0.00      X    C  
+ATOM     99  C4A P5LMX   5      11.757  11.524   5.844  1.00  0.00      X    C  
+ATOM    100  O3C P5LMX   5      11.768  10.536   4.827  1.00  0.00      X    O  
+ATOM    101  C3B P5LMX   5      10.778   9.538   5.021  1.00  0.00      X    C  
+ATOM    102  C3A P5LMX   5      10.912   8.528   3.889  1.00  0.00      X    C  
+ATOM    103  O2C P5LMX   5       9.824   7.624   3.993  1.00  0.00      X    O  
+ATOM    104  C2B P5LMX   5       9.817   6.647   2.963  1.00  0.00      X    C  
+ATOM    105  C2A P5LMX   5       8.488   5.907   3.045  1.00  0.00      X    C  
+ATOM    106  O1C P5LMX   5       8.483   4.914   2.028  1.00  0.00      X    O  
+ATOM    107  C1B P5LMX   5       7.183   4.429   1.736  1.00  0.00      X    C  
+ATOM    108  C1A P5LMX   5       7.278   3.365   0.661  1.00  0.00      X    C  
+ATOM    109  OG1 P5LMX   5       7.757   2.151   1.275  1.00  0.00      X    O  
+ATOM    110  CB  P5LMX   5       8.224   1.036   0.652  1.00  0.00      X    C  
+ATOM    111  OG2 P5LMX   5       8.335   0.053   1.361  1.00  0.00      X    O  
+ATOM    112  CA  P5LMX   5       8.606   1.022  -0.847  1.00  0.00      X    C  
+ATOM    113  CB2 P5LMX   5       7.328   1.216  -1.707  1.00  0.00      X    C  
+ATOM    114  CN  P5LMX   5       9.141  -0.400  -1.204  1.00  0.00      X    C  
+ATOM    115  CMA P5LMX   5       8.130  -1.618  -0.646  1.00  0.00      X    C  
+ATOM    116  C   P5LMX   5       9.665   2.115  -1.214  1.00  0.00      X    C  
+ATOM    117  CP  P5LMX   5      10.671   2.515  -0.120  1.00  0.00      X    C  
+ATOM    118  CQ  P5LMX   5      11.808   3.389  -0.665  1.00  0.00      X    C  
+ATOM    119  CQ  P4LMX   6      10.292   6.840  -0.676  1.00  0.00      X    C  
+ATOM    120  CP  P4LMX   6       9.387   5.602  -0.662  1.00  0.00      X    C  
+ATOM    121  C   P4LMX   6       9.632   4.696  -1.881  1.00  0.00      X    C  
+ATOM    122  CA  P4LMX   6       8.892   3.316  -1.924  1.00  0.00      X    C  
+ATOM    123  CB2 P4LMX   6       8.713   2.868  -3.400  1.00  0.00      X    C  
+ATOM    124  CN  P4LMX   6       9.758   2.211  -1.246  1.00  0.00      X    C  
+ATOM    125  CMA P4LMX   6       8.606   1.022  -0.847  1.00  0.00      X    C  
+ATOM    126  CB  P4LMX   6       7.508   3.339  -1.231  1.00  0.00      X    C  
+ATOM    127  OG2 P4LMX   6       7.224   2.572  -0.330  1.00  0.00      X    O  
+ATOM    128  OG1 P4LMX   6       6.520   4.203  -1.587  1.00  0.00      X    O  
+ATOM    129  C1A P4LMX   6       6.486   5.093  -2.722  1.00  0.00      X    C  
+ATOM    130  C1B P4LMX   6       5.539   6.230  -2.398  1.00  0.00      X    C  
+ATOM    131  O1C P4LMX   6       6.138   7.069  -1.425  1.00  0.00      X    O  
+ATOM    132  C2A P4LMX   6       5.352   8.209  -1.116  1.00  0.00      X    C  
+ATOM    133  C2B P4LMX   6       6.177   9.106  -0.204  1.00  0.00      X    C  
+ATOM    134  O2C P4LMX   6       5.392  10.251   0.086  1.00  0.00      X    O  
+ATOM    135  C3A P4LMX   6       6.106  11.245   0.804  1.00  0.00      X    C  
+ATOM    136  C3B P4LMX   6       5.157  12.414   1.031  1.00  0.00      X    C  
+ATOM    137  O3C P4LMX   6       5.893  13.456   1.649  1.00  0.00      X    O  
+ATOM    138  C4A P4LMX   6       5.103  14.603   1.912  1.00  0.00      X    C  
+ATOM    139  C4B P4LMX   6       6.010  15.667   2.516  1.00  0.00      X    C  
+ATOM    140  O4C P4LMX   6       5.212  16.809   2.773  1.00  0.00      X    O  
+ATOM    141  CZ  P4LMX   6       5.956  17.880   3.328  1.00  0.00      X    C  
+ATOM    142  CQ  P4LMX   7      12.410   7.195   1.126  1.00  0.00      X    C  
+ATOM    143  CP  P4LMX   7      11.421   6.053   0.856  1.00  0.00      X    C  
+ATOM    144  C   P4LMX   7      10.244   6.507  -0.024  1.00  0.00      X    C  
+ATOM    145  CA  P4LMX   7       9.236   5.413  -0.512  1.00  0.00      X    C  
+ATOM    146  CB2 P4LMX   7       7.852   6.065  -0.782  1.00  0.00      X    C  
+ATOM    147  CN  P4LMX   7       9.696   4.816  -1.878  1.00  0.00      X    C  
+ATOM    148  CMA P4LMX   7       8.892   3.316  -1.924  1.00  0.00      X    C  
+ATOM    149  CB  P4LMX   7       9.059   4.248   0.490  1.00  0.00      X    C  
+ATOM    150  OG2 P4LMX   7       9.251   3.088   0.174  1.00  0.00      X    O  
+ATOM    151  OG1 P4LMX   7       8.671   4.438   1.779  1.00  0.00      X    O  
+ATOM    152  C1A P4LMX   7       8.198   5.654   2.394  1.00  0.00      X    C  
+ATOM    153  C1B P4LMX   7       8.454   5.558   3.883  1.00  0.00      X    C  
+ATOM    154  O1C P4LMX   7       9.846   5.669   4.121  1.00  0.00      X    O  
+ATOM    155  C2A P4LMX   7      10.175   5.667   5.501  1.00  0.00      X    C  
+ATOM    156  C2B P4LMX   7      11.663   5.967   5.624  1.00  0.00      X    C  
+ATOM    157  O2C P4LMX   7      11.979   5.982   7.006  1.00  0.00      X    O  
+ATOM    158  C3A P4LMX   7      13.308   6.405   7.265  1.00  0.00      X    C  
+ATOM    159  C3B P4LMX   7      13.506   6.389   8.775  1.00  0.00      X    C  
+ATOM    160  O3C P4LMX   7      14.793   6.918   9.049  1.00  0.00      X    O  
+ATOM    161  C4A P4LMX   7      15.088   6.948  10.435  1.00  0.00      X    C  
+ATOM    162  C4B P4LMX   7      16.460   7.586  10.607  1.00  0.00      X    C  
+ATOM    163  O4C P4LMX   7      16.745   7.613  11.994  1.00  0.00      X    O  
+ATOM    164  CZ  P4LMX   7      18.001   8.202  12.281  1.00  0.00      X    C  
+ATOM    165  CZ  P5DMX   8       2.497  20.896  12.752  1.00  0.00      X    C  
+ATOM    166  O5C P5DMX   8       3.407  20.454  11.759  1.00  0.00      X    O  
+ATOM    167  C5B P5DMX   8       3.213  19.093  11.416  1.00  0.00      X    C  
+ATOM    168  C5A P5DMX   8       4.249  18.732  10.360  1.00  0.00      X    C  
+ATOM    169  O4C P5DMX   8       4.054  17.370  10.013  1.00  0.00      X    O  
+ATOM    170  C4B P5DMX   8       4.969  16.917   9.030  1.00  0.00      X    C  
+ATOM    171  C4A P5DMX   8       4.665  15.450   8.758  1.00  0.00      X    C  
+ATOM    172  O3C P5DMX   8       5.586  14.999   7.779  1.00  0.00      X    O  
+ATOM    173  C3B P5DMX   8       5.424  13.629   7.454  1.00  0.00      X    C  
+ATOM    174  C3A P5DMX   8       6.489  13.276   6.425  1.00  0.00      X    C  
+ATOM    175  O2C P5DMX   8       6.361  11.896   6.126  1.00  0.00      X    O  
+ATOM    176  C2B P5DMX   8       7.321  11.446   5.184  1.00  0.00      X    C  
+ATOM    177  C2A P5DMX   8       7.138   9.945   5.017  1.00  0.00      X    C  
+ATOM    178  O1C P5DMX   8       8.146   9.495   4.124  1.00  0.00      X    O  
+ATOM    179  C1B P5DMX   8       8.165   8.088   3.967  1.00  0.00      X    C  
+ATOM    180  C1A P5DMX   8       9.363   7.763   3.083  1.00  0.00      X    C  
+ATOM    181  OG1 P5DMX   8       9.394   6.328   2.990  1.00  0.00      X    O  
+ATOM    182  CB  P5DMX   8      10.235   5.532   2.271  1.00  0.00      X    C  
+ATOM    183  OG2 P5DMX   8      10.130   4.341   2.492  1.00  0.00      X    O  
+ATOM    184  CA  P5DMX   8      11.187   6.081   1.182  1.00  0.00      X    C  
+ATOM    185  CB2 P5DMX   8      12.067   4.900   0.717  1.00  0.00      X    C  
+ATOM    186  CN  P5DMX   8      10.280   6.547  -0.007  1.00  0.00      X    C  
+ATOM    187  CMA P5DMX   8       9.236   5.413  -0.512  1.00  0.00      X    C  
+ATOM    188  C   P5DMX   8      12.104   7.232   1.689  1.00  0.00      X    C  
+ATOM    189  CP  P5DMX   8      12.840   6.959   3.011  1.00  0.00      X    C  
+ATOM    190  CQ  P5DMX   8      13.743   8.126   3.429  1.00  0.00      X    C  
+HETATM  191  O1B COLMX   9      14.582   2.247  -0.564  1.00  0.00      SYST O  
+HETATM  192  C1C COLMX   9      14.946   2.700  -1.684  1.00  0.00      SYST C  
+HETATM  193  O1A COLMX   9      15.505   2.071  -2.622  1.00  0.00      SYST O  
+HETATM  194  C1B COLMX   9      14.636   4.198  -1.974  1.00  0.00      SYST C  
+HETATM  195  C1A COLMX   9      14.317   5.005  -0.729  1.00  0.00      SYST C  
+HETATM  196  OG1 COLMX   9      13.924   6.336  -1.177  1.00  0.00      SYST O  
+HETATM  197  CB  COLMX   9      13.544   7.329  -0.350  1.00  0.00      SYST C  
+HETATM  198  OG2 COLMX   9      13.191   8.380  -0.861  1.00  0.00      SYST O  
+HETATM  199  CA  COLMX   9      13.548   7.148   1.168  1.00  0.00      SYST C  
+HETATM  200  CN  COLMX   9      12.090   7.215   1.681  1.00  0.00      SYST C  
+HETATM  201  CMA COLMX   9      11.187   6.081   1.182  1.00  0.00      SYST C  
+HETATM  202  C   COLMX   9      14.402   8.271   1.803  1.00  0.00      SYST C  
+HETATM  203  CP  COLMX   9      15.905   8.226   1.477  1.00  0.00      SYST C  
+HETATM  204  CQ  COLMX   9      16.669   7.087   2.165  1.00  0.00      SYST C  
+HETATM  205  O1B CODTX  10      19.253  11.746  -0.834  1.00  0.00      SYST O  
+HETATM  206  C1C CODTX  10      18.257  11.344  -0.181  1.00  0.00      SYST C  
+HETATM  207  O1A CODTX  10      18.160  11.210   1.073  1.00  0.00      SYST O  
+HETATM  208  C1B CODTX  10      16.970  11.008  -0.996  1.00  0.00      SYST C  
+HETATM  209  C1A CODTX  10      16.348   9.680  -0.577  1.00  0.00      SYST C  
+HETATM  210  OG1 CODTX  10      14.946   9.626  -0.974  1.00  0.00      SYST O  
+HETATM  211  CB  CODTX  10      13.882   9.800  -0.165  1.00  0.00      SYST C  
+HETATM  212  OG2 CODTX  10      12.797   9.946  -0.709  1.00  0.00      SYST O  
+HETATM  213  CA  CODTX  10      13.976   9.694   1.366  1.00  0.00      SYST C  
+HETATM  214  CN  CODTX  10      14.395   8.261   1.797  1.00  0.00      SYST C  
+HETATM  215  CMA CODTX  10      13.548   7.148   1.168  1.00  0.00      SYST C  
+HETATM  216  C   CODTX  10      14.791  10.780   2.120  1.00  0.00      SYST C  
+HETATM  217  CTA CODTX  10      14.110  12.170   2.309  1.00  0.00      SYST C  
+HETATM  218 CTCN CODTX  10      12.857  11.997   3.075  1.00  0.00      SYST C  
+HETATM  219  N1  CODTX  10      11.873  11.860   3.679  1.00  0.00      SYST N  
+HETATM  220 CTB2 CODTX  10      15.061  13.070   3.135  1.00  0.00      SYST C  
+HETATM  221 CTB1 CODTX  10      13.767  12.864   0.968  1.00  0.00      SYST C  
+CONECT    1    2
+CONECT    2    1    3
+CONECT    3    2    4
+CONECT    4    3    5
+CONECT    5    4    6
+CONECT    6    5    7
+CONECT    7    6    8
+CONECT    8    7    9
+CONECT    9    8   10
+CONECT   10    9   11
+CONECT   11   10   12
+CONECT   12   11   13
+CONECT   13   12   14
+CONECT   14   13   15
+CONECT   15   14   16
+CONECT   16   15   17
+CONECT   17   16   18
+CONECT   18   17   19   20
+CONECT   19   18
+CONECT   20   18   21   22   25
+CONECT   21   20
+CONECT   22   20   23   47
+CONECT   23   22   24
+CONECT   24   23
+CONECT   25   20   26
+CONECT   26   25   27   28
+CONECT   27   26
+CONECT   28   26   29   37
+CONECT   29   28   30   31
+CONECT   30   29
+CONECT   31   29   32   33
+CONECT   32   31
+CONECT   33   31   34   35
+CONECT   34   33
+CONECT   35   33   36   37
+CONECT   36   35
+CONECT   37   28   35   38
+CONECT   38   37
+CONECT   39   40
+CONECT   40   39   41   42
+CONECT   41   40
+CONECT   42   40   43
+CONECT   43   42   44
+CONECT   44   43   45
+CONECT   45   44   46   47
+CONECT   46   45
+CONECT   47   22   45   48   50
+CONECT   48   47   49
+CONECT   49   48
+CONECT   50   47   51   61
+CONECT   51   50   52
+CONECT   52   51
+CONECT   53   54
+CONECT   54   53   55   56
+CONECT   55   54
+CONECT   56   54   57
+CONECT   57   56   58
+CONECT   58   57   59
+CONECT   59   58   60   61
+CONECT   60   59
+CONECT   61   50   59   62   64
+CONECT   62   61   63
+CONECT   63   62
+CONECT   64   61   65   86
+CONECT   65   64   66
+CONECT   66   65
+CONECT   67   68
+CONECT   68   67   69
+CONECT   69   68   70
+CONECT   70   69   71
+CONECT   71   70   72
+CONECT   72   71   73
+CONECT   73   72   74
+CONECT   74   73   75
+CONECT   75   74   76
+CONECT   76   75   77
+CONECT   77   76   78
+CONECT   78   77   79
+CONECT   79   78   80
+CONECT   80   79   81
+CONECT   81   80   82
+CONECT   82   81   83
+CONECT   83   82   84
+CONECT   84   83   85   86
+CONECT   85   84
+CONECT   86   64   84   87   88   90
+CONECT   87   86
+CONECT   88   86   89
+CONECT   89   88
+CONECT   90   86   91  112
+CONECT   91   90   92
+CONECT   92   91
+CONECT   93   94
+CONECT   94   93   95
+CONECT   95   94   96
+CONECT   96   95   97
+CONECT   97   96   98
+CONECT   98   97   99
+CONECT   99   98  100
+CONECT  100   99  101
+CONECT  101  100  102
+CONECT  102  101  103
+CONECT  103  102  104
+CONECT  104  103  105
+CONECT  105  104  106
+CONECT  106  105  107
+CONECT  107  106  108
+CONECT  108  107  109
+CONECT  109  108  110
+CONECT  110  109  111  112
+CONECT  111  110
+CONECT  112   90  110  113  114  116
+CONECT  113  112
+CONECT  114  112  115
+CONECT  115  114
+CONECT  116  112  117  122
+CONECT  117  116  118
+CONECT  118  117
+CONECT  119  120
+CONECT  120  119  121
+CONECT  121  120  122  145
+CONECT  122  116  121  123  124  126
+CONECT  123  122
+CONECT  124  122  125
+CONECT  125  124
+CONECT  126  122  127  128
+CONECT  127  126
+CONECT  128  126  129
+CONECT  129  128  130
+CONECT  130  129  131
+CONECT  131  130  132
+CONECT  132  131  133
+CONECT  133  132  134
+CONECT  134  133  135
+CONECT  135  134  136
+CONECT  136  135  137
+CONECT  137  136  138
+CONECT  138  137  139
+CONECT  139  138  140
+CONECT  140  139  141
+CONECT  141  140
+CONECT  142  143
+CONECT  143  142  144
+CONECT  144  143  145  184
+CONECT  145  121  144  146  147  149
+CONECT  146  145
+CONECT  147  145  148
+CONECT  148  147
+CONECT  149  145  150  151
+CONECT  150  149
+CONECT  151  149  152
+CONECT  152  151  153
+CONECT  153  152  154
+CONECT  154  153  155
+CONECT  155  154  156
+CONECT  156  155  157
+CONECT  157  156  158
+CONECT  158  157  159
+CONECT  159  158  160
+CONECT  160  159  161
+CONECT  161  160  162
+CONECT  162  161  163
+CONECT  163  162  164
+CONECT  164  163
+CONECT  165  166
+CONECT  166  165  167
+CONECT  167  166  168
+CONECT  168  167  169
+CONECT  169  168  170
+CONECT  170  169  171
+CONECT  171  170  172
+CONECT  172  171  173
+CONECT  173  172  174
+CONECT  174  173  175
+CONECT  175  174  176
+CONECT  176  175  177
+CONECT  177  176  178
+CONECT  178  177  179
+CONECT  179  178  180
+CONECT  180  179  181
+CONECT  181  180  182
+CONECT  182  181  183  184
+CONECT  183  182
+CONECT  184  144  182  185  186  188
+CONECT  185  184
+CONECT  186  184  187
+CONECT  187  186
+CONECT  188  184  189  199
+CONECT  189  188  190
+CONECT  190  189
+CONECT  191  192
+CONECT  192  191  193  194
+CONECT  193  192
+CONECT  194  192  195
+CONECT  195  194  196
+CONECT  196  195  197
+CONECT  197  196  198  199
+CONECT  198  197
+CONECT  199  188  197  200  202
+CONECT  200  199  201
+CONECT  201  200
+CONECT  202  199  203  213
+CONECT  203  202  204
+CONECT  204  203
+CONECT  205  206
+CONECT  206  205  207  208
+CONECT  207  206
+CONECT  208  206  209
+CONECT  209  208  210
+CONECT  210  209  211
+CONECT  211  210  212  213
+CONECT  212  211
+CONECT  213  202  211  214  216
+CONECT  214  213  215
+CONECT  215  214
+CONECT  216  213  217
+CONECT  217  216  218  220  221
+CONECT  218  217  219
+CONECT  219  218
+CONECT  220  217
+CONECT  221  217
+END
