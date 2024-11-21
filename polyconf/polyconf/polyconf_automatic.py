@@ -100,13 +100,12 @@ def main():
             names = {'P1':j_a[1],'Q1':j_a[0],'P2':d_a[0],'Q2':d_a[1]}
             j_t = (j_a[0], j_a[1])
             joins = [j_t]
-            print(joins)
             polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins)
 
 
     polymerSaver = PDB(polymer)
     polymerSaver.cleanup()
-    polymerSaver.save(fname = f'{fname}_linear.gro', selectionString=None)
+    polymerSaver.save(args.dummies, fname = f'{fname}_linear', selectionString=None)
 
     # polymer.genconf(n=nconfs,fname=fname,verbose=False,limit=args.shuffles)
 
