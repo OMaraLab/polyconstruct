@@ -98,7 +98,7 @@ class Polymer:
             * X_n   is some atom in residue n, the final residue before extension
             * Y_n+1 is some atom in residue nn, the new residue
         
-        NB: this function preserves all dummy atoms. Removing dummy atoms 
+        Note: this function preserves all dummy atoms. Removing dummy atoms 
             during extension causes substantial problems with indexing. They 
             must only be removed once the polymer is fully built. Save your 
             polymer to a .gro file with the PDB.save() method, which will strip
