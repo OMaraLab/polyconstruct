@@ -117,4 +117,4 @@ def main():
     #         if atom in polymer.bonds[i]:
     #             atomPairs[i] = (atom, polymer.bonds[i].partner(atom))
 
-    polymer.genconf(rotate, length = args.length, runs = args.shuffles, cutoff = 0.8, fname = 'polymer_conf')
+    polymer.genconf(rotate, args.dummies, length = args.length, runs = args.shuffles, cutoff = 0.8, fname = 'polymer_conf')
