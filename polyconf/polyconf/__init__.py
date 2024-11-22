@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Polytop: A Python library for creating polymers from monomers using GROMACS PDB files
+PolyConf: A Python library for creating polymers from monomers using GROMACS PDB files
 
 Copyright (C) 2024 O'Mara Group
 License: MIT
@@ -16,4 +16,3 @@ __website__ = "https://aibn.uq.edu.au/omara"
 from .monomer import Monomer
 from .polymer import Polymer
 from .PDB import PDB
-# from .polyconf_automatic import Visualize

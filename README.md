@@ -31,4 +31,8 @@ pip install -e .
 cd ../polyconf
 
 pip install -e .
+
+cd ../polybuild
+
+pip install -e .
 ```
