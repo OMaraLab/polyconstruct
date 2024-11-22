@@ -43,6 +43,35 @@ class Polymer:
                     [MDAnalysis Atom selection language](https://userguide.mdanalysis.org/stable/selections.html)
         """
         return self.polymer.select_atoms(selection)
+    
+    def renamer(self, resid, namein, nameout='X'):
+        """
+        Change selected atom names to a new name like X1, X2, X3. Intended to
+        flag dummy atoms for removal. Selected atoms are given a basename, 
+        e.g. 'X' defined by the nameout argument, as well as a number. 
+
+        Args:
+            resid (int): which residue number to select and rename atoms from
+            namein (str): current name of atoms, used to select target dummy atoms
+            nameout (str): new basename of atoms selected from resid and with
+                    atom name defined by namein
+        """
+        i = len(self.polymer.select_atoms(f"resid {resid} and name {nameout}*").atoms.names) + 1 # count existing dummy atoms
+        dummies=self.polymer.select_atoms(f"resid {resid} and name {namein}")
+        for x in dummies.atoms.indices:
+            self.polymer.select_atoms(f"resid {resid} and name {namein} and index {x}").atoms.names=[nameout+str(i)]
+
+    def newresid(self):
+        """
+        Generates a resid that is one larger than the highest existing resid in
+        the polymer. Excellent for finding what the number of the next residue
+        should be set to, for the nn argument to 'extend()'.
+
+        Returns:
+            nn (int): resid one greater than the polymer's current highest resid
+        """
+        nn = max(self.polymer.residues.resids) + 1
+        return nn
 
     def extend(self, monomer, n, nn, names, joins, ortho=[1,1,1], 
                linearise=False, beta=0): 
@@ -170,7 +199,7 @@ class Polymer:
         self.polymer = new.copy()
     
     #TODO: REPLACE WITH NAC GENCONF VERSION??
-    def genconf(self, atomPairs, length, runs = 5, attempts = 20, cutoff = 0.8, fname = 'polymer_conf'):
+    def genconf(self, atomPairs, dummies, length, runs = 5, attempts = 20, cutoff = 0.8, fname = 'polymer_conf', pdb = False):
         """
         Rotate bonds in the polymer to generate various conformations without atom overlap.
 
@@ -178,6 +207,7 @@ class Polymer:
             atomPairs (list of 2 item tuples): pairs of bonded atoms to rotate
                     around, only 1-2 pairs of bonded atom types in the polymer 
                     should be provided.
+            dummies (list): list of names of dummy atoms
             length (int): length of the polymer (i.e. the number of monomers)
             runs (int): number of conformations to generate, default is 5
             attempts (int): maximum number of shuffle rotations to attempt with
@@ -186,6 +216,7 @@ class Polymer:
             cutoff (float): minimum distance allowed between any two atoms, the
                     default is 0.8
             fname (str): base file name, default is 'polymer_conf'
+            pbd (bool): save output as PDB if True, else save as default GROMACS
 
         Writes each of the generated comformations to their own numbered output file
         """
@@ -203,13 +234,13 @@ class Polymer:
                         sign = ''
 
                     if (not sign): # [CA C]
-                        conf, a, b = self._shuffle(conf,a1, i,a2, i)
+                        conf, a, b = self.shuffle(conf,a1, i,a2, i)
                     elif (sign == '+'): # [CA C+]
                         if (i != length):
-                            conf, a, b =self._shuffle(conf,a1, i,a2, i+1)
+                            conf, a, b =self.shuffle(conf,a1, i,a2, i+1)
                     else: # [CA C-]
                         if (i != 1):
-                            conf, a, b =self._shuffle(conf,a1, i,a2, i-1)
+                            conf, a, b =self.shuffle(conf,a1, i,a2, i-1)
 
                     #convert a and b from atom indicies to atomgroups
                     aAtoms = conf.atoms[a.nodes()]
@@ -217,8 +248,11 @@ class Polymer:
                     dist=distances.distance_array(aAtoms.atoms.positions, bAtoms.atoms.positions).min() # this is the clash detection
                     if dist >= cutoff:
                         print(f'genconf {i} success')
-                        conf.atoms.write(f'{fname}_{i}.pdb')  
+                        toSave = PDB(conf)
+                        toSave.cleanup()
+                        toSave.save(dummies, fname = f'{fname}_{i}', selectionString=None, pdb=pdb)
                         j+=1
+                        tries = 0
                         #proceed to next - save at end of a run only
                     else:
                         #redo shuffle (until max trieds reached, then give up)
@@ -230,20 +264,20 @@ class Polymer:
                             print(f'genconf {i} clash; retrying')
                             tries+=1
    
-    def _shuffle(self, u, a1, a1resid, a2, a2resid, mult=3):
+    def shuffle(self, u, a1, a1resid, a2, a2resid, mult=3):
         """
         based on a tutorial by richard j gowers; http://www.richardjgowers.com/2017/08/14/rotating.html
         """ 
-        pair = u.select_atoms(f'(resid {a1resid} and name {a1}) or (resid {a2resid} and name {a2})' ) 
-        bond = u.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
+        pair = self.polymer.select_atoms(f'(resid {a1resid} and name {a1}) or (resid {a2resid} and name {a2})' ) 
+        bond = self.polymer.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
         g = nx.Graph()
-        g.add_edges_from(u.atoms.bonds.to_indices()) # get entire residue as a graph
+        g.add_edges_from(self.polymer.atoms.bonds.to_indices()) # get entire residue as a graph
         g.remove_edge(*bond.indices)     # remove the bond from the graph
         # unpack the two unconnected graphs
         a, b = (nx.subgraph(g,c) for c in nx.connected_components(g))
         # call the graph without the CA atom the 'head', this will be rotated
         fore_nodes = a
-        fore = u.atoms[fore_nodes.nodes()]
+        fore = self.polymer.atoms[fore_nodes.nodes()]
         v = bond[1].position - bond[0].position
         o = (fore & bond.atoms)[0]
         rot = random.randrange(0,mult)*int(360/mult) # rotate fore by a random multiplicity

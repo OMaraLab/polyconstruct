@@ -132,14 +132,14 @@ class Polymer:
         self.topology.clear_former_ids()
 
 
-    def extend(self, monomer, from_junction_name, to_junction_name, keep_charge = False, bond_length_func = None):
+    def extend(self, monomer, from_junction_name, to_junction_name, keep_charge = True, bond_length_func = None):
         """
         Extend the polymer by adding a monomer to the polymerization junctions of the polymer
         Args:
             monomer (Monomer): the monomer to add to the polymer
             from_junction_name (str): the name of the junction in the polymer to extend from (a random junction is chosen if multiple with this name are present)
             to_junction_name (str): the name of the junction in the monomer to extend to
-            keep_charge (bool): if True, the charge of the polymer is kept the same by forcing the final topology to be 
+            keep_charge (bool): default True - the charge of the polymer is kept the same by forcing the final topology to be 
                 the same net charge as the sum charge of the initial topology and the monomer 
             bond_length_func (function): a function that takes 2 bonds (the junction bond on the polymer, and the 
             junction bond on the monomer) and returns a bond length for the junction bond of the extended polymer

@@ -30,7 +30,7 @@ class PDB:
         atoms = self.polymer.select_atoms(selection)
         atoms.write(name)
 
-    def save(self, dummyAtoms, fname="polymer", selectionString = None):
+    def save(self, dummyAtoms, fname="polymer", selectionString = None, pdb = False):
         """
         Save polymer as a GROMACS .gro file with dummy atoms excluded.
         Optionally, select a subset of the polymer to save.
@@ -43,11 +43,18 @@ class PDB:
             selectionString (str): MDAnalysis atom selection string, for more 
                     information on supported atom selection formats see 
                     [MDAnalysis Atom selection language](https://userguide.mdanalysis.org/stable/selections.html)
+            pbd (bool): save output as PDB if True, else save as default GROMACS
         """
         if selectionString:
-            self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(fname)
+            if pdb:
+                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.pdb")
+            else:
+                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.gro")
         else:
-            self._write(f"not name {dummyAtoms}", f"{fname}.gro")
+            if pdb:
+                self._write(f"not name {dummyAtoms}", f"{fname}.pdb")
+            else:
+                self._write(f"not name {dummyAtoms}", f"{fname}.gro")
 
     def crudesave(self,fname="polymer_crude"):
         """
