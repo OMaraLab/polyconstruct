@@ -30,8 +30,8 @@ ARG = Topology.from_ITP('tests/data/arginine.itp')
 print(ARG.atoms)
 ```
 
-    [AE97.H26->[AE97.N5], AE97.N5->[AE97.H25,AE97.C12,AE97.H26], AE97.H25->[AE97.N5], AE97.C12->[AE97.N6,AE97.N5,AE97.N4], AE97.N6->[AE97.H23,AE97.C12,AE97.H24], AE97.H23->[AE97.N6], AE97.H24->[AE97.N6], AE97.N4->[AE97.C12,AE97.C10], AE97.C10->[AE97.C8,AE97.H18,AE97.N4,AE97.H19], AE97.H18->[AE97.C10], AE97.H19->[AE97.C10], AE97.C8->[AE97.H15,AE97.C10,AE97.H16,AE97.C7], AE97.H15->[AE97.C8], AE97.H16->[AE97.C8], AE97.C7->[AE97.H13,AE97.H14,AE97.C8,AE97.C9], AE97.H13->[AE97.C7], AE97.H14->[AE97.C7], AE97.C9->[AE97.C11,AE97.H17,AE97.N3,AE97.C7], AE97.H17->[AE97.C9], AE97.N3->[AE97.H20,AE97.C9,AE97.H21], AE97.H20->[AE97.N3], AE97.H21->[AE97.N3], AE97.C11->[AE97.C9,AE97.O2,AE97.O1], AE97.O2->[AE97.C11], AE97.O1->[AE97.C11,AE97.H22], AE97.H22->[AE97.O1]]
-    
+    [AE97.H26->[AE97.N5], AE97.N5->[AE97.C12,AE97.H26,AE97.H25], AE97.H25->[AE97.N5], AE97.C12->[AE97.N5,AE97.N6,AE97.N4], AE97.N6->[AE97.H23,AE97.C12,AE97.H24], AE97.H23->[AE97.N6], AE97.H24->[AE97.N6], AE97.N4->[AE97.C10,AE97.C12], AE97.C10->[AE97.N4,AE97.C8,AE97.H18,AE97.H19], AE97.H18->[AE97.C10], AE97.H19->[AE97.C10], AE97.C8->[AE97.C10,AE97.C7,AE97.H15,AE97.H16], AE97.H15->[AE97.C8], AE97.H16->[AE97.C8], AE97.C7->[AE97.H14,AE97.C8,AE97.C9,AE97.H13], AE97.H13->[AE97.C7], AE97.H14->[AE97.C7], AE97.C9->[AE97.N3,AE97.C7,AE97.C11,AE97.H17], AE97.H17->[AE97.C9], AE97.N3->[AE97.C9,AE97.H21,AE97.H20], AE97.H20->[AE97.N3], AE97.H21->[AE97.N3], AE97.C11->[AE97.O1,AE97.C9,AE97.O2], AE97.O2->[AE97.C11], AE97.O1->[AE97.C11,AE97.H22], AE97.H22->[AE97.O1]]
+
 
 We can visualize the topology as a 2D structure to make sure that this is the molecule we want to use.
 
@@ -45,7 +45,7 @@ Image(filename='tests/output/arginine.png')
 
 
     
-![png](README_files/README_5_0.png)
+![png](README_worked-examples_files/README_worked-examples_5_0.png)
     
 
 
@@ -62,7 +62,7 @@ Image(filename='tests/output/arginine_unordered.png')
 
 
     
-![png](README_files/README_7_0.png)
+![png](README_worked-examples_files/README_worked-examples_7_0.png)
     
 
 
@@ -80,7 +80,7 @@ Image(filename='tests/output/arginine_ordered.png')
 
 
     
-![png](README_files/README_9_0.png)
+![png](README_worked-examples_files/README_worked-examples_9_0.png)
     
 
 
@@ -101,7 +101,7 @@ Image(filename='tests/output/ARG_monomer.png')
 
 
     
-![png](README_files/README_11_0.png)
+![png](README_worked-examples_files/README_worked-examples_11_0.png)
     
 
 
@@ -140,7 +140,7 @@ Image(filename="tests/output/GLN.png")
 
 
     
-![png](README_files/README_16_0.png)
+![png](README_worked-examples_files/README_worked-examples_16_0.png)
     
 
 
@@ -154,7 +154,7 @@ Image(filename="tests/output/GLN_unordered.png")
 
 
     
-![png](README_files/README_17_0.png)
+![png](README_worked-examples_files/README_worked-examples_17_0.png)
     
 
 
@@ -168,7 +168,7 @@ Image(filename="tests/output/GLN_ordered.png")
 
 
     
-![png](README_files/README_18_0.png)
+![png](README_worked-examples_files/README_worked-examples_18_0.png)
     
 
 
@@ -182,7 +182,7 @@ Image(filename='tests/output/GLN_monomer.png')
 
 
     
-![png](README_files/README_19_0.png)
+![png](README_worked-examples_files/README_worked-examples_19_0.png)
     
 
 
@@ -204,7 +204,7 @@ Image(filename='tests/output/dipeptide.png')
 
 
     
-![png](README_files/README_21_0.png)
+![png](README_worked-examples_files/README_worked-examples_21_0.png)
     
 
 
@@ -224,7 +224,7 @@ Image(filename='tests/output/ethylene_terephthalate.png')
 
 
     
-![png](README_files/README_23_0.png)
+![png](README_worked-examples_files/README_worked-examples_23_0.png)
     
 
 
@@ -247,7 +247,7 @@ Image(filename='tests/output/ethylene_terephthalate_double_bond.png')
 
 
     
-![png](README_files/README_25_0.png)
+![png](README_worked-examples_files/README_worked-examples_25_0.png)
     
 
 
@@ -267,7 +267,7 @@ Image(filename='tests/output/ETH_monomer.png')
 
 
     
-![png](README_files/README_27_0.png)
+![png](README_worked-examples_files/README_worked-examples_27_0.png)
     
 
 
@@ -292,7 +292,7 @@ Image(filename='tests/output/PET_polymer.png')
 
 
     
-![png](README_files/README_29_0.png)
+![png](README_worked-examples_files/README_worked-examples_29_0.png)
     
 
 
@@ -323,7 +323,7 @@ Image(filename='tests/output/glucose.png')
 
 
     
-![png](README_files/README_32_0.png)
+![png](README_worked-examples_files/README_worked-examples_32_0.png)
     
 
 
@@ -362,7 +362,7 @@ Image(filename='tests/output/glucose_14.png')
 
 
     
-![png](README_files/README_36_0.png)
+![png](README_worked-examples_files/README_worked-examples_36_0.png)
     
 
 
@@ -376,7 +376,7 @@ Image(filename='tests/output/glucose_16.png')
 
 
     
-![png](README_files/README_37_0.png)
+![png](README_worked-examples_files/README_worked-examples_37_0.png)
     
 
 
@@ -390,7 +390,7 @@ Image(filename='tests/output/glucose_146.png')
 
 
     
-![png](README_files/README_38_0.png)
+![png](README_worked-examples_files/README_worked-examples_38_0.png)
     
 
 
@@ -422,23 +422,6 @@ for i in range(4):
 
 ```
 
-    Ignoring rdKit error for bond:    75    74     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   117   116     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   180   179     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   189   202     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    33    32     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:    54    53     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   117   116     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   159   158     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   168   181     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:    33    32     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:    75    74     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:    96    95     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   138   137     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   147   160     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   159   158     2     0.1181 8.6600e+06
-    
-
 ## A Chains
 
 Note: the difference in the shape of the images is an artifact of the visualization software (rdkit) attempting to render a 2D schematic representation of the topologies.  In a 3D visualization the shapes should be similar.  However, under simulation the absence of a dihedral constraint across the junction, that it is not possible to infer from the monomer topologies, which otherwise constrains rotation at the junction bond, will likely result in a more .
@@ -452,7 +435,7 @@ Image(filename='tests/output/alpha0.png')
 
 
     
-![png](README_files/README_42_0.png)
+![png](README_worked-examples_files/README_worked-examples_42_0.png)
     
 
 
@@ -466,7 +449,7 @@ Image(filename='tests/output/alpha1.png')
 
 
     
-![png](README_files/README_43_0.png)
+![png](README_worked-examples_files/README_worked-examples_43_0.png)
     
 
 
@@ -480,7 +463,7 @@ Image(filename='tests/output/alpha2.png')
 
 
     
-![png](README_files/README_44_0.png)
+![png](README_worked-examples_files/README_worked-examples_44_0.png)
     
 
 
@@ -494,7 +477,7 @@ Image(filename='tests/output/alpha3.png')
 
 
     
-![png](README_files/README_45_0.png)
+![png](README_worked-examples_files/README_worked-examples_45_0.png)
     
 
 
@@ -526,42 +509,6 @@ for i in range(2):
 
 ```
 
-    Ignoring rdKit error for bond:    31    30     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    50    49     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:    92    91     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   132   131     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   153   152     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   174   173     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   387   386     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   515   514     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   599   598     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   631   629     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   664   663     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   748   747     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   834   833     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   855   854     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   876   875     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   939   938     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   960   959     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:  1002  1001     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:    73    72     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   115   114     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   155   154     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   261   260     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   303   302     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   345   344     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   410   409     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   473   472     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   494   493     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   557   556     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   601   600     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   748   747     2     0.1181 8.6600e+06
-    Ignoring rdKit error for bond:   759   757     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   792   791     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   813   812     2     0.1181 1.9581e+07
-    Ignoring rdKit error for bond:   918   917     2     0.1181 8.6600e+06
-    
-
 ## B Chains
 
 
@@ -573,7 +520,7 @@ Image(filename='tests/output/beta0.png')
 
 
     
-![png](README_files/README_49_0.png)
+![png](README_worked-examples_files/README_worked-examples_49_0.png)
     
 
 
@@ -587,7 +534,7 @@ Image(filename='tests/output/beta1.png')
 
 
     
-![png](README_files/README_50_0.png)
+![png](README_worked-examples_files/README_worked-examples_50_0.png)
     
 
 
@@ -596,15 +543,21 @@ Image(filename='tests/output/beta1.png')
 
 
 ```python
-import sys
-sys.setrecursionlimit = 250_000 # increase recursion limit to allow for deepcopying large glycogen chains
-
 C_chain = create_146_chain(random.randint(8,10))
 C_chain.topology.title = "Glycogen"
 Glycogen = C_chain
 for monomer in B_chains:
     Glycogen.extend(monomer, from_junction_name = "6", to_junction_name = "1")
 
-Visualize.polymer(Glycogen).draw2D('tests/output/glycogen.png',(400,200))
+Visualize.polymer(Glycogen).draw2D('tests/output/glycogen.png',(800,400))
 Image(filename='tests/output/glycogen.png')
 ```
+
+
+
+
+    
+![png](README_worked-examples_files/README_worked-examples_52_0.png)
+    
+
+
