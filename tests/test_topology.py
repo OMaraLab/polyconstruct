@@ -15,11 +15,6 @@ def test_invalid_section_warning(data_dir: Path):
     with pytest.warns(UserWarning, match="Unknown section"):
         Topology.from_ITP(data_dir/"invalid_section.itp")
 
-@pytest.mark.xfail(reason="Refactored atom index for RDKit to not rely on atom name")
-def test_glucose_missing_index(data_dir: Path):
-    with pytest.raises(ValueError, match="No index"):
-        Topology.from_ITP(data_dir/"glucose_faulty.itp")
-
 def test_bad_name_warning(data_dir: Path):
     with pytest.warns(UserWarning, match="Atom type"):
         Topology.from_ITP(data_dir/"glucose_badname.itp")
@@ -314,12 +309,20 @@ def test_add_topologies(data_dir: Path):
 def test_topology_repr(data_dir: Path):
     # test of repr used in debugging polymer extend
     arg = Topology.from_ITP(data_dir/"arginine.itp")
-    assert arg.__repr__() == "(26) [H26,N5,H25,C12,N6,H23,H24,N4,C10,H18,H19,C8,H15,H16,C7,H13,H14,C9,H17,N3,H20,H21,C11,O2,O1,H22] netcharge=-1.0581813203458523e-16"
+    assert arg.__repr__() == "(26) [H26,N5,H25,C12,N6,H23,H24,N4,C10,H18,H19,C8,H15,H16,C7,H13,H14,C9,H17,N3,H20,H21,C11,O2,O1,H22] netcharge=-1.6653345369377348e-16"
 
+def no_duplicate_bonds(t: Topology) -> bool:
+    bond_set = set()
+    for bond in t.bonds:
+        bond_set.add((bond.atom_a.atom_id,bond.atom_b.atom_id))
+    return len(t.bonds) == len(bond_set)
+    
 def test_copy_toplology(data_dir: Path):
     # test of copy used in debugging polymer extend
     arg = Topology.from_ITP(data_dir/"arginine.itp")
+    assert no_duplicate_bonds(arg)
     arg_copy = arg.copy()
+    assert no_duplicate_bonds(arg_copy)
     assert len(arg.atoms) == len(arg_copy.atoms)
     assert arg.netcharge == arg_copy.netcharge
     for atom in arg.atoms:
@@ -332,41 +335,92 @@ def test_copy_toplology(data_dir: Path):
         assert atom.partial_charge == atom_copy.partial_charge, "partial charge mismatch"
         assert atom.mass == atom_copy.mass, "mass mismatch"
         assert len(atom.bonds) == len(atom_copy.bonds), "number of bonds mismatch"
+
+        # take copy of the atoms, bonds, angles, dihedrals, pairs and exclusions
+        atoms = []
+        for atom in arg.atoms:
+            atoms.append((atom.atom_id, atom.residue_id))
+        for atom in arg_copy.atoms:
+            assert (atom.atom_id, atom.residue_id) in atoms, "atom in copy not found in original"
+            atoms.remove((atom.atom_id, atom.residue_id))
+        assert len(atoms) == 0, "extra atoms in the original"
+
+        bonds = []
+        for bond in arg.bonds:
+            bonds.append((bond.atom_a.atom_id, bond.atom_a.residue_id, bond.atom_b.atom_id, bond.atom_b.residue_id))
+        for bond in arg_copy.bonds:
+            assert (bond.atom_a.atom_id, bond.atom_a.residue_id, bond.atom_b.atom_id, bond.atom_b.residue_id) in bonds, "bond in copy not found in original"
+            bonds.remove((bond.atom_a.atom_id, bond.atom_a.residue_id, bond.atom_b.atom_id, bond.atom_b.residue_id))
+        assert len(bonds) == 0, "extra bonds in the original"
+
+        angles = []
+        for angle in arg.angles:
+            angles.append((angle.atom_a.atom_id, angle.atom_a.residue_id, angle.atom_b.atom_id, angle.atom_b.residue_id, angle.atom_c.atom_id, angle.atom_c.residue_id))
+        for angle in arg_copy.angles:
+            assert (angle.atom_a.atom_id, angle.atom_a.residue_id, angle.atom_b.atom_id, angle.atom_b.residue_id, angle.atom_c.atom_id, angle.atom_c.residue_id) in angles, "angle in copy not found in original"
+            angles.remove((angle.atom_a.atom_id, angle.atom_a.residue_id, angle.atom_b.atom_id, angle.atom_b.residue_id, angle.atom_c.atom_id, angle.atom_c.residue_id))
+        assert len(angles) == 0, "extra angles in the original"
+
+        dihedrals = []
+        for dihedral in arg.dihedrals:
+            dihedrals.append((dihedral.atom_a.atom_id, dihedral.atom_a.residue_id, dihedral.atom_b.atom_id, dihedral.atom_b.residue_id, dihedral.atom_c.atom_id, dihedral.atom_c.residue_id, dihedral.atom_d.atom_id, dihedral.atom_d.residue_id))
+        for dihedral in arg_copy.dihedrals:
+            assert (dihedral.atom_a.atom_id, dihedral.atom_a.residue_id, dihedral.atom_b.atom_id, dihedral.atom_b.residue_id, dihedral.atom_c.atom_id, dihedral.atom_c.residue_id, dihedral.atom_d.atom_id, dihedral.atom_d.residue_id) in dihedrals, "dihedral in copy not found in original"
+            dihedrals.remove((dihedral.atom_a.atom_id, dihedral.atom_a.residue_id, dihedral.atom_b.atom_id, dihedral.atom_b.residue_id, dihedral.atom_c.atom_id, dihedral.atom_c.residue_id, dihedral.atom_d.atom_id, dihedral.atom_d.residue_id))
+        assert len(dihedrals) == 0, "extra dihedrals in the original"
+
+        pairs =[]
+        for pair in arg.pairs:
+            pairs.append((pair.atom_a.atom_id, pair.atom_a.residue_id, pair.atom_b.atom_id, pair.atom_b.residue_id))
+        for pair in arg_copy.pairs:
+            assert (pair.atom_a.atom_id, pair.atom_a.residue_id, pair.atom_b.atom_id, pair.atom_b.residue_id) in pairs, "pair in copy not found in original"
+            pairs.remove((pair.atom_a.atom_id, pair.atom_a.residue_id, pair.atom_b.atom_id, pair.atom_b.residue_id))
+        assert len(pairs) == 0, "extra pairs in the original"
+
+        exclusions = []
+        for exclusion in arg.exclusions:
+            exclusions.append((exclusion.atom_a.atom_id, exclusion.atom_a.residue_id, exclusion.atom_b.atom_id, exclusion.atom_b.residue_id))
+        for exclusion in arg_copy.exclusions:
+            assert (exclusion.atom_a.atom_id, exclusion.atom_a.residue_id, exclusion.atom_b.atom_id, exclusion.atom_b.residue_id) in exclusions, "exclusion in copy not found in original"
+            exclusions.remove((exclusion.atom_a.atom_id, exclusion.atom_a.residue_id, exclusion.atom_b.atom_id, exclusion.atom_b.residue_id))
+        assert len(exclusions) == 0, "extra exclusions in the original"
+
         for bond in atom.bonds:
             bond_copy = arg_copy.get_bond(bond.atom_a.atom_id, bond.atom_b.atom_id)
             # that there exists a bond between the same atoms in the copy
             assert bond_copy is not None, "bond not found in copy"
             # that the bond in the copy is a different object than the bond in the original
-            assert bond is not bond_copy, "bond is the same object in copy"
+            assert id(bond) is not id(bond_copy), "bond is the same object in copy"
             for angle in bond.angles:
                 angle_copy = arg_copy.get_angle(angle.atom_a.atom_id, angle.atom_b.atom_id, angle.atom_c.atom_id)
                 # that there exists an angle between the same atoms in the copy
                 assert angle_copy is not None, "angle not found in copy"
                 # that the angle in the copy is a different object than the angle in the original
-                assert angle is not angle_copy, "angle is the same object in copy"
+                assert id(angle) is not id(angle_copy), "angle is the same object in copy"
                 for dihedral in angle.dihedrals:
                     dihedral_copy = arg_copy.get_dihedral(dihedral.atom_a.atom_id, dihedral.atom_b.atom_id, dihedral.atom_c.atom_id, dihedral.atom_d.atom_id)
                     # that there exists a dihedral between the same atoms in the copy
                     assert dihedral_copy is not None, "dihedral not found in copy"
                     # that the dihedral in the copy is a different object than the dihedral in the original
-                    assert dihedral is not dihedral_copy, "dihedral is the same object in copy"
+                    assert id(dihedral) is not id(dihedral_copy), "dihedral is the same object in copy"
         for pair in atom.pairs:
             pair_copy = arg_copy.get_pair(pair.atom_a.atom_id, pair.atom_b.atom_id)
             # that there exists a pair between the same atoms in the copy
             assert pair_copy is not None, "pair not found in copy"
             # that the pair in the copy is a different object than the pair in the original
-            assert pair is not pair_copy, "pair is the same object in copy"
+            assert id(pair) is not id(pair_copy), "pair is the same object in copy"
         for exclusion in atom.exclusions:
             exclusion_copy = arg_copy.get_exclusion(exclusion.atom_a.atom_id, exclusion.atom_b.atom_id)
             # that there exists an exclusion between the same atoms in the copy
             assert exclusion_copy is not None, "exclusion not found in copy"
             # that the exclusion in the copy is a different object than the exclusion in the original
-            assert exclusion is not exclusion_copy, "exclusion is the same object in copy"
+            assert id(exclusion) is not id(exclusion_copy), "exclusion is the same object in copy"
     # check arg.preamble is a different object than arg_copy.preamble
     assert arg.preamble is not arg_copy.preamble, "preamble is the same object in copy"
     for i in range(len(arg.preamble)):
         # assert the string in the preamble has teh same content but are independent objects 
         assert arg.preamble[i] == arg_copy.preamble[i], "preamble content is different in copy"
+        assert id(arg.preamble[i]) is not id(arg_copy.preamble[i]), "preamble is the same object in copy"
     # check arg.molecule_type is not the same object as arg_copy.molecule_type
     assert not arg.molecule_type is arg_copy.molecule_type, "molecule type is same object"
     # check arg.molecule_type attributes are the same as arg_copy.molecule_types

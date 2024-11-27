@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polytop"
+version = "1.0"
+description = "A Python library for representing molecular topologies, and constructing polymer molecules from monomer molecules with defined junctions"
+authors = [
+    { name = "Richard Morris", email = "richard.morris@anu.edu.au" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT License" }
+
+# Dependencies required for your project
+dependencies = [
+    "numpy",
+    "mdanalysis",
+    "click",
+    "py3Dmol",
+    "rdkit",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]

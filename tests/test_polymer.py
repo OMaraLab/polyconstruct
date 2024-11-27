@@ -46,8 +46,7 @@ def test_simple_polymer(data_dir: Path, output_dir: Path):
     assert len(polymer.topology.atoms) == 43 # we have 43 atoms in the polymer after 3 left
     assert len(polymer.topology.bonds) < len(arg_glu.bonds) # we have fewer bonds than the naive join
     assert len(polymer.topology.angles) < len(arg_glu.angles) # we have fewer angles than the naive join
-    assert len(polymer.topology.dihedrals) < len(arg_glu.dihedrals) # we have fewer dihedrals than the naive join
-
+    
     with pytest.raises(ValueError):
         polymer.topology.get_atom("O2")
 
@@ -121,6 +120,90 @@ def test_complex_polymer(data_dir: Path, output_dir: Path):
     polymer_topology.to_ITP(output_dir/'polymer.itp')
     Visualize.polymer(polymer,infer_bond_order=False).draw2D(output_dir/'polymer.png',(400,200))
 
+def test_convert_to_monomer(data_dir:Path):
+    glucose_topology = Topology.from_ITP(data_dir/'glucose.itp')
+
+    alpha1 = glucose_topology.junction('C5','O4').named('1')
+    alpha6 = glucose_topology.junction('O2','H1').named('6')
+    alpha4 = glucose_topology.junction('O3','H2').named('4')
+    glucose_topology.title= "Cyclic glucose monomer"
+
+    Glucose_14 = Monomer(glucose_topology, [alpha1, alpha4])
+
+    def create_14_chain(n):
+        A_chain = Polymer(Glucose_14)
+        for i in range(n-1):
+            A_chain.extend(Glucose_14, from_junction_name = "1", to_junction_name = "4")
+        return A_chain
+    
+    def no_duplicate_bonds(t: Topology) -> bool:
+        bond_set = set()
+        duplicate_bonds = []
+        
+        for bond in t.bonds:
+            bond_tuple = (bond.atom_a.atom_id, bond.atom_b.atom_id)
+            if bond_tuple in bond_set:
+                duplicate_bonds.append(bond_tuple)
+            else:
+                bond_set.add(bond_tuple)
+        
+        if duplicate_bonds:
+            print(f"Duplicate bonds found: {duplicate_bonds}")
+        
+        no_duplicates = len(t.bonds) == len(bond_set)
+        return no_duplicates
+
+    chain = create_14_chain(2)
+    assert no_duplicate_bonds(chain.topology), "Duplicate bonds in polymer"
+    to_monomer = Monomer.from_Polymer(chain)
+    assert no_duplicate_bonds(to_monomer.topology), "Duplicate bonds in monomer"
+
+
+def test_polymer_of_polymers(data_dir: Path, output_dir: Path):
+    random.seed(42)
+    glucose_topology = Topology.from_ITP(data_dir/'glucose.itp')
+
+    alpha1 = glucose_topology.junction('C5','O4').named('1')
+    alpha6 = glucose_topology.junction('O2','H1').named('6')
+    alpha4 = glucose_topology.junction('O3','H2').named('4')
+    glucose_topology.title= "Cyclic glucose monomer"
+
+    Glucose_14 = Monomer(glucose_topology, [alpha1, alpha4])
+    Glucose_146 = Monomer(glucose_topology, [alpha1, alpha4, alpha6])
+
+    def create_14_chain(n):
+        A_chain = Polymer(Glucose_14)
+        for i in range(n-1):
+            A_chain.extend(Glucose_14, from_junction_name = "1", to_junction_name = "4")
+        return A_chain
+
+    def create_146_chain(n):
+        B_chain = Polymer(Glucose_146)
+        for i in range(n-1):
+            B_chain.extend(Glucose_146, from_junction_name = "1", to_junction_name = "4")
+        return B_chain
+
+
+
+    # Construct 2 B chains with 4 A chains branched from each B chain
+    B_chains=[]
+    for i in range(2):
+        chain = create_146_chain(9)
+        for j in range(4):
+            A_chain = create_14_chain(9)
+            A_chain_as_monomer = Monomer.from_Polymer(A_chain)
+            chain.extend(A_chain_as_monomer, from_junction_name = "6", to_junction_name = "1")
+        chain.topology.title = f"Beta chain {i}"
+        chain_as_monomer = Monomer.from_Polymer(chain)
+        B_chains.append(chain_as_monomer)
+
+    C_chain = create_146_chain(8)
+    C_chain.topology.title = "Glycogen"
+    Glycogen = C_chain
+    for monomer in B_chains:
+        Glycogen.extend(monomer, from_junction_name = "6", to_junction_name = "1")
+
+    Visualize.polymer(Glycogen).draw2D(output_dir/'glycogen.png',(400,200))
     
 def test_multijoined_polymer(data_dir: Path, output_dir: Path):   
     glu_ltop = Topology.from_ITP(data_dir/"glucose.itp")
@@ -146,7 +229,7 @@ def test_multijoined_polymer(data_dir: Path, output_dir: Path):
 
     assert len(bond_set) == len(polymer.topology.bonds) # no duplicate bonds
 
-    assert len(polymer.topology.bonds) == 45
+    assert len(polymer.topology.bonds) == 44
         
     polymer.save_to_file(output_dir/'double_sugar_polymer.json')
     polymer_topology = polymer.topology

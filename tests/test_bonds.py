@@ -36,6 +36,14 @@ def test_bond_creation()->None:
     assert bond.bond_type == "1"
     assert bond.bond_length == 0.147
     assert bond.force_constant == 265265.0
+    # test otheratom across from a bond
+    assert bond.other_atom(atom_a) == atom_b
+    assert bond.other_atom(atom_b) == atom_a
+    # test from_atoms
+    assert Bond.from_atoms(atom_a,atom_b) == bond 
+    atoms=[atom_a,atom_b]
+    #test serialization works and doesn't create new Bonds when there is an existing bond
+    assert Bond.from_dict(bond.to_dict(),atoms) == bond 
 
 def test_deduplicate_bonds():
     atom1 = Atom(

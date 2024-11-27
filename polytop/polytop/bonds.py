@@ -85,11 +85,6 @@ class Bond:
             new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order)
         else:
             raise ValueError(f"Atom {from_atom} is not in bond {self}")
-        for angle in self.angles:
-            if angle.contains_atom(from_atom):
-                new_bond.angles.add(angle.clone_angle_changing(from_atom, to_atom))
-            else:
-                new_bond.angles.add(angle) # add a copy of the old angle is none of it's atoms are changing
         return new_bond
 
     def references_atom(self, atom: Atom) -> bool:
@@ -165,14 +160,21 @@ class Bond:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]):
-        return cls(
-            atom_a = next((atom for atom in atoms if atom.atom_id == data['atom_a']), None),
-            atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None),
-            bond_type=data["bond_type"],
-            bond_length=data["bond_length"],
-            force_constant=data["force_constant"],
-            order=data["order"],
-        )
+        atom_a = next((atom for atom in atoms if atom.atom_id == data['atom_a']),None)
+        atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None)
+        # check for existing bond
+        existing_bond = Bond.from_atoms(atom_a,atom_b)
+        if existing_bond:
+            return existing_bond
+        else:
+            return cls(
+                atom_a = atom_a,
+                atom_b = atom_b,
+                bond_type=data["bond_type"],
+                bond_length=data["bond_length"],
+                force_constant=data["force_constant"],
+                order=data["order"],
+            )
         
     # def __eq__(self, __value: object) -> bool:
     #     if isinstance(__value, Bond):

@@ -280,4 +280,4 @@ class Polymer:
         )
         
     def __repr__(self) -> str:
-        return f"Polymer(({len(self.topology.atoms)} atoms), junctions:{self.junctions.count()})"
+        return f"Polymer(({len(self.topology.atoms)} atoms), junctions:{len(self.junctions)})"

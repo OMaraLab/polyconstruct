@@ -13,7 +13,7 @@ def test_proper_dihedral_creation()->None:
         atom_type="C",
         residue_id=1,
         residue_name="ARG",
-        atom_name="C2",
+        atom_name="C1",
         charge_group_num=2,
         partial_charge=0.5,
         mass=12.011,
@@ -23,7 +23,7 @@ def test_proper_dihedral_creation()->None:
         atom_type="C",
         residue_id=1,
         residue_name="ARG",
-        atom_name="C4",
+        atom_name="C2",
         charge_group_num=4,
         partial_charge=0.5,
         mass=12.011,
@@ -33,7 +33,7 @@ def test_proper_dihedral_creation()->None:
         atom_type="C",
         residue_id=1,
         residue_name="ARG",
-        atom_name="C8",
+        atom_name="C3",
         charge_group_num=8,
         partial_charge=0.5,
         mass=12.011,
@@ -43,7 +43,7 @@ def test_proper_dihedral_creation()->None:
         atom_type="C",
         residue_id=1,
         residue_name="ARG",
-        atom_name="C9",
+        atom_name="C4",
         charge_group_num=9,
         partial_charge=0.5,
         mass=12.011,
@@ -61,7 +61,7 @@ def test_proper_dihedral_creation()->None:
         atom_b,
         atom_c,
         atom_d,
-        dihedral_type=Dihedral_type.proper,
+        dihedral_type=1,
         phase_angle=180.0,
         force_constant=25.10400,
         multiplicity=3,
@@ -76,6 +76,17 @@ def test_proper_dihedral_creation()->None:
     assert dihedral.force_constant == 25.10400
     assert dihedral.multiplicity == 3
 
+    # test contains other atom 
+    assert dihedral.contains_atom(atom_a) == True
+    assert dihedral.contains_atom(atom_b) == True
+    assert dihedral.contains_atom(atom_c) == True
+    assert dihedral.contains_atom(atom_d) == True
+
+    # test from atoms
+    assert Dihedral.from_atoms(atom_a,atom_b, atom_c, atom_d) == dihedral
+    atoms=[atom_a,atom_b,atom_c, atom_d]
+    #test serialization works and doesn't create new Dihedrals when there is an existing dihedral
+    assert Dihedral.from_dict(dihedral.to_dict(),atoms) == dihedral 
 
 def test_improper_dihedrals_creation()->None:
     atom_a = Atom(
@@ -120,12 +131,11 @@ def test_improper_dihedrals_creation()->None:
     )
     
     Bond(atom_a, atom_b, bond_type="1", bond_length=1.5, force_constant=1000)
-    Bond(atom_a, atom_d, bond_type="1", bond_length=1.5, force_constant=1000)
     Bond(atom_a, atom_c, bond_type="1", bond_length=1.5, force_constant=1000)
     Bond(atom_a, atom_d, bond_type="1", bond_length=1.5, force_constant=1000)
 
-    Angle(atom_c, atom_a, atom_d, angle_type="1", angle_value=120.0, force_constant=200)
     Angle(atom_b, atom_a, atom_c, angle_type="1", angle_value=120.0, force_constant=200)
+    Angle(atom_b, atom_a, atom_d, angle_type="1", angle_value=120.0, force_constant=200)
 
     dihedral = Dihedral(
         atom_a,
