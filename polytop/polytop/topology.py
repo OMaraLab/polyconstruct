@@ -588,7 +588,10 @@ class Topology:
     def add(self, topology):
 
         new_topology = topology.copy()
-        # new_topology = copy.deepcopy(topology)
+        # set the residue id of the new atoms to the maximum residue id in the current topology plus 1
+        new_residue_id = self.max_residue_id() + 1
+        for atom in new_topology.atoms:
+            atom.residue_id = new_residue_id
         self.atoms.extend(new_topology.atoms)
         self.reorder_atoms()  # reorder atoms so the atom_ids are correct
 

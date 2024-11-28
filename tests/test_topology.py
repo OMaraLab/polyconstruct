@@ -301,7 +301,9 @@ def test_add_topologies(data_dir: Path):
     # test of operator overloading used in debugging polymer extension
     arg = Topology.from_ITP(data_dir/"arginine.itp")
     glu = Topology.from_ITP(data_dir/"glutamine.itp")
+    previous_max_residue = arg.max_residue_id()
     arg_glu = arg+glu
+    assert arg_glu.max_residue_id() == previous_max_residue + 1
     assert len(arg_glu.atoms) == len(arg.atoms) + len(glu.atoms)
     arg += glu
     assert len(arg.atoms) == len(arg_glu.atoms)
