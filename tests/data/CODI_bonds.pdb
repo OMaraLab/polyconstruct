@@ -1,0 +1,59 @@
+HEADER    UNCLASSIFIED                            22-Feb-24
+TITLE     UNITED ATOM STRUCTURE FOR MOLECULE UNL                                
+AUTHOR    AUTOMATED TOPOLOGY BUILDER (ATB) REVISION 2023-06-14 20:38:16
+AUTHOR   2  https://atb.uq.edu.au
+HETATM    1  O1B CODI    0      -4.879   3.567  -0.008  1.00  0.00           O
+HETATM    2  C1C CODI    0      -3.936   2.789   0.287  1.00  0.00           C
+HETATM    3  O1A CODI    0      -3.278   2.748   1.364  1.00  0.00           O
+HETATM    4  C1B CODI    0      -3.516   1.771  -0.816  1.00  0.00           C
+HETATM    5  C1A CODI    0      -2.746   0.598  -0.238  1.00  0.00           C
+HETATM    6  OG1 CODI    0      -2.378  -0.288  -1.342  1.00  0.00           O
+HETATM    7   CB CODI    0      -1.416  -1.221  -1.313  1.00  0.00           C
+HETATM    8  OG2 CODI    0      -1.267  -1.923  -2.298  1.00  0.00           O
+HETATM    9   CA CODI    0      -0.494  -1.414  -0.098  1.00  0.00           C
+HETATM   10   HB CODI    0       0.197  -2.204  -0.405  1.00  0.00           H
+HETATM   11    C CODI    0      -1.125  -1.829   1.248  1.00  0.00           C
+HETATM   12   CP CODI    0      -1.858  -3.187   1.213  1.00  0.00           C
+HETATM   13   CQ CODI    0      -3.239  -3.189   0.542  1.00  0.00           C
+HETATM   14   S1 CODI    0       0.580   0.090   0.045  1.00  0.00           S
+HETATM   15  CIA CODI    0       2.224  -0.537   0.246  1.00  0.00           C
+HETATM   16   S2 CODI    0       2.625  -2.120   0.529  1.00  0.00           S
+HETATM   17  CIB CODI    0       3.226   0.554   0.162  1.00  0.00           C
+HETATM   18 CIC2 CODI    0       3.092   1.591  -0.782  1.00  0.00           C
+HETATM   19 HIC2 CODI    0       2.256   1.588  -1.472  1.00  0.00           H
+HETATM   20 CID2 CODI    0       4.054   2.596  -0.870  1.00  0.00           C
+HETATM   21 HID2 CODI    0       3.946   3.376  -1.618  1.00  0.00           H
+HETATM   22 CIE1 CODI    0       5.152   2.593  -0.008  1.00  0.00           C
+HETATM   23 HIE1 CODI    0       5.898   3.379  -0.074  1.00  0.00           H
+HETATM   24 CID1 CODI    0       5.291   1.573   0.940  1.00  0.00           C
+HETATM   25 HID1 CODI    0       6.140   1.572   1.617  1.00  0.00           H
+HETATM   26 CIC1 CODI    0       4.344   0.556   1.020  1.00  0.00           C
+HETATM   27 HIC1 CODI    0       4.448  -0.233   1.757  1.00  0.00           H
+CONECT    1    2
+CONECT    2    1    3    4
+CONECT    3    2
+CONECT    4    2    5
+CONECT    5    4    6
+CONECT    6    5    7
+CONECT    7    6    8    9
+CONECT    8    7
+CONECT    9    7   10   11   14
+CONECT   10    9
+CONECT   11    9   12
+CONECT   12   11   13
+CONECT   13   12
+CONECT   14    9   15
+CONECT   15   14   16   17
+CONECT   16   15
+CONECT   17   15   18   26
+CONECT   18   17   19   20
+CONECT   19   18
+CONECT   20   18   21   22
+CONECT   21   20
+CONECT   22   20   23   24
+CONECT   23   22
+CONECT   24   22   25   26
+CONECT   25   24
+CONECT   26   17   24   27
+CONECT   27   26
+END
