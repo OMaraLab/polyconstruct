@@ -9,13 +9,13 @@ class Junction:
     from polytop.atoms import Atom
     from polytop.bonds import Bond
 
-    def __init__(self, monomer_atom : Atom, residue_atom: Atom, name: str = None):
+    def __init__(self, remaining_atom : Atom, leaving_atom: Atom, name: str = None):
         if name is None:
-            name = f"{monomer_atom.atom_name}-{residue_atom.atom_name}"
+            name = f"{remaining_atom.atom_name}-{leaving_atom.atom_name}"
         self.name = name
-        self.monomer_atom = monomer_atom
-        self.residue_atom = residue_atom
-        if not residue_atom in monomer_atom.bond_neighbours():
+        self.remaining_atom = remaining_atom
+        self.leaving_atom = leaving_atom
+        if not leaving_atom in remaining_atom.bond_neighbours():
             raise ValueError("Junction location cannot be found")
         
     def named(self, newname : str) -> "Junction":
@@ -25,28 +25,34 @@ class Junction:
     def to_dict(self)->dict:
         return {
             "name": self.name,
-            "monomer_atom": self.monomer_atom.atom_name,
-            "residue_atom": self.residue_atom.atom_name
+            "remaining_atom": self.remaining_atom.atom_name,
+            "leaving_atom": self.leaving_atom.atom_name
         }
+    
+    def second_remaining_atom(self)->Atom:
+        return next((atom for atom in self.remaining_atom.bond_neighbours() if atom != self.leaving_atom), None) 
+
+    def second_leaving_atom(self)->Atom:
+        return next((atom for atom in self.leaving_atom.bond_neighbours() if atom != self.remaining_atom), None)
 
     @classmethod
     def from_dict(cls, data: dict, atoms: List[Atom]):
         name = data["name"]
         from polytop.atoms import Atom
-        monomer_atom_name = data["monomer_atom"]
-        monomer_atom = next(atom for atom in atoms if atom.atom_name == monomer_atom_name)
-        residue_atom_name = data["residue_atom"]
-        residue_atom = next(atom for atom in atoms if atom.atom_name == residue_atom_name)
-        return cls(monomer_atom,residue_atom,name)
+        remaining_atom_name = data["remaining_atom"]
+        remaining_atom = next(atom for atom in atoms if atom.atom_name == remaining_atom_name)
+        leaving_atom_name = data["leaving_atom"]
+        leaving_atom = next(atom for atom in atoms if atom.atom_name == leaving_atom_name)
+        return cls(remaining_atom,leaving_atom,name)
 
     @classmethod
-    def from_topology(cls, topology: "Topology", monomer_atom_name, residue_atom_name, residue_id: int = None, name: str = None):
-        monomer_atom = topology.get_atom(monomer_atom_name, residue_id)
-        residue_atom = topology.get_atom(residue_atom_name, residue_id)
-        return cls(monomer_atom, residue_atom, name)
+    def from_topology(cls, topology: "Topology", remaining_atom_name, leaving_atom_name, residue_id: int = None, name: str = None):
+        remaining_atom = topology.get_atom(remaining_atom_name, residue_id)
+        leaving_atom = topology.get_atom(leaving_atom_name, residue_id)
+        return cls(remaining_atom, leaving_atom, name)
 
     def __repr__(self) -> str:
-        return f"(\"{self.name}\":{self.monomer_atom.atom_name}-{self.residue_atom.atom_name})"
+        return f"(\"{self.name}\":{self.remaining_atom.atom_name}-{self.leaving_atom.atom_name})"
     
 class Junctions(list):
     def add(self, junction: Junction):
@@ -73,55 +79,5 @@ class Junctions(list):
             junctions.add(junction)
         return junctions
 
-    # @classmethod
-    # def from_list(cls, junctions_list: list["Junction"]):
-    #     junctions = cls()
-    #     for junction in junctions_list:
-    #         junctions.add(junction)
-    #     return junctions
-
     def __repr__(self) -> str:
         return f"({len(self)}) {','.join(j.__repr__() for j in self)}"
-    
-    
-# class Junctions:
-#     def __init__(self):
-#         self.junctions = []
-        
-#     def __len__(self):
-#         return len(self.junctions)
-    
-#     def __getitem__(self, index):
-#         return self.junctions[index]
-
-#     def add(self, junction: Junction):
-#         self.junctions.append(junction)
-
-#     def get_junctions(self):
-#         return self.junctions
-    
-#     def remove(self, junction: Junction):
-#         self.junctions.remove(junction)
-    
-#     def named(self, name: str):
-#         return [junction for junction in self.junctions if junction.name == name]
-
-#     def to_dict(self):
-#         return [junction.to_dict() for junction in self.junctions]
-
-#     @classmethod
-#     def from_dict(cls, data: list, atoms: List[Atom]):
-#         junctions = cls()
-#         for junction_dict in data:
-#             junction = Junction.from_dict(junction_dict, atoms)
-#             junctions.add(junction)
-#         return junctions
-    
-#     @classmethod
-#     def from_list(cls, junctions_list: list["Junction"]):
-#         junctions = cls()
-#         for junction in junctions_list:
-#             junctions.add(junction)
-#         return junctions
-#     def __repr__(self) -> str:
-#         return f"Junctions({len(self.junctions)})"

@@ -8,8 +8,7 @@ from polytop.monomer import Monomer
 from polytop.visualize import Visualize
 from polytop.polymer import Polymer
 from polytop.topology import Topology
-
-
+from polytop.bonds import Bond
 
 def test_simple_polymer(data_dir: Path, output_dir: Path):    
     arg = Topology.from_ITP(data_dir/"arginine.itp")
@@ -119,6 +118,26 @@ def test_complex_polymer(data_dir: Path, output_dir: Path):
     polymer_topology = polymer.topology
     polymer_topology.to_ITP(output_dir/'polymer.itp')
     Visualize.polymer(polymer,infer_bond_order=False).draw2D(output_dir/'polymer.png',(400,200))
+
+
+def test_custom_bond_Length(data_dir: Path, output_dir: Path):    
+    arg = Topology.from_ITP(data_dir/"arginine.itp")
+    arg_monomer = Monomer(arg, [arg.junction('N3','H20').named("N"), arg.junction('C11','O1').named("C")])
+
+    glu = Topology.from_ITP(data_dir/"glutamine.itp")
+    glu_monomer = Monomer(glu, [glu.junction('N1','H6').named("N"), glu.junction('C4','O1').named("C")])
+
+    polymer = Polymer(arg_monomer)
+
+    bond_length_func = lambda bond1, bond2: 5
+
+    polymer.extend(glu_monomer, from_junction_name= 'C', to_junction_name= 'N', bond_length_func=bond_length_func)
+    
+    atom1 = polymer.topology.get_atom("C11",1)
+    atom2 = polymer.topology.get_atom("N1",2)
+    assert Bond.from_atoms(atom1, atom2).bond_length == 5
+    
+
 
 def test_convert_to_monomer(data_dir:Path):
     glucose_topology = Topology.from_ITP(data_dir/'glucose.itp')
@@ -235,3 +254,5 @@ def test_multijoined_polymer(data_dir: Path, output_dir: Path):
     polymer_topology = polymer.topology
     polymer_topology.to_ITP(output_dir/'double_sugar_polymer.itp')
     Visualize.polymer(polymer,infer_bond_order=False).draw2D(output_dir/'double_sugar_polymer.png',(400,200))
+
+

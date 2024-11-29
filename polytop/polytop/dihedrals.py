@@ -187,6 +187,16 @@ class Dihedral:
     def contains_atom(self, atom: Atom) -> bool:
         return atom in [self.atom_a, self.atom_b, self.atom_c, self.atom_d]
     
+    def replace_atom(self, from_atom: Atom, to_atom: Atom):
+        if from_atom == self.atom_a:
+            self.atom_a = to_atom
+        elif from_atom == self.atom_b:
+            self.atom_b = to_atom
+        elif from_atom == self.atom_c:
+            self.atom_c = to_atom
+        elif from_atom == self.atom_d:
+            self.atom_d = to_atom
+    
     def clone_dihedral_changing(self, from_atom: Atom, to_atom: Atom):
         """ Clone the dihedral, changing the atom that is being replaced """
         if self.atom_a == from_atom:

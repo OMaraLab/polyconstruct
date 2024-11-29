@@ -102,6 +102,14 @@ class Angle:
             raise ValueError(f"Atom {atom} is not in angle {self}")
         result.remove(atom)
         return result
+    
+    def replace_atom(self, from_atom: Atom, to_atom: Atom):
+        if from_atom == self.atom_a:
+            self.atom_a = to_atom
+        elif from_atom == self.atom_b:
+            self.atom_b = to_atom
+        elif from_atom == self.atom_c:
+            self.atom_c = to_atom
 
     def remove(self):
         while self.dihedrals:
