@@ -1,0 +1,15 @@
+HETATM    1  N1  ELPR    0      -1.757   2.627   0.115  1.00  0.00           N
+HETATM    2  H1  ELPR    0      -1.791   3.280  -0.670  1.00  0.00           H
+HETATM    3  C2  ELPR    0      -2.966   1.803   0.070  1.00  0.00           C
+HETATM    4  C1  ELPR    0      -4.221   2.675   0.069  1.00  0.00           C
+HETATM    5  NX  ELPR    0      -5.436   1.859   0.055  1.00  0.00           N
+HETATM    6  H2  ELPR    0      -1.732   3.143   0.983  1.00  0.00           H
+HETATM    7  CZ  ELPR    0      -0.469   1.795  -0.026  1.00  0.00           C
+CONECT    4    3    5
+CONECT    3    4    1
+CONECT    2    1
+CONECT    6    1
+CONECT    1    3    6    7    2
+CONECT    5    4
+CONECT    7    1
+END

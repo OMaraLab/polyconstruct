@@ -264,80 +264,163 @@ class Polymer:
                             print(f'genconf {i} clash; retrying')
                             tries+=1
    
-    def shuffle(self, u, a1, a1resid, a2, a2resid, mult=3):
-        """
-        based on a tutorial by richard j gowers; http://www.richardjgowers.com/2017/08/14/rotating.html
-        """ 
-        pair = self.polymer.select_atoms(f'(resid {a1resid} and name {a1}) or (resid {a2resid} and name {a2})' ) 
+    # def shuffle(self, u, a1, a1resid, a2, a2resid, mult=3):
+    #     """
+    #     based on a tutorial by richard j gowers; http://www.richardjgowers.com/2017/08/14/rotating.html
+    #     """ 
+    #     pair = self.polymer.select_atoms(f'(resid {a1resid} and name {a1}) or (resid {a2resid} and name {a2})' ) 
+    #     bond = self.polymer.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
+    #     g = nx.Graph()
+    #     g.add_edges_from(self.polymer.atoms.bonds.to_indices()) # get entire residue as a graph
+    #     g.remove_edge(*bond.indices)     # remove the bond from the graph
+    #     # unpack the two unconnected graphs
+    #     a, b = (nx.subgraph(g,c) for c in nx.connected_components(g))
+    #     # call the graph without the CA atom the 'head', this will be rotated
+    #     fore_nodes = a
+    #     fore = self.polymer.atoms[fore_nodes.nodes()]
+    #     v = bond[1].position - bond[0].position
+    #     o = (fore & bond.atoms)[0]
+    #     rot = random.randrange(0,mult)*int(360/mult) # rotate fore by a random multiplicity
+    #     fore.rotateby(rot, v, point=o.position)
+    #     return(u, a, b)
+    
+    
+    # def gencomp(mdict, length, fill, middle, count = True, frac = False): 
+    #     """
+    #     Generate the linear conformation of a polymer from a given length, 
+    #     specified monomer composition and a dictionary of monomers.
+
+    #     Args:
+    #         mdict (dict): dictionary of resnames in the middle with how many
+    #                 of each type
+    #         length (int): desired length of the polymer 
+    #                 (i.e. number of monomers)
+    #         fill (list): list of monomers which can be used to build the 
+    #                 polymer middle (i.e. are not terminal monomers) if there 
+    #                 are not enough in 'middle' to complete the monomer
+    #         middle (list): list of monomers to build the polymer from
+    #         count (bool): generate absolute composition with counts (e.g. 4 of
+    #                 monomer A and 12 of monomer B), default is True
+    #         frac (bool): generate relative composition with fractions (e.g. 25%
+    #                 monomer A and 75% monomer B), default is False
+        
+    #     Returns:
+    #         polyList: a list with the sequence of randomly ordered monomers of
+    #                 the desired length and composition to build the polymer
+    #     """
+    #     #TODO: is this able to generate instructions for branched polymers?
+    #     polycomp = []
+
+    #     if count:
+    #         for m in middle:
+    #             rcount = mdict['count'][m]
+    #             for i in range(rcount):
+    #                 polycomp += [m] # build a list with one of each monomer unit present in the final polymer
+
+    #     elif frac:
+    #         for m in middle:
+    #             rfrac = int(length * mdict['frac'][m]) # fraction of total length that is monomer x
+    #             for i in range(rfrac):
+    #                 polycomp += [m] # build a list with one of each monomer unit present in the final polymer
+        
+    #     # then randomise positions of monomers
+    #     # 'polycomp' is ordered list of X number of monomers -> will add all of monomer A required, before doing all of B, etc.
+
+    #     filler = [x for x in fill]
+    #     while len(polycomp) < length:
+    #         sel = random.sample(filler,1)
+    #         polycomp += sel # if the polymer is shorter than the desired length, continue to fill from the given list 
+    #         filler = [x for x in filler if not x in sel]
+    #         if len(filler) == 0: 
+    #             filler = [x for x in fill]
+
+    #     polyList=random.sample(polycomp,length) # reorder the list of monomers randomly
+
+    #     polyList[0] = polyList[0][:-1] + 'I' # convert first monomer from middle to initiator -> add extra bit onto middle mono
+    #     # TODO: REWORK THIS TO BUILD IN SAME WAY AS POLYTOP!
+
+    #     polyList[-1] = polyList[-1][:-1] + 'T' # convert last monomer from middle to terminator -> add extra bit onto middle mono
+    #     return(polyList) # list of length items with all monomers in order -> used to build w PDBs
+
+    def _split_pol(self,a1,a1_resid,a2,a2_resid):
+        # returns two atomgroups, containing all atoms on either side of a bond
+        pair = self.polymer.select_atoms(f'(resid {a1_resid} and name {a1}) or (resid {a2_resid} and name {a2})' ) 
         bond = self.polymer.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
         g = nx.Graph()
-        g.add_edges_from(self.polymer.atoms.bonds.to_indices()) # get entire residue as a graph
-        g.remove_edge(*bond.indices)     # remove the bond from the graph
-        # unpack the two unconnected graphs
-        a, b = (nx.subgraph(g,c) for c in nx.connected_components(g))
-        # call the graph without the CA atom the 'head', this will be rotated
-        fore_nodes = a
-        fore = self.polymer.atoms[fore_nodes.nodes()]
+        g.add_edges_from(self.polymer.atoms.bonds.to_indices()) 
+        g.remove_edge(*bond.indices)
+        a, _ = (nx.subgraph(g,c) for c in nx.connected_components(g))
+        fore=self.polymer.atoms[a.nodes()]
+        aft=self.polymer.atoms ^ fore
+        return(fore,aft)
+
+    def _rotate(self,a1,a1_resid,a2,a2_resid,mult=3,step=1):
+        fore,_=self._split_pol(a1,a1_resid,a2,a2_resid)
+        pair = self.polymer.select_atoms(f'(resid {a1_resid} and name {a1}) or (resid {a2_resid} and name {a2})' ) 
+        bond = self.polymer.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
         v = bond[1].position - bond[0].position
         o = (fore & bond.atoms)[0]
-        rot = random.randrange(0,mult)*int(360/mult) # rotate fore by a random multiplicity
+        rot = step * int(360/mult) # rotate by $step multiplicity units
         fore.rotateby(rot, v, point=o.position)
-        return(u, a, b)
-    
-    
-    def gencomp(mdict, length, fill, middle, count = True, frac = False): 
-        """
-        Generate the linear conformation of a polymer from a given length, 
-        specified monomer composition and a dictionary of monomers.
 
-        Args:
-            mdict (dict): dictionary of resnames in the middle with how many
-                    of each type
-            length (int): desired length of the polymer 
-                    (i.e. number of monomers)
-            fill (list): list of monomers which can be used to build the 
-                    polymer middle (i.e. are not terminal monomers) if there 
-                    are not enough in 'middle' to complete the monomer
-            middle (list): list of monomers to build the polymer from
-            count (bool): generate absolute composition with counts (e.g. 4 of
-                    monomer A and 12 of monomer B), default is True
-            frac (bool): generate relative composition with fractions (e.g. 25%
-                    monomer A and 75% monomer B), default is False
-        
-        Returns:
-            polyList: a list with the sequence of randomly ordered monomers of
-                    the desired length and composition to build the polymer
-        """
-        #TODO: is this able to generate instructions for branched polymers?
-        polycomp = []
+    def dist(self,a1,a1_resid,a2,a2_resid,dummy='X*'):
+        # get minimum distance between atoms on one side of a bond, and atoms on the other side of the bond
+        fore,aft=self._split_pol(a1,a1_resid,a2,a2_resid)
+        fore_trim=fore.select_atoms(f'not name {dummy}')
+        aft_trim=aft.select_atoms(f'not name {dummy}')
+        return(distances.distance_array(fore_trim.atoms.positions, aft_trim.atoms.positions).min()) # this is the clash detection
 
-        if count:
-            for m in middle:
-                rcount = mdict['count'][m]
-                for i in range(rcount):
-                    polycomp += [m] # build a list with one of each monomer unit present in the final polymer
+    def shuffle(self,a1,a1_resid,a2,a2_resid,dummy='X*',mult=3,rand=False,step=1,cutoff=0.5,clashcheck=False):
+        if rand:
+            step = random.randrange(0,mult)*int(360/mult) # rotate fore by a random multiplicity
+        print(step)
+        self._rotate(a1,a1_resid,a2,a2_resid,mult,step)
+        clash = self.dist(a1,a1_resid,a2,a2_resid,dummy) <= cutoff 
+        if clash and clashcheck:
+            self._rotate(a1,a1_resid,a2,a2_resid,mult,-1 * step)
+        return(clash)
 
-        elif frac:
-            for m in middle:
-                rfrac = int(length * mdict['frac'][m]) # fraction of total length that is monomer x
-                for i in range(rfrac):
-                    polycomp += [m] # build a list with one of each monomer unit present in the final polymer
-        
-        # then randomise positions of monomers
-        # 'polycomp' is ordered list of X number of monomers -> will add all of monomer A required, before doing all of B, etc.
+    def dihedral_solver(self,pairlist,dummy='X*',cutoff=0.5):
+        #pairlist is a list of dicts of atom pairs    [{a1,a1_resid,a2,a2_resid,mult}]  
+        steps=len(pairlist)
+        tries={x:0 for x in range(0,steps)}
+        i=0
+        failed=False
+        done=False
+        with tqdm(total=steps) as pbar:
+            while not done:
+                while i < steps:
+                    dh=pairlist[i]
+                    check=self.dist(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],dummy=dummy)
+                    if check > cutoff:
+                        i+=1
+                        pbar.update(1)
+                    else:
+                        if tries[i] >= dh['mult']: # have you tried all steps around the dihedral?
+                            if i==0: # yes, and this is the first monomer
+                                failed=True
+                                done=True
+                            else: # yes, and this is not the first monomer
+                                tries[i] = 0 # reset tries for this monomer
+                                i-=1 # step backwards
+                                pbar.update(-1)
+                        else: # no, there are more tries
+                            tries[i] += 1
+                            self._rotate(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],mult=dh['mult'])
+                done=True
+        if failed:
+            print('Could not reach a valid conformation at first monomer')
+            print('Perhaps you should try building a pseudolinear geometry with extend(linearize=True), or try randomising all dihedrals and starting again')
+        return(failed)
 
-        filler = [x for x in fill]
-        while len(polycomp) < length:
-            sel = random.sample(filler,1)
-            polycomp += sel # if the polymer is shorter than the desired length, continue to fill from the given list 
-            filler = [x for x in filler if not x in sel]
-            if len(filler) == 0: 
-                filler = [x for x in fill]
+    def shuffler(self,pairlist,dummy='X*',cutoff=0.5):
+        #pairlist is a list of atom pairs    [{a1,a1_resid,a2,a2_resid,mult}]  
+        # TODO need a function to generate pairlists
+        for dh in tqdm(pairlist):
+            print(dh)
+            self.shuffle(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],mult=dh['mult'],dummy=dummy,rand=True,cutoff=cutoff)
 
-        polyList=random.sample(polycomp,length) # reorder the list of monomers randomly
-
-        polyList[0] = polyList[0][:-1] + 'I' # convert first monomer from middle to initiator -> add extra bit onto middle mono
-        # TODO: REWORK THIS TO BUILD IN SAME WAY AS POLYTOP!
-
-        polyList[-1] = polyList[-1][:-1] + 'T' # convert last monomer from middle to terminator -> add extra bit onto middle mono
-        return(polyList) # list of length items with all monomers in order -> used to build w PDBs
+    def gen_pairlist(self,a1='CA',a2='C',first_resid=1,last_resid=999,resid_step=1,same_resid=True,mult=3):
+        pairlist=[{'a1':a1,'a1_resid':i,'a2':a2,'a2_resid':i+int(not same_resid),'mult':mult} for i in range(first_resid,last_resid+1,resid_step)]
+        # crude, doesn't actually check if the pairs exist
+        return(pairlist)
