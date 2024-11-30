@@ -25,6 +25,15 @@ def test_polymer_initialization(data_dir, pdb_file):
     for method in methods:
         assert hasattr(Polymer, method), f"Polymer class should have a method named {method}"
 
+def test_polymer_initialization_arguments():
+    '''
+    Test that the Polymer class raises an error when initialized with a non-Monomer object
+    '''
+    with pytest.raises(ValueError):
+        Polymer(None)
+    with pytest.raises(TypeError):
+        Polymer("not a Monomer")
+
 @pytest.mark.parametrize("pdb_file", test_pdbs)
 def test_polymer_attributes(data_dir, pdb_file):
     first_monomer = mda.Universe(f"{data_dir}/{pdb_file}")

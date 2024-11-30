@@ -19,7 +19,7 @@ class Polymer:
     """
     Docstrings go brr
     """
-    def __init__(self, firstMonomer) -> None:
+    def __init__(self, firstMonomer: Monomer) -> None:
         """
         Initiate the polymer by building its first monomer. Takes a copy of its
         atoms and sets the residue resids to 1.
@@ -27,6 +27,12 @@ class Polymer:
         Args:
             firstMonomer (MDAnalysis Universe): first monomer of the polymer
         """
+        # Guard clauses to ensure that firstMonomer.residues.resids is a sane call
+        if firstMonomer is None:
+            raise ValueError('firstMonomer must be a Monomer object')
+        if not isinstance(firstMonomer, Monomer):
+            raise TypeError('firstMonomer must be a Monomer object')
+        
         firstMonomer.residues.resids = 1
         self.first = firstMonomer
         self.polymer = self.first
