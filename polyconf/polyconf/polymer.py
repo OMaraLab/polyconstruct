@@ -85,6 +85,16 @@ class Polymer:
         nn = max(self.polymer.residues.resids) + 1
         return nn
 
+    def maxresid(self):
+        """
+        Retruns maximum resid in the polymer
+
+        Returns:
+            n (int): resid one greater than the polymer's current highest resid
+        """
+        n = max(self.polymer.residues.resids)
+        return n
+
 
     def extend(self, monomer, n, nn, names, joins, ortho=[1,1,1], 
                linearise=False, beta=0):             # TODO switch from beta to segments, beta sucks to use
@@ -143,7 +153,7 @@ class Polymer:
         Note: this function preserves all dummy atoms. Removing dummy atoms 
             during extension causes substantial problems with indexing. They 
             must only be removed once the polymer is fully built. Save your 
-            polymer to a .gro file with the PDB.save() method, which will strip
+            polymer to a .gro or .pdb file with the PDB.save() method, which will strip
             any dummy atoms.
         """
 
@@ -356,7 +366,7 @@ class Polymer:
                 done=True
         if failed or i<0: # hard coded to detect failure if you stop at i<=0 because detecting this automatically wasn't working
             print('Could not reach a valid conformation')
-            print('Perhaps you should try building a pseudolinear geometry with extend(linearize=True), or try randomising all dihedrals with shuffler() and starting again')
+            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again')
         return(failed)
 
     def shuffler(self,pairlist,dummy='X*',cutoff=0.5,clashcheck=False):

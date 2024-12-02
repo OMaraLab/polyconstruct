@@ -14,12 +14,12 @@ from polyconf.PDB import PDB
 polymer1=Polymer(Monomer('PEI_start.pdb')) # initialise
 imax=127 # we will lay 127 additional monomers
 
-for i in range (1,imax+1):
+for i in range (0,imax):
     if not i==imax: # do this for everything except the first one
         polymer1.extend( # extend with one monomer, aligned along this step's linearization vector
             Monomer('PEI_monomer.pdb'), # extend with this monomer
-            i, # extend existing residue i
-            i+1, # incoming monomer will have resid i+1
+            n=polymer1.maxresid(), # extend existing residue i
+            nn=polymer1.newresid(), # incoming monomer will have resid i+1
             names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
             joins=[('N1','C1')],# new connection between N1_i and C1_i+1 
             ) 
