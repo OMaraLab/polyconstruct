@@ -1,6 +1,8 @@
 #!/usr/bin/env python 
 
-class PDB:
+#TODO we need to change the name of this if the default is not to save as a pdb
+    
+class PDB: 
     """
     docstring go brr
     """
@@ -30,7 +32,7 @@ class PDB:
         atoms = self.polymer.select_atoms(selection)
         atoms.write(name)
 
-    def save(self, dummyAtoms, fname="polymer", selectionString = None, pdb = False):
+    def save(self, dummyAtoms="X*", fname="polymer", selectionString = None, pdb = False):
         """
         Save polymer as a GROMACS .gro file with dummy atoms excluded.
         Optionally, select a subset of the polymer to save.
