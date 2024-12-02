@@ -203,13 +203,13 @@ class Polymer:
             
             u_r2 = u_r1.atoms.rotateby(theta,axis=k,point=R)
 
-            R= u_.select_atoms('resid '+str(nn)+' and name '+names['R']).positions[0]
-            S= u_.select_atoms('resid '+str(nn)+' and name '+names['S']).positions[0]
-            RS=S-R
-            RS_n=np.linalg.norm(RS)
-            ortho_n=np.linalg.norm(ortho)
-            check = degrees(np.arccos(np.dot(RS,ortho)/(RS_n * ortho_n)))
-            if abs(check)>1: print('linear check =' ,check)
+            # R= u_.select_atoms('resid '+str(nn)+' and name '+names['R']).positions[0]
+            # S= u_.select_atoms('resid '+str(nn)+' and name '+names['S']).positions[0]
+            # RS=S-R
+            # RS_n=np.linalg.norm(RS)
+            # ortho_n=np.linalg.norm(ortho)
+            # check = degrees(np.arccos(np.dot(RS,ortho)/(RS_n * ortho_n)))
+            # if abs(check)>1: print('linear check =' ,check)
 
             u_r1=u_r2
 
@@ -350,7 +350,7 @@ class Polymer:
                         #print(i,'tries',tries[i],'multiplicity:',dh['mult'])
                         if tries[i] >= dh['mult']: # have you tried all steps around the dihedral?
                             if i==0: # yes, and this is the first monomer
-                                #failed=True
+                                failed=True
                                 done=True
                             else: # yes, and this is not the first monomer
                                 #print(i,tries[i])

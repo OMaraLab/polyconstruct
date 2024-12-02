@@ -1,0 +1,27 @@
+HEADER    UNCLASSIFIED                            21-Feb-24
+TITLE     UNITED ATOM STRUCTURE FOR MOLECULE UNL                                
+AUTHOR    AUTOMATED TOPOLOGY BUILDER (ATB) REVISION 2023-06-14 20:38:16
+AUTHOR   2  https://atb.uq.edu.au
+HETATM    1  CQ  MMAL    0      -2.187   2.598   0.955  1.00  0.00           C
+HETATM    2  CP  MMAL    0      -3.103   1.625   0.202  1.00  0.00           C
+HETATM    3  C   MMAL    0      -4.343   1.244   1.030  1.00  0.00           C
+HETATM    4  CA  MMAL    0      -5.447   0.380   0.332  1.00  0.00           C
+HETATM    5  CB2 MMAL    0      -6.227  -0.430   1.403  1.00  0.00           C
+HETATM    6  CN  MMAL    0      -6.503   1.297  -0.358  1.00  0.00           C
+HETATM    7  CMA MMAL    0      -6.015   2.361  -1.349  1.00  0.00           C
+HETATM    8  CB  MMAL    0      -4.886  -0.595  -0.730  1.00  0.00           C
+HETATM    9  OG2 MMAL    0      -5.275  -0.589  -1.883  1.00  0.00           O
+HETATM   10  OG1 MMAL    0      -3.934  -1.524  -0.447  1.00  0.00           O
+HETATM   11  C1A MMAL    0      -3.414  -1.897   0.846  1.00  0.00           C
+CONECT    1    2
+CONECT    2    1    3
+CONECT    3    2    4
+CONECT    4    3    5    6    8
+CONECT    5    4
+CONECT    6    4    7
+CONECT    7    6
+CONECT    8    4    9   10
+CONECT    9    8
+CONECT   10    8   11
+CONECT   11   10
+END
