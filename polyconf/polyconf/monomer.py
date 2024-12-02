@@ -19,6 +19,10 @@ class Monomer:
         Args:
             monomerName (str): polymer constructed with the Polymer
                     class, supplied from a Polymer.polymer attribute
+
+        Remarks:
+            Polymer.dihedral_solver(), Polymer.dist(), Polymer.shuffle() and Polymer.shuffler() rely on connectivity information.
+            If your input file does not contain connectivity information (e.g. CONECT records in a pdb), these may not work as intended 
         """
         self.monomer = mda.Universe(monomerName)
         self.residues = self.monomer.residues
