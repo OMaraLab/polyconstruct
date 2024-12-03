@@ -1,0 +1,51 @@
+HEADER    UNCLASSIFIED                            21-Feb-24
+TITLE     UNITED ATOM STRUCTURE FOR MOLECULE UNL                                
+AUTHOR    AUTOMATED TOPOLOGY BUILDER (ATB) REVISION 2023-06-14 20:38:16
+AUTHOR   2  https://atb.uq.edu.au
+HETATM    1   CQ P4DM    0      -4.367  -3.605   0.943  1.00  0.00           C
+HETATM    2   CP P4DM    0      -5.043  -2.236   1.083  1.00  0.00           C
+HETATM    3    C P4DM    0      -5.259  -1.548  -0.275  1.00  0.00           C
+HETATM    4   CA P4DM    0      -5.978  -0.169  -0.221  1.00  0.00           C
+HETATM    5  CB2 P4DM    0      -7.457  -0.387   0.168  1.00  0.00           C
+HETATM    6   CN P4DM    0      -5.910   0.576  -1.597  1.00  0.00           C
+HETATM    7  CMA P4DM    0      -6.492  -0.187  -2.795  1.00  0.00           C
+HETATM    8   CB P4DM    0      -5.373   0.794   0.828  1.00  0.00           C
+HETATM    9  OG2 P4DM    0      -6.064   1.372   1.645  1.00  0.00           O
+HETATM   10  OG1 P4DM    0      -4.052   1.128   0.848  1.00  0.00           O
+HETATM   11  C1A P4DM    0      -2.953   0.505   0.160  1.00  0.00           C
+HETATM   12  C1B P4DM    0      -1.722   1.322   0.532  1.00  0.00           C
+HETATM   13  O1C P4DM    0      -0.615   0.681  -0.076  1.00  0.00           O
+HETATM   14  C2A P4DM    0       0.635   1.249   0.284  1.00  0.00           C
+HETATM   15  C2B P4DM    0       1.719   0.378  -0.334  1.00  0.00           C
+HETATM   16  O2C P4DM    0       2.975   0.901   0.063  1.00  0.00           O
+HETATM   17  C3A P4DM    0       4.062   0.120  -0.407  1.00  0.00           C
+HETATM   18  C3B P4DM    0       5.349   0.768   0.086  1.00  0.00           C
+HETATM   19  O3C P4DM    0       6.426  -0.043  -0.353  1.00  0.00           O
+HETATM   20  C4A P4DM    0       7.692   0.440   0.068  1.00  0.00           C
+HETATM   21  C4B P4DM    0       8.745  -0.544  -0.422  1.00  0.00           C
+HETATM   22  O4C P4DM    0      10.011  -0.060  -0.009  1.00  0.00           O
+HETATM   23   CZ P4DM    0      11.073  -0.913  -0.405  1.00  0.00           C
+CONECT    1    2
+CONECT    2    1    3
+CONECT    3    2    4
+CONECT    4    3    5    6    8
+CONECT    5    4
+CONECT    6    4    7
+CONECT    7    6
+CONECT    8    4    9   10
+CONECT    9    8
+CONECT   10    8   11
+CONECT   11   10   12
+CONECT   12   11   13
+CONECT   13   12   14
+CONECT   14   13   15
+CONECT   15   14   16
+CONECT   16   15   17
+CONECT   17   16   18
+CONECT   18   17   19
+CONECT   19   18   20
+CONECT   20   19   21
+CONECT   21   20   22
+CONECT   22   21   23
+CONECT   23   22
+END

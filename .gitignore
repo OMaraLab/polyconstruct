@@ -134,3 +134,7 @@ tests/output/
 
 # virtual environments
 .venv 
+
+# polyconf example outputs
+polymer_0*
+PMMA*
