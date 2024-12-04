@@ -151,7 +151,7 @@ class Atom:
         )
 
     def __str__(self):
-        return f"{self.atom_id:5} {self.atom_type:5} {self.residue_id:5} {self.residue_name:5} {self.atom_name:5} {self.charge_group_num:5} {self.partial_charge:9.3f} {self.mass:9.4f}"
+        return f"{self.atom_id:5} {self.atom_type:5} {self.residue_id:5} {self.residue_name:5} {self.atom_name:5} {self.charge_group_num:5} {self.partial_charge:9.6f} {self.mass:9.4f}"
 
     def __repr__(self) -> str:
         return f"{self.residue_name}.{self.atom_name}->[{','.join([f'{bond.other_atom(self).residue_name}.{bond.other_atom(self).atom_name}' for bond in self.bonds])}]"
