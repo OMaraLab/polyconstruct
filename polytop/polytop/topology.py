@@ -396,9 +396,12 @@ class Topology:
         the charge distribution), use the function proportional_charge_change instead.
         """
         old_netcharge = self.netcharge
-        charge_difference_per_atom = (new_netcharge - old_netcharge) / len(self.atoms)
+        num_atoms_to_distribute = len(list(atom for atom in self.atoms if atom.residue_id == self.max_residue_id()))
+        num_atoms_to_distribute += len(list(atom for atom in self.atoms if atom.residue_id == (self.max_residue_id()-1)))
+        charge_difference_per_atom = (new_netcharge - old_netcharge) / num_atoms_to_distribute
         for atom in self.atoms:
-            atom.partial_charge += charge_difference_per_atom
+            if atom.residue_id == self.max_residue_id() or atom.residue_id == (self.max_residue_id()-1):
+                atom.partial_charge += charge_difference_per_atom
 
     def proportional_charge_change(self, new_netcharge):
         """
