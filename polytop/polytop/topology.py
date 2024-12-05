@@ -170,6 +170,25 @@ class Topology:
             new_line = line
         return new_line
     
+    def _rearrange_atoms(self):
+        """
+        Rearrange atoms by residue id and then by rank before writing to ITP
+        """
+        atoms = self.atoms.copy()
+        
+        atoms.sort(key=lambda atom: atom.residue_id)
+        arranged_atoms = []
+        for i in range(self.max_residue_id()+1):
+            atom_subset = list(atom for atom in atoms if atom.residue_id==i)
+            atom_subset.sort(key=lambda a: a.rank)
+            arranged_atoms.extend(atom_subset)
+        atoms = arranged_atoms
+
+        for j, atom in enumerate(atoms):
+            atom.atom_id = j+1
+            atom.charge_group_num = j+1
+        return atoms
+    
     @classmethod
     def from_ITP(cls, file_path: str, preprocess=None)->'Topology':
         """
@@ -235,7 +254,7 @@ class Topology:
             # Note: we don't explicitly check that moleculetype.nrexcl = number of exclusions associated with atoms
         return cls(atoms, preamble, molecule_type)
 
-    def to_ITP(self, file_path: str):
+    def to_ITP(self, file_path: str, dummies = []):
         """
         Write the topology to a GROMACS ITP file.
         Args:
@@ -257,6 +276,7 @@ class Topology:
             f.write(str(self.molecule_type) + "\n")
 
             f.write("[ atoms ]\n")
+            self.atoms = self._rearrange_atoms()
             for atom in self.atoms:
                 f.write(str(atom) + "\n")
 
