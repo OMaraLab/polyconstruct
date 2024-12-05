@@ -32,7 +32,7 @@ class Polymer:
             firstMonomer (MDAnalysis Universe): first monomer of the polymer
         """
 
-         # Guard clauses to ensure that firstMonomer.residues.resids is a sane call
+        # Guard clauses to ensure that firstMonomer.residues.resids is a sane call
         if firstMonomer is None:
             raise ValueError('firstMonomer must be a Monomer object')
         if not isinstance(firstMonomer, Monomer):
@@ -55,6 +55,18 @@ class Polymer:
                     [MDAnalysis Atom selection language](https://userguide.mdanalysis.org/stable/selections.html)
         """
         return self.polymer.select_atoms(selection)
+    
+    def copy(self):
+        """
+        Use MDAnalysis Merge to create a new MDAnalysis Universe that is an 
+        exact copy of this one containing the polymer. Deepcopy is not used as
+        it can be problematic with open file sockets.
+
+        Returns:
+            A new MDAnalysis Universe that is an exact copy of the polymer
+        """
+        new_u = mda.Merge(self.polymer.atoms)
+        return new_u
     
     def renamer(self, resid, namein, nameout='X'):
         """
@@ -97,7 +109,7 @@ class Polymer:
 
 
     def extend(self, monomer, n, nn, names, joins, ortho=[1,1,1], 
-               linearise=False, beta=0):             # TODO switch from beta to segments, beta sucks to use
+               linearise=False, beta=0):
         """
         Extend the polymer by adding a monomer
 

@@ -32,7 +32,7 @@ class PDB:
         atoms = self.polymer.select_atoms(selection)
         atoms.write(name)
 
-    def save(self, dummyAtoms="X*", fname="polymer", selectionString = None, pdb = False):
+    def save(self, dummyAtoms="X*", fname="polymer", selectionString = None, gmx = False):
         """
         Save polymer as a GROMACS .gro file with dummy atoms excluded.
         Optionally, select a subset of the polymer to save.
@@ -45,28 +45,28 @@ class PDB:
             selectionString (str): MDAnalysis atom selection string, for more 
                     information on supported atom selection formats see 
                     [MDAnalysis Atom selection language](https://userguide.mdanalysis.org/stable/selections.html)
-            pbd (bool): save output as PDB if True, else save as default GROMACS
+            gmx (bool): save output as GROMACS if True, else save as default PDB
         """
         if selectionString:
-            if pdb:
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.pdb")
-            else:
+            if gmx:
                 self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.gro")
-        else:
-            if pdb:
-                self._write(f"not name {dummyAtoms}", f"{fname}.pdb")
             else:
+                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.pdb")
+        else:
+            if gmx:
                 self._write(f"not name {dummyAtoms}", f"{fname}.gro")
+            else:
+                self._write(f"not name {dummyAtoms}", f"{fname}.pdb")
 
     def crudesave(self,fname="polymer_crude"):
         """
-        Save polymer as a GROMACS .gro file with dummy atoms included.
+        Save polymer as a PDB file with dummy atoms included.
         Useful for debugging the geometry transforms.
 
         Args:
             fname (str): name of the output file, default is 'polymer_crude'
         """
-        self.atoms._write(f"{fname}.gro")
+        self.atoms._write(f"{fname}.pdb")
 
     def select_atoms(self, selection):
         """
