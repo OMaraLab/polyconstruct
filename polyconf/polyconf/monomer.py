@@ -17,8 +17,7 @@ class Monomer:
         save a copy of the Monomer's residues and atoms for quicker access.
 
         Args:
-            monomerName (str): polymer constructed with the Polymer
-                    class, supplied from a Polymer.polymer attribute
+            monomerName (str): filepath to the monomer .pdb file
 
         Remarks:
             Polymer.dihedral_solver(), Polymer.dist(), Polymer.shuffle() and Polymer.shuffler() rely on connectivity information.

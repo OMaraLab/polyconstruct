@@ -56,6 +56,18 @@ class Polymer:
         """
         return self.polymer.select_atoms(selection)
     
+    def copy(self):
+        """
+        Use MDAnalysis Merge to create a new MDAnalysis Universe that is an 
+        exact copy of this one containing the polymer. Deepcopy is not used as
+        it can be problematic with open file sockets.
+
+        Returns:
+            A new MDAnalysis Universe that is an exact copy of the polymer
+        """
+        new_u = mda.Merge(self.polymer.atoms)
+        return new_u
+    
     def renamer(self, resid, namein, nameout='X'):
         """
         Change selected atom names to a new name like X1, X2, X3. Intended to
