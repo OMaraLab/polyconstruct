@@ -49,6 +49,7 @@ class Atom:
         formerly = None
     ) -> None:
         self.atom_id = atom_id
+        self.rank = atom_id
         self.atom_type = atom_type
         self.residue_id = residue_id
         self.residue_name = residue_name
