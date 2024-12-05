@@ -25,5 +25,7 @@ from .polymer import Polymer
 from .topology import Topology
 from .visualize import Visualize
 from .junction import Junction
+from .ITP import ITP
+from .molecule import Molecule
 from .polymerization_type import PolymerizationType
 from .gromacs import Gromacs
