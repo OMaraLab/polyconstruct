@@ -16,3 +16,17 @@ dependencies:
   - pytest-cov
   - pytest-xdist
   - codecov
+
+  - IPython
+  - jupyter
+  - nbconvert
+  - nbformat
+  - pytest
+  - rdkit
+  - py3Dmol
+  - numpy
+  - mdanalysis
+  - click
+  - py3Dmol
+  - networkx
+  - tqdm
