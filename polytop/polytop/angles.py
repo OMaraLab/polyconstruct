@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple, Union
 
 import warnings
 
-from polytop.bonds import Bond
+from .bonds import Bond
 
 
 class Atom:

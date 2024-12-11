@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.abspath('../../polybuild'))
 sys.path.insert(0, os.path.abspath('../../polytop.polytop'))
 sys.path.insert(0, os.path.abspath('../../polyconf.polyconf'))
 sys.path.insert(0, os.path.abspath('../../polybuild.polybuild'))
+sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 import polybuild
 import polyconf
 import polytop

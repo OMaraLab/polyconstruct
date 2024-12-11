@@ -6,8 +6,8 @@ class Junction:
     name: str - the name of the PolymerJunction type
     bonds: list - a list of bonds of that junction type
     """
-    from polytop.atoms import Atom
-    from polytop.bonds import Bond
+    from .atoms import Atom
+    from .bonds import Bond
 
     def __init__(self, monomer_atom : Atom, residue_atom: Atom, name: str = None):
         if name is None:
@@ -64,7 +64,7 @@ class Junctions(list):
     def to_dict(self):
         return [junction.to_dict() for junction in self]
 
-    from polytop.atoms import Atom
+    from .atoms import Atom
     @classmethod
     def from_dict(cls, data: list, atoms: List[Atom]):
         junctions = cls()

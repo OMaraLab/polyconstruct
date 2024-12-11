@@ -1,4 +1,4 @@
-polyconf.monomer
+﻿polyconf.monomer
 ================
 
 .. automodule:: polyconf.monomer

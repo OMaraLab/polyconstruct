@@ -4,8 +4,8 @@ import json
 import random
 import re
 from typing import Dict, List, Optional, Tuple, Union
-from polytop.bonds import Bond
-from polytop.junction import Junction, Junctions
+from .bonds import Bond
+from .junction import Junction, Junctions
 from .topology import Topology
 import datetime
 import copy
