@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polyconstruct"
+version = "1.0"
+description = "Python libraries for constructing polymer topologies and coordinates from monomers for molecular dynamics simulation with GROMACS"
+authors = [{name = "Luna Morrow", email = "uqlmorro@uq.edu.au"}, ]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT License" }
+
+# Dependencies required for your project
+dependencies = [
+    "numpy",
+    "mdanalysis",
+    "click",
+    "py3Dmol",
+    "rdkit",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
