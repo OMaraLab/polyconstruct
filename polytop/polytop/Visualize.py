@@ -6,11 +6,11 @@ from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem, Draw
 from rdkit.Chem.Draw import rdMolDraw2D
 from PIL import Image, ImageDraw
-from polytop.junction import Junctions
-from polytop.topology import Topology
+from .Junction import Junctions
+from .Topology import Topology
 from functools import singledispatchmethod
-from polytop.polymer import Polymer
-from polytop.monomer import Monomer
+from .Polymer import Polymer
+from .Monomer import Monomer
 
 class Visualize:
     def __init__(

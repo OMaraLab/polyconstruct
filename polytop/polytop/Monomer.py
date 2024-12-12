@@ -2,10 +2,10 @@ import copy
 import json
 from typing import Tuple, Union, List
 
-from polytop.junction import Junction, Junctions
+from .Junction import Junction, Junctions
 
-from .bonds import Bond
-from .topology import Topology
+from .Bonds import Bond
+from .Topology import Topology
     
 class Monomer:
     def __init__(self, topology: Topology, junctions: Union[Junctions, List[Junction]]):
@@ -18,7 +18,7 @@ class Monomer:
                 junctions_obj.add(junction)
             self.junctions = junctions_obj
 
-    from polytop.polymer import Polymer
+    from .Polymer import Polymer
 
     @classmethod
     def from_Polymer(cls, polymer: Polymer):

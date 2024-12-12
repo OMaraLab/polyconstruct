@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
-from polytop.monomer import Monomer
-from polytop.topology import Topology
-from polytop.junction import Junction, Junctions
+from polytop.Monomer import Monomer
+from polytop.Topology import Topology
+from polytop.Junction import Junction, Junctions
 
 
 def test_monomer_ARG(data_dir: Path ):

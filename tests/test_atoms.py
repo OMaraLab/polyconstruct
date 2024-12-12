@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-from polytop.atoms import Atom
-from polytop.topology import Topology
+from polytop.Atoms import Atom
+from polytop.Topology import Topology
 
 
 def test_atom_creation():

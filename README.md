@@ -20,9 +20,10 @@ conda activate polyconstruct-env
 
 pip install -r requirements.txt
 
-# polytop requires python 3.10, and setup.py will not run without it
+# polytop requires python 3.10
+# you may need to install python=3.10 before you are able to install requirements (as per above), depending on your setup
 conda uninstall python
-conda install "python=3.10" 
+conda install "python=3.10"
 
 ```
 

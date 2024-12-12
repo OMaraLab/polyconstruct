@@ -1,5 +1,4 @@
 [build-system]
-# XXX: If your project needs other packages to build properly, add them to this list.
 requires = ["setuptools >= 64"]
 build-backend = "setuptools.build_meta"
 
@@ -7,8 +6,15 @@ build-backend = "setuptools.build_meta"
 name = "polybuild"
 version = "1.0"
 authors = [{name = "Rangika Ruwan Kumara Wijeweera Munaweera", email = "r.munaweera@uq.edu.au"}, ]
-dynamic = ["dependencies"]
-requires-python = "==3.10"
+license = { text = "MIT License" }
+
+dependencies = [
+    "numpy"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
 
 [project.scripts]
 ITP2RTP = "polybuild.ITP2RTP:main"
