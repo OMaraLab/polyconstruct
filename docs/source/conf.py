@@ -19,9 +19,9 @@ sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath('../../polytop'))
 sys.path.insert(0, os.path.abspath('../../polyconf'))
 sys.path.insert(0, os.path.abspath('../../polybuild'))
-sys.path.insert(0, os.path.abspath('../../polytop.polytop'))
-sys.path.insert(0, os.path.abspath('../../polyconf.polyconf'))
-sys.path.insert(0, os.path.abspath('../../polybuild.polybuild'))
+# sys.path.insert(0, os.path.abspath('../../polytop.polytop'))
+# sys.path.insert(0, os.path.abspath('../../polyconf.polyconf'))
+# sys.path.insert(0, os.path.abspath('../../polybuild.polybuild'))
 sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 import polybuild
 import polyconf
@@ -38,6 +38,7 @@ copyright = (
     "MDAnalysis Cookiecutter version 0.1"
 )
 author = "Luna Morrow"
+add_module_names = False
 
 # The short X.Y version
 version = ""
@@ -69,6 +70,12 @@ autosummary_generate = True
 # This skips generating an autodoc of the test module
 # when using the autosummary directive that is included
 # by default in api.rst
+autodoc_default_options = {
+    'special-members': True,
+    'show-inheritance': True,
+    'undoc-members': True,
+    'exclude-members': '__weakref__'
+}
 autodoc_mock_imports = [
     'polyconstruct.tests'
 ]

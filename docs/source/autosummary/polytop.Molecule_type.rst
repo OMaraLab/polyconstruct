@@ -1,7 +1,7 @@
-polytop.molecule
-================
+polytop.Molecule\_type
+======================
 
-.. automodule:: polytop.molecule
+.. automodule:: polytop.Molecule_type
 
    
    
@@ -17,7 +17,7 @@ polytop.molecule
 
    .. autosummary::
    
-      Molecule
+      MoleculeType
    
    
 

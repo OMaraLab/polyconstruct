@@ -2,9 +2,9 @@ import re
 from typing import Any, List, Optional
 import warnings
 
-from .exclusions import Exclusion
-from .bonds import Bond
-from .pairs import Pair
+from .Exclusions import Exclusion
+from .Bonds import Bond
+from .Pairs import Pair
 
 
 class Atom:

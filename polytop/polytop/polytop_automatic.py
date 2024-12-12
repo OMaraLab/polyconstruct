@@ -4,13 +4,13 @@ import json
 import random
 import re
 from typing import Dict, List, Optional, Tuple, Union
-from .bonds import Bond
-from .junction import Junction, Junctions
-from .topology import Topology
-from .polymer import Polymer
-from .atoms import Atom
-from .monomer import Monomer
-from .visualize import Visualize
+from .Bonds import Bond
+from .Junction import Junction, Junctions
+from .Topology import Topology
+from .Polymer import Polymer
+from .Atoms import Atom
+from .Monomer import Monomer
+from .Visualize import Visualize
 import datetime
 import copy
 

@@ -1,7 +1,7 @@
-polytop.polymerization\_type
+polytop.Polymerization\_type
 ============================
 
-.. automodule:: polytop.polymerization_type
+.. automodule:: polytop.Polymerization_type
 
    
    

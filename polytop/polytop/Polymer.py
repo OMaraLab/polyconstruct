@@ -4,9 +4,9 @@ import json
 import random
 import re
 from typing import Dict, List, Optional, Tuple, Union
-from .bonds import Bond
-from .junction import Junction, Junctions
-from .topology import Topology
+from .Bonds import Bond
+from .Junction import Junction, Junctions
+from .Topology import Topology
 import datetime
 import copy
 

@@ -1,7 +1,7 @@
-polytop.gromacs
-===============
+polytop.Exclusions
+==================
 
-.. automodule:: polytop.gromacs
+.. automodule:: polytop.Exclusions
 
    
    
@@ -17,7 +17,8 @@ polytop.gromacs
 
    .. autosummary::
    
-      Gromacs
+      Atom
+      Exclusion
    
    
 

@@ -3,12 +3,8 @@ from typing import Dict, List, Tuple, Union
 
 import warnings
 
-from .bonds import Bond
-
-
-class Atom:
-    ...
-
+from .Bonds import Bond
+from .Atoms import Atom
 
 class Angle:
     """

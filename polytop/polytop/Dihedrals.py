@@ -4,7 +4,7 @@ import warnings
 from enum import IntEnum
 from typing import Dict, List, Union
 
-from .angles import Angle
+from .Angles import Angle
 
 
 class Atom:

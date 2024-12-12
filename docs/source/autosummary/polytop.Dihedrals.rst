@@ -1,7 +1,7 @@
-polytop.bonds
-=============
+polytop.Dihedrals
+=================
 
-.. automodule:: polytop.bonds
+.. automodule:: polytop.Dihedrals
 
    
    
@@ -18,7 +18,8 @@ polytop.bonds
    .. autosummary::
    
       Atom
-      Bond
+      Dihedral
+      Dihedral_type
    
    
 

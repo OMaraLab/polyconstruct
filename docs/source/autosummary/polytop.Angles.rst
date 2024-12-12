@@ -1,7 +1,7 @@
-polytop.atoms
-=============
+polytop.Angles
+==============
 
-.. automodule:: polytop.atoms
+.. automodule:: polytop.Angles
 
    
    
@@ -17,7 +17,7 @@ polytop.atoms
 
    .. autosummary::
    
-      Atom
+      Angle
    
    
 

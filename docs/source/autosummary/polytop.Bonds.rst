@@ -1,7 +1,7 @@
-polytop.monomer
-===============
+polytop.Bonds
+=============
 
-.. automodule:: polytop.monomer
+.. automodule:: polytop.Bonds
 
    
    
@@ -17,7 +17,8 @@ polytop.monomer
 
    .. autosummary::
    
-      Monomer
+      Atom
+      Bond
    
    
 

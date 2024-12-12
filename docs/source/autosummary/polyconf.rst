@@ -27,8 +27,8 @@
    :toctree:
    :recursive:
 
+   polyconf.Monomer
    polyconf.PDB
-   polyconf.monomer
+   polyconf.Polymer
    polyconf.polyconf_automatic
-   polyconf.polymer
 

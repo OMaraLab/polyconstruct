@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from .monomer import Monomer
+from .Monomer import Monomer
 from .PDB import PDB
  
 import numpy as np

@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 from polytop import *
-from polytop.atoms import Atom
-from polytop.bonds import Bond
-from polytop.topology import Topology
-from polytop.visualize import Visualize
+from polytop.Atoms import Atom
+from polytop.Bonds import Bond
+from polytop.Topology import Topology
+from polytop.Visualize import Visualize
 import pytest
 
 def test_invalid_file(data_dir: Path):

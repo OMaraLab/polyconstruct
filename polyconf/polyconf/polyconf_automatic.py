@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
-from polyconf.monomer import Monomer
-from polyconf.polymer import Polymer
-from polyconf.PDB import PDB
+from .Monomer import Monomer
+from .Polymer import Polymer
+from .PDB import PDB
 from polytop.polytop_automatic import Automatic
 
 import numpy as np

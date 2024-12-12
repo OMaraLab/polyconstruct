@@ -27,21 +27,21 @@
    :toctree:
    :recursive:
 
+   polytop.Angles
+   polytop.Atoms
+   polytop.Bonds
+   polytop.Dihedrals
+   polytop.Exclusions
+   polytop.Gromacs
    polytop.ITP
-   polytop.angles
-   polytop.atoms
-   polytop.bonds
-   polytop.dihedrals
-   polytop.exclusions
-   polytop.gromacs
-   polytop.junction
-   polytop.molecule
-   polytop.molecule_type
-   polytop.monomer
-   polytop.pairs
-   polytop.polymer
-   polytop.polymerization_type
+   polytop.Junction
+   polytop.Molecule
+   polytop.Molecule_type
+   polytop.Monomer
+   polytop.Pairs
+   polytop.Polymer
+   polytop.Polymerization_type
+   polytop.Topology
+   polytop.Visualize
    polytop.polytop_automatic
-   polytop.topology
-   polytop.visualize
 

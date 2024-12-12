@@ -1,7 +1,7 @@
-polytop.topology
-================
+polytop.Pairs
+=============
 
-.. automodule:: polytop.topology
+.. automodule:: polytop.Pairs
 
    
    
@@ -17,7 +17,8 @@ polytop.topology
 
    .. autosummary::
    
-      Topology
+      Atom
+      Pair
    
    
 

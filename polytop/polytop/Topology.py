@@ -5,14 +5,14 @@ import warnings
 from typing import Dict, List, Optional, Tuple
 # import numpy as np
 # import numpy.linalg as la
-from .angles import Angle
-from .atoms import Atom
-from .bonds import Bond
-from .junction import Junction, Junctions
-from .dihedrals import Dihedral, Dihedral_type
-from .exclusions import Exclusion
-from .molecule_type import MoleculeType
-from .pairs import Pair
+from .Angles import Angle
+from .Atoms import Atom
+from .Bonds import Bond
+from .Junction import Junction, Junctions
+from .Dihedrals import Dihedral, Dihedral_type
+from .Exclusions import Exclusion
+from .Molecule_type import MoleculeType
+from .Pairs import Pair
 
 
 class Topology:
