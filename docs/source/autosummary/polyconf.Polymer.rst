@@ -1,4 +1,4 @@
-polyconf.Polymer
+﻿polyconf.Polymer
 ================
 
 .. currentmodule:: polyconf
@@ -19,6 +19,7 @@ polyconf.Polymer
       ~Polymer.dist
       ~Polymer.extend
       ~Polymer.gen_pairlist
+      ~Polymer.gencomp
       ~Polymer.maxresid
       ~Polymer.newresid
       ~Polymer.renamer

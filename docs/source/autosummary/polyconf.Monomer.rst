@@ -1,4 +1,4 @@
-polyconf.Monomer
+﻿polyconf.Monomer
 ================
 
 .. currentmodule:: polyconf
