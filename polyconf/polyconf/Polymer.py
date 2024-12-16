@@ -69,7 +69,8 @@ class Polymer:
         :rtype: mda.Universe
         """
         new_u = mda.Merge(self.polymer.atoms)
-        return new_u
+        return Polymer(Monomer.monomer_from_u(new_u), keep_resids=True)
+        # return Polymer(Monomer.monomer_from_u(new_u), keep_resids=True)
     
     def renamer(self, resid, namein, nameout='X'):
         """
@@ -440,8 +441,8 @@ class Polymer:
                 done=True
         if failed or i<0: # hard coded to detect failure if you stop at i<=0 because detecting this automatically wasn't working
             print('Could not reach a valid conformation')
-            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again')
-        return(failed)
+            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again') 
+        return(failed or i<0)
 
     def shuffler(self,pairlist,dummy='X*',cutoff=0.5,clashcheck=False):
         """
@@ -553,8 +554,8 @@ class Polymer:
 
         polyList=random.sample(polycomp,length) # reorder the list of monomers randomly
 
-        polyList[0] = polyList[0][:-1] + 'I' # convert first monomer from middle to initiator -> add extra bit onto middle mono
+        polyList[0] = polyList[0].split("_")[0] + 'I' # convert first monomer from middle to initiator -> add extra bit onto middle mono
         # TODO: REWORK THIS TO BUILD IN SAME WAY AS POLYTOP!
 
-        polyList[-1] = polyList[-1][:-1] + 'T' # convert last monomer from middle to terminator -> add extra bit onto middle mono
+        polyList[-1] = polyList[-1].split("_")[0] + 'T' # convert last monomer from middle to terminator -> add extra bit onto middle mono
         return(polyList) # list of length items with all monomers in order -> used to build w PDBs
