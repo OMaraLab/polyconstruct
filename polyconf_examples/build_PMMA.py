@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-from polyconf.monomer import Monomer
-from polyconf.polymer import Polymer
-from polyconf.PDB import PDB
+from polyconf.polyconf import Monomer, Polymer, PDB
 import random
 
 ###############################################################################

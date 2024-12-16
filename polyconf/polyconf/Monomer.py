@@ -1,41 +1,41 @@
 #!/usr/bin/env python 
-import numpy as np
-import pandas as pd
-from tqdm import tqdm
-
 import MDAnalysis as mda
-from MDAnalysis.analysis import distances
-from math import degrees
 
 class Monomer:
     """
-    Docstring go brrr
+    Create a Monomer MDAnalysis Universe from the provided PDB filepath.
+
+    Remarks:
+            :func:`Polymer.dihedral_solver`, :func:`Polymer.dist`, 
+            :func:`Polymer.shuffle` and :func:`Polymer.shuffler` rely on 
+            connectivity information. If your input file does not contain
+            connectivity information (e.g. CONECT records in a pdb),
+            these may not work as intended.
     """
-    def __init__(self, monomerName) -> None:
+    def __init__(self, monomerName:str) -> None:
         """
         Create a Monomer MDAnalysis Universe from the filepath to a PDB, and
-        save a copy of the Monomer's residues and atoms for quicker access.
-
-        Args:
-            monomerName (str): filepath to the monomer .pdb file
-
-        Remarks:
-            Polymer.dihedral_solver(), Polymer.dist(), Polymer.shuffle() and Polymer.shuffler() rely on connectivity information.
-            If your input file does not contain connectivity information (e.g. CONECT records in a pdb), these may not work as intended 
+        saves a copy of the Monomer's residues and atoms for quicker access.
+        
+        :param monomerName: filepath to the monomer .pdb file
+        :type monomerName: str
         """
         self.monomer = mda.Universe(monomerName)
         self.residues = self.monomer.residues
         self.atoms = self.monomer.atoms
     
-    def select_atoms(self, selection):
+    def select_atoms(self, selection:str) -> mda.AtomGroup:
         """
         Selection method that selects atoms from the monomer's MDAnalysis
         Universe by leveraging the MDAnalysis atom selection.
+        MDAnalysis atom selection string, for more
+        information on supported atom selection formats see
 
-        Args:
-            selection (str): MDAnalysis atom selection string, for more 
-                    information on supported atom selection formats see 
-                    [MDAnalysis Atom selection language](https://userguide.mdanalysis.org/stable/selections.html)
+        :param selection: MDAnalysis atom selection string, for more 
+            information on supported atom selection formats see 
+            `MDAnalysis Atom selection language <https://userguide.mdanalysis.org/stable/selections.html>`
+        :type selection: str
+        :return: An MDAnalysis AtomGroup containing only the selected atoms
+        :rtype: mda.AtomGroup
         """
         return self.monomer.select_atoms(selection)
-

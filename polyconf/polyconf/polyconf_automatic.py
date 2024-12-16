@@ -2,7 +2,7 @@
 from .Monomer import Monomer
 from .Polymer import Polymer
 from .PDB import PDB
-from polytop.polytop_automatic import Automatic
+# from polytop.polytop.polytop_automatic import Automatic
 
 import numpy as np
 import pandas as pd

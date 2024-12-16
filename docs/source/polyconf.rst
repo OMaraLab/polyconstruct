@@ -1,10 +1,18 @@
 polyconf package
 ================
 
-Submodules
+Classes
 ----------
 
-polyconf.PDB module
+polyconf.Monomer
+-----------------------
+
+.. automodule:: polyconf.Monomer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+polyconf.PDB
 -------------------
 
 .. automodule:: polyconf.PDB
@@ -12,7 +20,7 @@ polyconf.PDB module
    :undoc-members:
    :show-inheritance:
 
-polyconf.Polymer module
+polyconf.Polymer
 -----------------------
 
 .. automodule:: polyconf.Polymer
@@ -20,15 +28,7 @@ polyconf.Polymer module
    :undoc-members:
    :show-inheritance:
 
-polyconf.monomer module
------------------------
-
-.. automodule:: polyconf.monomer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-polyconf.polyconf\_automatic module
+polyconf.polyconf\_automatic
 -----------------------------------
 
 .. automodule:: polyconf.polyconf_automatic

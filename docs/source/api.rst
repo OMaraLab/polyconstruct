@@ -7,3 +7,4 @@ API Documentation
 
    polyconf
    polytop
+   polybuild

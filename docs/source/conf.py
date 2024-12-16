@@ -19,14 +19,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath('../../polytop'))
 sys.path.insert(0, os.path.abspath('../../polyconf'))
 sys.path.insert(0, os.path.abspath('../../polybuild'))
-# sys.path.insert(0, os.path.abspath('../../polytop.polytop'))
-# sys.path.insert(0, os.path.abspath('../../polyconf.polyconf'))
-# sys.path.insert(0, os.path.abspath('../../polybuild.polybuild'))
 sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
-import polybuild
-import polyconf
-import polytop
-
 
 
 # -- Project information -----------------------------------------------------
@@ -71,10 +64,10 @@ autosummary_generate = True
 # when using the autosummary directive that is included
 # by default in api.rst
 autodoc_default_options = {
-    'special-members': True,
+    'special-members': False,
     'show-inheritance': True,
-    'undoc-members': True,
-    'exclude-members': '__weakref__'
+    'undoc-members': False,
+    # 'exclude-members': '__weakref__'
 }
 autodoc_mock_imports = [
     'polyconstruct.tests'
