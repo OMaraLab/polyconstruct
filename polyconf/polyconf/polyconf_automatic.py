@@ -2,19 +2,13 @@
 from .Monomer import Monomer
 from .Polymer import Polymer
 from .PDB import PDB
-# from polytop.polytop.polytop_automatic import Automatic
+import polytop
+from polytop.polytop_automatic import Automatic
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm  # progress bar
 
-import MDAnalysis as mda
-from MDAnalysis.analysis import distances
-from math import degrees
-
-import random # we'll be using this to randomise monomer positions
-
-import networkx as nx  # we'll be using this to define halves of the molecule during dihedral shuffling
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -23,7 +17,7 @@ parser.add_argument("--nconfs", default=3, )
 parser.add_argument('--count', action='store_true', help='explicit count of how many of each type of monomer to include')
 parser.add_argument('--frac', action='store_true', help='fraction of polymer made up of each type of monomer')
 parser.add_argument('--length', type=int,required=True, help='total polymer length')
-parser.add_argument("--monomers",type=str,default='monomers.csv',help='path to csv describing monomers, expected columns are "resname", "pdb path", "itp path", "position", "fill", and at least one of "count" or "frac"') 
+parser.add_argument("--monomers",type=str,required=True,default='monomers.csv',help='path to csv describing monomers, expected columns are "resname", "pdb path", "itp path", "position", "fill", and at least one of "count" or "frac"') 
 parser.add_argument('--shuffles', type=int,default=20, help='max number of shuffles before restarting conformation generation')
 parser.add_argument('--rotate', metavar='N', type=str, nargs='*', required=True,
                     help='which bond pairs to shuffle, e.g. "CA C CA CB" to shuffle CA-C and CA-CB')
@@ -43,6 +37,10 @@ parser.add_argument('--dummies', metavar='N', type=str, nargs='*', required=True
 #           if the polymer has not reached the desired length, extends by choosing randomly from monomers where fill = True
 
 def main():
+    print("WARNING")
+    print("this automatic linear polymer builder is newly developed and may not "
+          "construct polymer topologies and coordinates as expected, please "
+          "manually check all output for correctness before submitting for MD")
     args = parser.parse_args()
 
     fname = '_'.join(args.name.split(' '))
@@ -76,20 +74,22 @@ def main():
     fill = [x for x in monomers if mdict['fill'][x]]
 
     polyList = Polymer.gencomp(mdict, args.length, fill, middle, count = args.count, frac = args.frac)
+    print("Generated polymer composition monomer order:")
     print(polyList)
 
     # has paths to all ITP and PDB files
     itp_monomers = [x for x in mdict['itp path'].keys()]
 
     polymerITP = Automatic(polyList, mdict['itp path'], args.length, itp_monomers, args.junctions, args.dummies)
-    polymerITP.build()
+    print("\nBuilding polymer topology")
+    polymerITP.build(outputName=args.name)
 
-    print('Polymer composition generated\n')
+    print('\nPolymer composition:')
     for l in [initial, middle, terminal]:
         for m in l:
             print(m,':',len([x for x in polyList if x == m]))
-        print()
 
+    # Generate and save linear polymer
     j_a = args.junctions
     d_a = args.joiners
     polymer = Polymer(Monomer(mdict['pdb path'][polyList[0]]))
@@ -97,24 +97,29 @@ def main():
         if i >= 1:
             rot = (i*45)%360 # not used anymore; replaced with genconf shuffling
             # names = {'P1':'CA','Q1':'C','P2':'CMA','Q2':'CN'}
-            names = {'P1':j_a[1],'Q1':j_a[0],'P2':d_a[0],'Q2':d_a[1]}
+            names = {'P1':j_a[1],'Q1':j_a[0],'P2':d_a[0],'Q2':d_a[1], 'R':args.junctions[0], 'S':args.junctions[1]}
             j_t = (j_a[0], j_a[1])
             joins = [j_t]
-            polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins)
-
+            polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins, linearise=True)
 
     polymerSaver = PDB(polymer)
     polymerSaver.cleanup()
     polymerSaver.save(args.dummies, fname = f'{fname}_linear', selectionString=None)
 
-    # polymer.genconf(n=nconfs,fname=fname,verbose=False,limit=args.shuffles)
 
-    atomPairs = iter(args.rotate)
-    rotate = list(zip(atomPairs, atomPairs)) # convert list to tuple
-    print(rotate)
-    # for i in range(polymer.bonds):
-    #     for atom in polymer.atoms:
-    #         if atom in polymer.bonds[i]:
-    #             atomPairs[i] = (atom, polymer.bonds[i].partner(atom))
+    # Copy linear polymer, generate different conformations without steric clashes and save
+    CN=polymer.gen_pairlist(a1=args.rotate[0],a2=args.rotate[1],first_resid=1,last_resid=args.length,mult=3)
 
-    polymer.genconf(rotate, args.dummies, length = args.length, runs = args.shuffles, cutoff = 0.8, fname = 'polymer_conf')
+    for i in range(args.nconfs):
+        success = True
+        polymerToShuffle = polymer.copy()
+        for j in range(args.shuffles):
+            success = polymerToShuffle.dihedral_solver(CN,dummy=args.joiners,cutoff=0.7)
+            if success == False:
+                print(f"Successfully generated conformation {i+1} without clashes")
+                Saver = PDB(polymerToShuffle)
+                Saver.cleanup() # center in box
+                Saver.save(dummyAtoms=args.joiners,fname=f'{args.name}_solved{i+1}')
+                break
+        if success == True:
+            print(f"Unable to generate conformation number {i+1} - moving onto the next conformation")
