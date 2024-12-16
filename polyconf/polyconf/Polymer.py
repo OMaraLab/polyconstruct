@@ -441,8 +441,8 @@ class Polymer:
                 done=True
         if failed or i<0: # hard coded to detect failure if you stop at i<=0 because detecting this automatically wasn't working
             print('Could not reach a valid conformation')
-            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again')
-        return(failed)
+            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again') 
+        return(failed or i<0)
 
     def shuffler(self,pairlist,dummy='X*',cutoff=0.5,clashcheck=False):
         """

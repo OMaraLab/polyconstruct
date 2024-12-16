@@ -95,31 +95,34 @@ def main():
     polymer = Polymer(Monomer(mdict['pdb path'][polyList[0]]))
     for i in tqdm(range(len(polyList)),desc='Building initial polymer geometry'):
         if i >= 1:
-            rot = (i*45)%360 # not used anymore; replaced with genconf shuffling
-            # names = {'P1':'CA','Q1':'C','P2':'CMA','Q2':'CN'}
-            names = {'P1':j_a[1],'Q1':j_a[0],'P2':d_a[0],'Q2':d_a[1], 'R':args.junctions[0], 'S':args.junctions[1]}
+            names = {'P1':j_a[0],'Q1':j_a[1],'P2':d_a[0],'Q2':d_a[1], 'R':args.junctions[0], 'S':args.junctions[1]}
             j_t = (j_a[0], j_a[1])
             joins = [j_t]
             polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins, linearise=True)
+            for name in args.joiners:
+                polymer.renamer(i, name, nameout='X')
 
+    for name in args.joiners:
+        polymer.renamer(i+1, name, nameout='X')
+        
     polymerSaver = PDB(polymer)
     polymerSaver.cleanup()
-    polymerSaver.save(args.dummies, fname = f'{fname}_linear', selectionString=None)
+    polymerSaver.save(fname = f'{fname}_linear', selectionString=None)
 
 
     # Copy linear polymer, generate different conformations without steric clashes and save
     CN=polymer.gen_pairlist(a1=args.rotate[0],a2=args.rotate[1],first_resid=1,last_resid=args.length,mult=3)
 
     for i in range(args.nconfs):
-        success = True
+        failed = True
         polymerToShuffle = polymer.copy()
         for j in range(args.shuffles):
-            success = polymerToShuffle.dihedral_solver(CN,dummy=args.joiners,cutoff=0.7)
-            if success == False:
-                print(f"Successfully generated conformation {i+1} without clashes")
+            failed = polymerToShuffle.dihedral_solver(CN,dummy=args.joiners,cutoff=0.7)
+            if failed == False:
+                print(f"successfully generated conformation {i+1} without clashes")
                 Saver = PDB(polymerToShuffle)
                 Saver.cleanup() # center in box
                 Saver.save(dummyAtoms=args.joiners,fname=f'{args.name}_solved{i+1}')
                 break
-        if success == True:
+        if failed == True:
             print(f"Unable to generate conformation number {i+1} - moving onto the next conformation")
