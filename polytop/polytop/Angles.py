@@ -48,7 +48,8 @@ class Angle:
     @classmethod
     def from_line(cls, line: str, atoms) -> Angle:
         """
-        Class method to construct Angle from the line of an ITP file
+        Class method to construct Angle from the line of an ITP file and a
+        list of all Atoms present in the topology.
 
         :param line: the ITP file line
         :type line: str
@@ -70,7 +71,7 @@ class Angle:
     def find_bonds(atom_a: Atom, atom_b: Atom, atom_c: Atom) -> tuple[Bond, Bond]:
         """
         Class method to find two bonds present in this angle, between
-        A-B and B-C Atoms
+        A-B and B-C Atoms.
 
         :param atom_a: The first atom involved in the angle.
         :type atom_a: Atom
@@ -88,7 +89,7 @@ class Angle:
     @staticmethod
     def from_atoms(atom_a: Atom, atom_b: Atom, atom_c: Atom) -> Angle:
         """
-        Class method to construct Angle from three Atoms. There just be a bond
+        Class method to construct Angle from three Atoms. There must be a bond
         from atom_a to atom_b, and from atom_b to atom_c.
 
         :param atom_a: The first atom involved in the angle.

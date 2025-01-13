@@ -8,22 +8,6 @@ class Atom:
 class Bond:
     """
     Represents a bond between two atoms in a molecular system.
-
-    Attributes
-    ----------
-    atom_a : Atom
-        The first atom involved in the bond.
-    atom_b : Atom
-        The second atom involved in the bond.
-    bond_type : int
-        The type of the bond (e.g., single, double, triple).
-    bond_length : float
-        The length of the bond.
-    force_constant : float
-        The force constant associated with the bond.
-    bond_order : int, optional
-        The bond order, default is 1 (single bond).
-
     """
     def __init__(
         self,
@@ -34,6 +18,23 @@ class Bond:
         force_constant: float,
         order: int = 1,
     ) -> None:
+        """
+        Represents a bond between two atoms in a molecular system.
+
+        :param atom_a: The first atom involved in the bond.
+        :type atom_a: Atom
+        :param atom_b: The second atom involved in the bond.
+        :type atom_b: Atom
+        :param bond_type: The type of the bond (e.g., single, double, triple).
+        :type bond_type: int
+        :param bond_length: The length of the bond.
+        :type bond_length: float
+        :param force_constant: The force constant associated with the bond.
+        :type force_constant: float
+        :param order: The bond order, defaults to 1 (single bond)
+        :type order: int, optional
+        :raises ValueError: if either atom_a or atom_b are None
+        """
         if atom_a is None or atom_b is None:
             raise ValueError("Bond must have two atoms")
         self.atom_a = atom_a
@@ -49,7 +50,18 @@ class Bond:
         self.angles = set()
 
     @classmethod
-    def from_line(cls, line: str, atoms: List["Atom"]):
+    def from_line(cls, line: str, atoms: List["Atom"]) -> Bond:
+        """
+        Class method to construct Bond from the line of an ITP file and a list
+        of all Atom's present in the topology.
+
+        :param line: the ITP file line
+        :type line: str
+        :param atoms: list of all Atoms in the Topology 
+        :type atoms: List[Atom]
+        :return: the new Bond
+        :rtype: Bond
+        """
         parts = line.split()
         atom_a = atoms[int(parts[0]) - 1]
         atom_b = atoms[int(parts[1]) - 1]
@@ -60,7 +72,27 @@ class Bond:
         return cls(atom_a, atom_b, bond_type, bond_length, force_constant)
 
     @staticmethod
-    def from_atoms(atom_a: Atom, atom_b: Atom):
+    def from_atoms(atom_a: Atom, atom_b: Atom) -> Bond:
+        """
+        Class method to find and return Bond from between two Atoms. 
+
+        :param atom_a: The first atom involved in the angle.
+        :type atom_a: Atom
+        :param atom_b: The central atom in the angle.
+        :type atom_b: Atom
+        :param atom_c: The third atom involved in the angle.
+        :type atom_c: Atom
+        :return: the new Angle
+        :rtype: Angle
+
+        :param atom_a: The first atom involved in the bond.
+        :type atom_a: Atom
+        :param atom_b: The second atom involved in the bond.
+        :type atom_b: Atom
+        :return: a Bond between these Atoms, or None if either atom_a or atom_b
+                are None or there is not a bond between them.
+        :rtype: Bond
+        """
         if atom_a is None or atom_b is None:
             return None
         return next(
@@ -73,10 +105,31 @@ class Bond:
         )
 
     def contains_atom(self, atom: Atom) -> bool:
+        """
+        Check if this Bond contains a given atom.
+
+        :param atom: the Atom you wish to check if it is in this Bond or not
+        :type atom: Atom
+        :return: True if the Bond contains the given Atom, or False if not.
+        :rtype: bool
+        """
         return atom in [self.atom_a, self.atom_b]
 
-    def clone_bond_changing(self, from_atom: Atom, to_atom: Atom):
-        """ Clone the bond, changing the atom that is being replaced """
+    def clone_bond_changing(self, from_atom: Atom, to_atom: Atom) -> Bond:
+        """
+        Clone the bond, changing the atom that is being replaced. Used during
+        the polymer.extend() algorithm to copy and modify bonds where a new
+        Monomer is joined to the Polymer.
+
+        :param from_atom: the outgoing Atom, to be replaced
+        :type from_atom: Atom
+        :param to_atom: the incoming Atom, will replace the position of the
+                outgoing Atom in this Bond
+        :type to_atom: Atom
+        :raises ValueError: if 'from_atom' is not in the Bond
+        :return: the new, modified Bond
+        :rtype: Bond
+        """
         if self.atom_a == from_atom: # first atom is being replaced
             new_bond = Bond(to_atom, self.atom_b, self.bond_type, self.bond_length, self.force_constant, self.order)
         elif self.atom_b == from_atom: # second atom is being replaced
@@ -85,10 +138,18 @@ class Bond:
             raise ValueError(f"Atom {from_atom} is not in bond {self}")
         return new_bond
 
-    def references_atom(self, atom: Atom) -> bool:
-        return atom in [self.atom_a, self.atom_b]
-
     def other_atom(self, atom: Atom)-> Atom:
+        """
+        Check if the given Atom is in this Angle and return a list of the other
+        atoms present in this Angle (i.e. discluding 'atom').
+
+        :param atom: the Atom you wish to check if it is in this Bond, and if
+                so, which other atom it is bonded to
+        :type atom: Atom
+        :raises ValueError: if 'atom' is not in this Bond
+        :return: the other Atom in this Bond
+        :rtype: Atom
+        """
         if atom == self.atom_a:
             return self.atom_b
         elif atom == self.atom_b:
@@ -96,8 +157,13 @@ class Bond:
         else:
             raise ValueError(f"Atom {atom} is not in bond {self}")
     
-    def LHS(self) -> set['Atom']:
-        # list all atoms in the LHS of the bond
+    def LHS(self) -> set[Atom]:
+        """
+        List of all atoms in the left-hand side of the bond.
+
+        :return: set of Atoms located on the left-hand side of this bond
+        :rtype: set[Atom]
+        """
         LHS_atoms = set()
         def traverse(atom: Atom):
             if atom != self.atom_b:
@@ -110,8 +176,13 @@ class Bond:
         traverse(self.atom_a)
         return LHS_atoms
     
-    def RHS(self) -> set['Atom']:
-        # list all atoms in the RHS of the bond
+    def RHS(self) -> set[Atom]:
+        """
+        List of all atoms in the right-hand side of the bond.
+
+        :return: set of Atoms located on the right-hand side of this bond
+        :rtype: set[Atom]
+        """
         RHS_atoms = set()
         def traverse(atom: Atom):
             if atom != self.atom_a:
@@ -124,6 +195,10 @@ class Bond:
         return RHS_atoms
         
     def remove(self):
+        """
+        Delete self from all related Angles and the two Atoms. Used to cleanup
+        and remove attributes during Polymer.extend().
+        """
         while self.angles:
             self.angles.pop().remove()
         if self in self.atom_a.bonds:
@@ -146,7 +221,22 @@ class Bond:
         else:
             return f"Bond({self.atom_a.atom_id} {self.atom_b.atom_id})"
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """
+        Convert this Bond to a dictionary representation.
+
+        The structure of the dictionary is as below:
+        {"atom_a": self.atom_a.atom_id,
+        "atom_b": self.atom_b.atom_id,
+        "bond_type": self.bond_type,
+        "bond_length": self.bond_length,
+        "force_constant": self.force_constant,
+        "order": self.order}
+
+        :return: a dictionary containing the id's of its Atoms and other
+                attributes of this Bond.
+        :rtype: dict
+        """
         return {
             "atom_a": self.atom_a.atom_id,
             "atom_b": self.atom_b.atom_id,
@@ -157,7 +247,30 @@ class Bond:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]):
+    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]) -> Bond:
+        """
+        Create a new Bond from a dictionary, such as that created with
+        Bond.to_dict(). Will retrieve an existing Bond if
+        it already exists between these Atoms.
+
+        The structure of the dictionary is as below:
+        {"atom_a": self.atom_a.atom_id,
+        "atom_b": self.atom_b.atom_id,
+        "bond_type": self.bond_type,
+        "bond_length": self.bond_length,
+        "force_constant": self.force_constant,
+        "order": self.order}
+
+        :param data: dictionary containing data to make a Bond, generate
+                with 'to_dict()'.
+        :type data: Dict[str, Union[int, float]]
+        :param atoms: list of Atoms. The list may contain more than 3 atoms, as
+                long as the id's of the three atoms specified in the data dict
+                are present.
+        :type atoms: List[Atom]
+        :return: a new Bond
+        :rtype: Bond
+        """
         atom_a = next((atom for atom in atoms if atom.atom_id == data['atom_a']),None)
         atom_b = next((atom for atom in atoms if atom.atom_id == data['atom_b']), None)
         # check for existing bond
