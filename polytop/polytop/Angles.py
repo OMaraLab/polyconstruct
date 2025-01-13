@@ -79,8 +79,8 @@ class Angle:
         :type atom_b: Atom
         :param atom_c: The third atom involved in the angle.
         :type atom_c: Atom
-        :return: tuple[Bond, Bond]
-        :rtype: a tuple containing the A-B and B-C atom bonds in that order
+        :return: a tuple containing the A-B and B-C atom bonds in that order 
+        :rtype: tuple[Bond, Bond]
         """
         bond_ab = Bond.from_atoms(atom_a, atom_b)
         bond_bc = Bond.from_atoms(atom_b, atom_c)
@@ -183,7 +183,6 @@ class Angle:
         Convert this Angle to a dictionary representation.
 
         The structure of the dictionary is as below:
-
         {'atom_a': self.atom_a.atom_id,
         'atom_b': self.atom_b.atom_id,
         'atom_c': self.atom_c.atom_id,
