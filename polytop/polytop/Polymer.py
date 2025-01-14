@@ -14,6 +14,9 @@ class Polymer:
     """
     Represents a polymer, which is a Topology with a set of Junctions, in a
     molecular system.
+
+    :param monomer: the Monomer to create the Polymer from.
+    :type monomer: Monomer
     """
     def __init__(self, monomer):
         """

@@ -17,7 +17,17 @@ from .Pairs import Pair
 
 class Topology:
     """
-    Represents the topology of a molecular system, including atoms, bonds, angles, and dihedrals.
+    Represents the topology of a molecular system, including atoms, bonds,
+    angles, and dihedrals.
+
+    :param atoms: a list of atoms in the molecular system, defaults to None
+    :type atoms: Optional[List[Atom]], optional
+    :param preamble: a string containing the preamble of the topology file,
+            defaults to None
+    :type preamble: Optional[List[str]], optional
+    :param molecule_type: the type of molecule represented by the topology,
+            defaults to None
+    :type molecule_type: Optional[MoleculeType], optional
 
     Attributes
     ----------

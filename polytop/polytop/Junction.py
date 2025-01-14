@@ -4,7 +4,21 @@ from typing import List
 class Junction:
     """
     Junctions are the polymerization sites of a monomer topology. They are
-    defined by a name and a list of Bonds.
+    defined by a name and a list of Bonds. The name should be unique to the
+    Junction such that it can be unambigously identified by its name, thus
+    ensuring that polymers can be built with consistent, desired
+    conformations.
+
+    :param monomer_atom: the Atom which will remain with this Monomer after
+            polymerisation, and will obtain a new bond.
+    :type monomer_atom: Atom
+    :param residue_atom: the Atom which will be lost during polymerisation,
+            analogous to the leaving atom in a chemical reaction.
+    :type residue_atom: Atom
+    :param name: the unique name of the Junction type, defaults to None.
+    :type name: str, optional
+    :raises ValueError: if a Junction cannot be determined from the two
+            provided atoms (i.e. if they are not bonded).
     """
     from .Atoms import Atom
     from .Bonds import Bond

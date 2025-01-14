@@ -9,6 +9,13 @@ class Pair:
     """
     Represents interactions between a pair of atoms in a molecular system not
     reflected by bonds.
+
+    :param atom_a: The first atom involved in the pair.
+    :type atom_a: Atom
+    :param atom_b: The second atom involved in the pair.
+    :type atom_b: Atom
+    :param pair_type: The type of the pair (e.g., 1-4 interactions).
+    :type pair_type: int
     """
     def __init__(self, atom_a: Atom, atom_b: Atom, pair_type: int):
         """

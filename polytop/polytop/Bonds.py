@@ -8,6 +8,20 @@ class Atom:
 class Bond:
     """
     Represents a bond between two atoms in a molecular system.
+
+    :param atom_a: The first atom involved in the bond.
+    :type atom_a: Atom
+    :param atom_b: The second atom involved in the bond.
+    :type atom_b: Atom
+    :param bond_type: The type of the bond (e.g., single, double, triple).
+    :type bond_type: int
+    :param bond_length: The length of the bond.
+    :type bond_length: float
+    :param force_constant: The force constant associated with the bond.
+    :type force_constant: float
+    :param order: The bond order, defaults to 1 (single bond)
+    :type order: int, optional
+    :raises ValueError: if either atom_a or atom_b are None
     """
     def __init__(
         self,

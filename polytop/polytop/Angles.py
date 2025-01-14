@@ -9,6 +9,21 @@ from .Atoms import Atom
 class Angle:
     """
     Represents an angle between three atoms in a molecular system.
+
+    :param atom_a: The first atom involved in the angle.
+    :type atom_a: Atom
+    :param atom_b: The central atom in the angle.
+    :type atom_b: Atom
+    :param atom_c: The third atom involved in the angle.
+    :type atom_c: Atom
+    :param angle_type: The type of the angle.
+    :type angle_type: int
+    :param angle_value: The value of the angle in degrees.
+    :type angle_value: float
+    :param force_constant: The force constant associated with the angle.
+    :type force_constant: float
+    :raises ValueError: If there are not bonds present between atoms A and
+            B and atoms B and C
     """
     def __init__(self, atom_a: Atom, atom_b: Atom, atom_c: Atom,
             angle_type: int, angle_value: float, force_constant: float) -> None:

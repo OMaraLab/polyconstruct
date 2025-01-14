@@ -10,6 +10,32 @@ from .Pairs import Pair
 class Atom:
     """
     Represents an atom with its properties in a molecular system.
+
+    :param atom_id: The unique identifier of the atom.
+    :type atom_id: int
+    :param atom_type: The type of the atom, usually based on its element.
+    :type atom_type: str
+    :param residue_id: The unique identifier of the residue containing the atom.
+    :type residue_id: int
+    :param residue_name: The name of the residue containing the atom.
+    :type residue_name: str
+    :param atom_name: The name of the atom, often based on its position within the residue.
+    :type atom_name: str
+    :param charge_group_num: The charge group the atom belongs to.
+    :type charge_group_num: int
+    :param partial_charge: The partial charge of the atom.
+    :type partial_charge: float
+    :param mass: The mass of the atom.
+    :type mass: float
+    :param x: The Atom's x position in 3D space, defaults to 0.0
+    :type x: float, optional
+    :param y: The Atom's y position in 3D space, defaults to 0.0
+    :type y: float, optional
+    :param z: The Atom's z position in 3D space, defaults to 0.0
+    :type z: float, optional
+    :param formerly: The atom id of the atom this atom was before
+            renumbering, defaults to None
+    :type formerly: int, optional
     """
     def __init__(
         self,

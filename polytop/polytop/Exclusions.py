@@ -10,6 +10,11 @@ class Atom:
 class Exclusion:
     """
     Represents non-bonded interactions between two atoms in a molecular system.
+
+    :param atom_a: The first atom involved in the exclusion.
+    :type atom_a: Atom
+    :param atom_b: The second atom involved in the exclusion.
+    :type atom_b: Atom
     """
     def __init__(self, atom_a: Atom, atom_b: Atom):
         """

@@ -11,6 +11,12 @@ from .Topology import Topology
 class Monomer:
     """
     Represents a monomer with its properties in a molecular system.
+
+    :param topology: the Topology object used to create this Monomer.
+    :type topology: Topology
+    :param junctions: a list of Junction objects or Junctions object
+            containing all Junctions which will be present in this Monomer.
+    :type junctions: Union[Junctions, List[Junction]]
     """
     def __init__(self, topology: Topology, junctions: Union[Junctions, List[Junction]]):
         """

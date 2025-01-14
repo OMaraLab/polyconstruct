@@ -17,6 +17,16 @@ class Visualize:
     """
     Enables conversion of a molecular system representation (Polymer, Monomer
     or Topology) to a rdKit Chem mol for 2D and 3D visualisation.
+
+    :param topology: the molecular system Topology to visualise.
+    :type topology: Topology
+    :param junctions: the Junctions present with the Topology, to enable
+            optional highlighting of the Junction locations,
+            defaults to None
+    :type junctions: Junctions, optional
+    :param infer_bond_order: if true, the bond order will be inferred based
+            on the atom type and its number of bonds, defaults to True
+    :type infer_bond_order: bool, optional
     """
     def __init__(
         self,

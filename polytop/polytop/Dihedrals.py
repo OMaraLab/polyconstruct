@@ -49,6 +49,25 @@ class Dihedral_type(IntEnum):
 class Dihedral:
     """
     Represents a dihedral angle formed by four atoms in a molecular system.
+
+    :param atom_a: The first atom involved in the dihedral angle.
+    :type atom_a: Atom
+    :param atom_b: The second atom involved in the dihedral angle.
+    :type atom_b: Atom
+    :param atom_c: The third atom involved in the dihedral angle.
+    :type atom_c: Atom
+    :param atom_d: The fourth atom involved in the dihedral angle.
+    :type atom_d: Atom
+    :param dihedral_type: The type of the dihedral angle (e.g., proper, improper).
+    :type dihedral_type: Dihedral_type
+    :param phase_angle: The phase angle of the dihedral angle in degrees.
+    :type phase_angle: float
+    :param force_constant: The force constant associated with the dihedral angle.
+    :type force_constant: float
+    :param multiplicity: The multiplicity of the dihedral angle.
+    :type multiplicity: int
+    :raises ValueError: If unable to find an Angle for the Dihedral.
+    :raises ValueError: If an unknown Dihedral_type is provided.
     """
     def __init__(
         self,
