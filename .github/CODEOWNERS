@@ -1,0 +1,8 @@
+# code owners who may approve any commits to the PolyConstruct repository
+
+* @lunamorrow @khiron @recombinatrix @RangikaM
+
+/polyconf/ @ada
+
+# information on how to adjust the code owners can be found here:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
