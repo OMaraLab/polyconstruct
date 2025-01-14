@@ -1,3 +1,4 @@
+from __future__ import annotations
 import copy
 import logging
 import re
@@ -13,12 +14,30 @@ from .Polymer import Polymer
 from .Monomer import Monomer
 
 class Visualize:
+    """
+    Enables conversion of a molecular system representation (Polymer, Monomer
+    or Topology) to a rdKit Chem mol for 2D and 3D visualisation.
+    """
     def __init__(
         self,
         topology: Topology,
         junctions: Junctions = None,
         infer_bond_order = True,
     ):
+        """
+        Enables conversion of a molecular system representation (Polymer,
+        Monomer or Topology) to a RDKit Chem mol for 2D and 3D visualisation.
+
+        :param topology: the molecular system Topology to visualise.
+        :type topology: Topology
+        :param junctions: the Junctions present with the Topology, to enable
+                optional highlighting of the Junction locations,
+                defaults to None
+        :type junctions: Junctions, optional
+        :param infer_bond_order: if true, the bond order will be inferred based
+                on the atom type and its number of bonds, defaults to True
+        :type infer_bond_order: bool, optional
+        """
         self.topology = topology
         self.junctions = Junctions() if junctions is None else junctions
         self.atom_mapping = {}
@@ -27,7 +46,18 @@ class Visualize:
             self.infer_bond_order()
         
     def infer_bond_order(self):
-        # add double bonds to the topology using the known valencies of the atoms and number of declared bonds
+        """
+        Infer the bond order of all bonds in the Topology according to the
+        valencies of the two Atoms that share the Bond and the number of other
+        Bonds each of them have. The inferred bond order is saved to the
+        'order' property of each bond.
+
+        Double bonds will be added to the Topology using the known valencies
+        of the Atoms and number of declared Bonds.
+
+        This function is called automatically by the Class initialiser if the
+        parameter 'infer_bond_order' is True.
+        """
         self.valencies = {
             "H": 1,
             "F": 1,
@@ -75,19 +105,68 @@ class Visualize:
                     
             
     @classmethod
-    def polymer(cls, polymer: Polymer, infer_bond_order = True):
+    def polymer(cls, polymer: Polymer, infer_bond_order = True) -> Visualize:
+        """
+        Class method to construct Visualize object from a Polymer.
+
+        :param polymer: the Polymer set to be converted to RDKit format
+                and visualised.
+        :type polymer: Polymer
+        :param infer_bond_order: if true, the bond order will be inferred based
+                on the atom type and its number of bonds, defaults to True.
+        :type infer_bond_order: bool, optional
+        :return: a Visualize object that can be drawn in 2D or 3D.
+        :rtype: Visualize
+        """
         return cls(topology=polymer.topology, junctions=polymer.junctions, infer_bond_order = infer_bond_order)
 
     @classmethod
-    def monomer(cls, monomer: Monomer, infer_bond_order = True):
+    def monomer(cls, monomer: Monomer, infer_bond_order = True) -> Visualize:
+        """
+        Class method to construct Visualize object from a Polymer.
+
+        :param monomer: the Monomer set to be converted to RDKit format
+                and visualised.
+        :type monomer: Monomer
+        :param infer_bond_order: if true, the bond order will be inferred based
+                on the atom type and its number of bonds, defaults to True.
+        :type infer_bond_order: bool, optional
+        :return: a Visualize object that can be drawn in 2D or 3D.
+        :rtype: Visualize
+        """
         return cls(topology=monomer.topology, junctions=monomer.junctions, infer_bond_order = infer_bond_order)
 
     @classmethod
-    def topology(cls, topology: Topology, infer_bond_order = True):
+    def topology(cls, topology: Topology, infer_bond_order = True) -> Visualize:
+        """
+        Class method to construct Visualize object from a Topology.
+
+        :param topology: the Topology set to be converted to RDKit format
+                and visualised.
+        :type topology: Topology
+        :param infer_bond_order: if true, the bond order will be inferred based
+                on the atom type and its number of bonds, defaults to True.
+        :type infer_bond_order: bool, optional
+        :return: a Visualize object that can be drawn in 2D or 3D.
+        :rtype: Visualize
+        """
         return cls(topology=topology, infer_bond_order = infer_bond_order)
 
-    def to_rdKit_Chem_mol(self,options: dict[str,any]):
+    def _to_rdKit_Chem_mol(self, options: dict[str,any]) -> Chem.RWMol:
+        """
+        Convert Visualize object to RDKit format for visualisation.
 
+        Format of 'options' dictionary:
+        {"highlight_junctions": highlight_junctions, 
+        "show_atom_ID": show_atom_ID,
+        "remove_explicit_H": remove_explicit_H}
+
+        :param options: dictionary of options for the molecular representation,
+                which are provided when draw3D or draw2D are called.
+        :type options: dict[str,any]
+        :return: converted Chem.RWMol representation of the Visualize object.
+        :rtype: Chem.RWMol
+        """
         lg = RDLogger.logger()
         lg.setLevel(RDLogger.CRITICAL)
         logging.basicConfig(level=logging.ERROR)
@@ -159,13 +238,34 @@ class Visualize:
 
         return mol
 
-    def draw3D(self, view=None, highlight_junctions: bool = False,show_atom_ID:bool= False, remove_explicit_H:bool = True):
+    def draw3D(self, view = None,
+               highlight_junctions: bool = False,
+               show_atom_ID: bool = False,
+               remove_explicit_H: bool = True):
+        """
+        Draw the Visualize object (molecule) in 3D with RDKit's
+        DrawMolecule function.
+
+        :param view: a py3Dmol.view() of desired width and height,
+                defaults to None
+        :type view: py3Dmol.view, optional
+        :param highlight_junctions: if True, render the Junction bonds in
+                a different colour to highlight them, defaults to False
+        :type highlight_junctions: bool, optional
+        :param show_atom_ID: if True, render the drawing with the Atom's
+                labelled with their atom_id, defaults to False
+        :type show_atom_ID: bool, optional
+        :param remove_explicit_H: if True, removes explicit hydrogens. Valuable
+                for rendering larger images by making them less crowded,
+                defaults to True
+        :type remove_explicit_H: bool, optional
+        """
         options = {
             "highlight_junctions":highlight_junctions, 
             "show_atom_ID":show_atom_ID,
             "remove_explicit_H": remove_explicit_H
             }
-        mol = self.to_rdKit_Chem_mol(options=options)  # Removed the MolToMolBlock conversion
+        mol = self._to_rdKit_Chem_mol(options=options)  # Removed the MolToMolBlock conversion
         Chem.SanitizeMol(mol)
         AllChem.EmbedMolecule(mol)
         AllChem.MMFFOptimizeMolecule(mol)
@@ -173,7 +273,7 @@ class Visualize:
         view.setStyle({"stick": {}})
         view.zoomTo()
         
-    def remove_non_junction_hydrogens(self, mol):
+    def _remove_non_junction_hydrogens(self, mol):
         # Get the indices of all hydrogen atoms
         hydrogen_indices = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomicNum() == 1]
 
@@ -204,14 +304,36 @@ class Visualize:
         remove_explicit_H = True,
     ):
         """
-        Draw the molecule using RDKit's DrawMolecule function
+        Draw the Visualize object (molecule) in 2D with RDKit's
+        DrawMolecule function.
+        
         Args:
-            filename (str): the filename to save the image to
-            size (tuple[int,int]): the size of the image to draw
-            highlight_junctions (bool): if True, highlight the junctions in the molecule
+            filename (str): 
+            size (tuple[int,int]): 
+            highlight_junctions (bool): 
             show_atom_ID (bool): if True, show the atom ID in the molecule
-            show_legend (bool): if True, show the legend in the molecule
-            remove_explicit_H (bool): if True, remove the explicit hydrogens from the molecule        
+            show_legend (bool): 
+            remove_explicit_H (bool): if True, remove the explicit hydrogens from the molecule 
+
+        :param filename: the filename to save the image to
+        :type filename: str
+        :param size: the size of the image to draw, defaults to (600,300)
+        :type size: Tuple[int,int], optional
+        :param highlight_junctions: if True, render the Junction bonds in
+                a different colour to highlight them, defaults to False
+        :type highlight_junctions: bool, optional
+        :param show_atom_ID: if True, render the drawing with the Atom's
+                labelled with their atom_id, defaults to False
+        :type show_atom_ID: bool, optional
+        :param show_legend: if True, show the legend (the 'title' of the
+                underlying Topology) in the image, defaults to True
+        :type show_legend: bool, optional
+        :param remove_explicit_H: if True, removes explicit hydrogens. Valuable
+                for rendering larger images by making them less crowded,
+                defaults to True
+        :type remove_explicit_H: bool, optional
+        :raises ValueError: if both 'show_atom_ID' and 'remove_explicit_H'
+                are True
         """
         options = {
             "size":size, 
@@ -223,13 +345,13 @@ class Visualize:
         if options["show_atom_ID"] and options["remove_explicit_H"]:
             raise ValueError("show_atom_ID and remove_explicit_H cannot both be True")  
         
-        mol = self.to_rdKit_Chem_mol(options)
+        mol = self._to_rdKit_Chem_mol(options)
         
         # Initialize args and kwargs for DrawMolecule
         draw_kwargs = {}
         
         if options.get("remove_explicit_H",True):
-            mol = self.remove_non_junction_hydrogens(mol)
+            mol = self._remove_non_junction_hydrogens(mol)
         
         size = options.get("size",(600,300))
         d = rdMolDraw2D.MolDraw2DCairo(size[0], size[1]) 
@@ -268,6 +390,3 @@ class Visualize:
         # Save the image
         with open(filename, 'wb') as f:
             f.write(d.GetDrawingText())
-
-
-    
