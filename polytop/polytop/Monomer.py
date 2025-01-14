@@ -1,7 +1,7 @@
+from __future__ import annotations
 import copy
 import json
 from typing import Tuple, Union, List
-from __future__ import annotations
 
 from .Junction import Junction, Junctions
 
