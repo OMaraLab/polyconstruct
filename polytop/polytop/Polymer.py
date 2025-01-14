@@ -317,7 +317,7 @@ class Polymer:
             json.dump(self.to_dict(), f)
 
     @classmethod
-    def load_from_file(cls, filename: str) -> None:
+    def load_from_file(cls, filename: str) -> Polymer:
         """
         Load a JSON text dump of a Polymer, generated with
         Polymer.save_to_file(), to a new Polymer.
