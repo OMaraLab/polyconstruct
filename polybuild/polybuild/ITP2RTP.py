@@ -1,7 +1,23 @@
+"""
+Use ITP2RTP to convert ITP files in your current working directory to RTP
+files. To convert files, just change to the directory containing them, activate
+the environment you have polyconstruct installed on and run the command. You
+will be prompted to select which file you would like to convert. The conversion
+works in a stepwise manner of: ITP->txt->RTP->CSV, and can be stopped at any point.
+
+An example of usage is below:
+
+.. code-block:: python
+
+    conda activate polyconstruct-env
+    ITP2RTP
+
+"""
+
 import os
 import csv
 
-def read_atoms_section(lines):
+def _read_atoms_section(lines):
     atoms = {}
     start_index = None
     end_index = None
@@ -23,7 +39,7 @@ def read_atoms_section(lines):
 
     return atoms
 
-def print_assigned_atom_names(atoms):
+def _print_assigned_atom_names(atoms):
     if not atoms:
         print("No assigned atom names found.")
     else:
@@ -31,14 +47,14 @@ def print_assigned_atom_names(atoms):
         for number, atom_name in atoms.items():
             print(f"{number} = {atom_name}")
 
-def assign_atom_names(itp_file):
+def _assign_atom_names(itp_file):
     with open(itp_file, 'r') as file:
         lines = file.readlines()
 
-    atoms = read_atoms_section(lines)
-    print_assigned_atom_names(atoms)
+    atoms = _read_atoms_section(lines)
+    _print_assigned_atom_names(atoms)
 
-def replace_numbers_with_atom_names(lines, atoms):
+def _replace_numbers_with_atom_names(lines, atoms):
     atoms_section = False
     bonds_section = False
     angles_section = False
@@ -108,14 +124,14 @@ def replace_numbers_with_atom_names(lines, atoms):
 
     return lines
 
-def save_changes(itp_file, lines):
+def _save_changes(itp_file, lines):
     output_file = os.path.splitext(itp_file)[0] + '.txt'
     with open(output_file, 'w') as file:
         file.writelines(lines)
 
     print(f"New txt file has been created with atom names and saved to the output file: {output_file}")
 
-def extract_sections(filename):
+def _extract_sections(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
 
@@ -200,16 +216,16 @@ def extract_sections(filename):
 
     print(f'New RTP record for the selected file has been created: {new_filename}')
 
-def list_rtp_files():
+def _list_rtp_files():
     rtp_files = [file for file in os.listdir(".") if file.endswith(".rtp")]
     return rtp_files
 
-def print_file_list(file_list):
+def _print_file_list(file_list):
     print("Available RTP files:")
     for i, file in enumerate(file_list, 1):
         print(f"{i}. {file}")
 
-def select_file(file_list):
+def _select_file(file_list):
     while True:
         try:
             choice = int(input("Please enter the number corresponding to the file you want to convert (or 0 to exit): "))
@@ -222,14 +238,14 @@ def select_file(file_list):
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def convert_rtp_to_csv(rtp_file):
+def _convert_rtp_to_csv(rtp_file):
     csv_file = os.path.splitext(rtp_file)[0] + ".csv"
     with open(rtp_file, 'r') as rtp_file, open(csv_file, 'w', newline='') as csv_file:
         csv_writer = csv.writer(csv_file)
         for line in rtp_file:
             csv_writer.writerow(line.split())
 
-def select_txt_file():
+def _select_txt_file():
     txt_files = [f for f in os.listdir('.') if f.endswith('.txt')]
 
     if not txt_files:
@@ -247,7 +263,7 @@ def select_txt_file():
             return
 
         filename = txt_files[option - 1]
-        extract_sections(filename)
+        _extract_sections(filename)
     except ValueError:
         print('Invalid input.')
 
@@ -269,14 +285,14 @@ def main():
         return
 
     selected_file = itp_files[int(selection) - 1]
-    assign_atom_names(selected_file)
+    _assign_atom_names(selected_file)
     proceed = input("Do you want to continue? (Yes/No): ")
 
     if proceed.lower() != 'yes':
         return
 
-    atoms = read_atoms_section(open(selected_file, 'r').readlines())
-    print_assigned_atom_names(atoms)
+    atoms = _read_atoms_section(open(selected_file, 'r').readlines())
+    _print_assigned_atom_names(atoms)
 
     while True:
         change = input("Would you like to make any changes? (Yes/No): ")
@@ -293,20 +309,20 @@ def main():
         atoms[int(number)] = atom_name
 
         print("Assigned atom names after change:")
-        print_assigned_atom_names(atoms)
+        _print_assigned_atom_names(atoms)
 
     lines = open(selected_file, 'r').readlines()
-    modified_lines = replace_numbers_with_atom_names(lines, atoms)
-    save_changes(selected_file, modified_lines)
+    modified_lines = _replace_numbers_with_atom_names(lines, atoms)
+    _save_changes(selected_file, modified_lines)
 
     # Process the RTP file
-    select_txt_file()
+    _select_txt_file()
     
     # List and convert RTP files to CSV
-    rtp_files = list_rtp_files()
+    rtp_files = _list_rtp_files()
     if rtp_files:
-        print_file_list(rtp_files)
-        chosen_file = select_file(rtp_files)
+        _print_file_list(rtp_files)
+        chosen_file = _select_file(rtp_files)
         if chosen_file:
-            convert_rtp_to_csv(chosen_file)
+            _convert_rtp_to_csv(chosen_file)
             print(f"{chosen_file} successfully converted to CSV.")
