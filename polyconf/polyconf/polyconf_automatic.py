@@ -2,7 +2,6 @@
 from .Monomer import Monomer
 from .Polymer import Polymer
 from .PDB import PDB
-import polytop
 from polytop.polytop_automatic import Automatic
 
 import numpy as np
@@ -22,11 +21,9 @@ parser.add_argument('--shuffles', type=int,default=20, help='max number of shuff
 parser.add_argument('--rotate', metavar='N', type=str, nargs='*', required=True,
                     help='which bond pairs to shuffle, e.g. "CA C CA CB" to shuffle CA-C and CA-CB')
 parser.add_argument('--joiners', metavar='N', type=str, nargs='*', required=True,
-                    help='which atoms will be the corresponding dummies for polyconf extend, e.g. "CMA CN"')
+                    help='which atoms will be the corresponding dummies for polyconf extend and the corresponding "residue atoms" for the "monomer atoms" specified in --junctions, e.g. "CMA CN", where the first junction atom must be bonded to the first dummy atom, and the second junction atom to the second dummy atom')
 parser.add_argument('--junctions', metavar='N', type=str, nargs='*', required=True,
-                    help='which atoms will be "monomer atoms" for junctions of monomers joined together, e.g. "C CA"')
-parser.add_argument('--dummies', metavar='N', type=str, nargs='*', required=True,
-                    help='which atoms will be the corresponding "residue atoms" for the "monomer atoms" specified in --junctions, e.g. "CP CN"')
+                    help='which atoms will be "monomer atoms" for junctions of monomers joined together, define in order as "from" atom, then "to" atom, e.g. "C CA" makes bond from C_i to CA_i+1')
 
 # assumes monomer resnames are four letter codes, with the final letter either M for middle, T for terminator, or I for initiator)
 # count = 
@@ -37,14 +34,13 @@ parser.add_argument('--dummies', metavar='N', type=str, nargs='*', required=True
 #           if the polymer has not reached the desired length, extends by choosing randomly from monomers where fill = True
 
 def main():
-    print("WARNING")
-    print("this automatic linear polymer builder is newly developed and may not "
+    print("\nWARNING")
+    print("This automatic linear, united-atom polymer builder is newly developed and may not "
           "construct polymer topologies and coordinates as expected, please "
-          "manually check all output for correctness before submitting for MD")
+          "manually check all output for correctness before submitting for MD\n\n")
     args = parser.parse_args()
 
     fname = '_'.join(args.name.split(' '))
-    nconfs = int(args.nconfs)
 
     df = pd.read_csv(args.monomers) # has paths to all ITP and PDB files
     df.set_index('resname',inplace=True)
@@ -77,37 +73,41 @@ def main():
     print("Generated polymer composition monomer order:")
     print(polyList)
 
-    # has paths to all ITP and PDB files
-    itp_monomers = [x for x in mdict['itp path'].keys()]
-
-    polymerITP = Automatic(polyList, mdict['itp path'], args.length, itp_monomers, args.junctions, args.dummies)
-    print("\nBuilding polymer topology")
-    polymerITP.build(outputName=args.name)
-
-    print('\nPolymer composition:')
+    print('\nPolymer composition is:')
     for l in [initial, middle, terminal]:
         for m in l:
             print(m,':',len([x for x in polyList if x == m]))
+
+    print(f"\nPolymer building by joining atom {args.junctions[0]} to atom {args.junctions[1]}")
+
+    # has paths to all ITP and PDB files
+    itp_monomers = [x for x in mdict['itp path'].keys()]
+
+    polymerITP = Automatic(polyList, mdict['itp path'], args.length, itp_monomers, args.junctions, args.joiners)
+    print("\n\nBuilding polymer topology with PolyTop...\n")
+    polymerITP.build(outputName=args.name)
+    print(f"Saved polymer topology as '{fname}.itp'\n")
+
+
 
     # Generate and save linear polymer
     j_a = args.junctions
     d_a = args.joiners
     polymer = Polymer(Monomer(mdict['pdb path'][polyList[0]]))
-    for i in tqdm(range(len(polyList)),desc='Building initial polymer geometry'):
+    for i in tqdm(range(len(polyList)),desc='Building initial polymer geometry with PolyConf'):
         if i >= 1:
-            names = {'P1':j_a[0],'Q1':j_a[1],'P2':d_a[0],'Q2':d_a[1], 'R':args.junctions[0], 'S':args.junctions[1]}
+            names = {'P1':d_a[1],'Q1':j_a[0],'P2':j_a[1],'Q2':d_a[0], 'R':args.junctions[1], 'S':args.junctions[0]}
             j_t = (j_a[0], j_a[1])
             joins = [j_t]
             polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins, linearise=True)
-            for name in args.joiners:
-                polymer.renamer(i, name, nameout='X')
-
-    for name in args.joiners:
-        polymer.renamer(i+1, name, nameout='X')
+            # rename the dummy atoms to 'X' to flag for removal
+            for j, name in enumerate(args.joiners):
+                polymer.renamer(i+j, name, nameout='X')
         
     polymerSaver = PDB(polymer)
     polymerSaver.cleanup()
     polymerSaver.save(fname = f'{fname}_linear', selectionString=None)
+    print(f"\n\nSaved linear polymer geometry as '{fname}_linear.pdb'\n\n")
 
 
     # Copy linear polymer, generate different conformations without steric clashes and save
@@ -123,6 +123,7 @@ def main():
                 Saver = PDB(polymerToShuffle)
                 Saver.cleanup() # center in box
                 Saver.save(dummyAtoms=args.joiners,fname=f'{args.name}_solved{i+1}')
+                print(f"Saved polymer geometry {i+1} as '{fname}_solved{i+1}.pdb'\n\n")
                 break
         if failed == True:
-            print(f"Unable to generate conformation number {i+1} - moving onto the next conformation")
+            print(f"Unable to generate conformation number {i+1} - moving onto the next conformation\n\n")
