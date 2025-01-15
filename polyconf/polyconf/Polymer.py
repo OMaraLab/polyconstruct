@@ -91,6 +91,7 @@ class Polymer:
         for x in dummies.atoms.indices:
             self.polymer.select_atoms(f"resid {resid} and name {namein} and index {x}").atoms.names=[nameout+str(i)]
 
+
     def newresid(self):
         """
         Generates a resid that is one larger than the highest existing resid in
@@ -102,6 +103,7 @@ class Polymer:
         """
         nn = max(self.polymer.residues.resids) + 1
         return nn
+
 
     def maxresid(self):
         """
