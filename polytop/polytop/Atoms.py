@@ -11,27 +11,31 @@ class Atom:
     """
     Represents an atom with its properties in a molecular system.
 
-    Attributes
-    ----------
-    atom_id : int
-        The unique identifier of the atom.
-    atom_type : str
-        The type of the atom, usually based on its element.
-    residue_id : int
-        The unique identifier of the residue containing the atom.
-    residue_name : str
-        The name of the residue containing the atom.
-    atom_name : str
-        The name of the atom, often based on its position within the residue.
-    charge_group_num : int
-        The charge group the atom belongs to.
-    partial_charge : float
-        The partial charge of the atom.
-    mass : float
-        The mass of the atom.
-    formerly : int [optional]
-        The atom id of the atom this atom was before renumbering. 
-
+    :param atom_id: The unique identifier of the atom.
+    :type atom_id: int
+    :param atom_type: The type of the atom, usually based on its element.
+    :type atom_type: str
+    :param residue_id: The unique identifier of the residue containing the atom.
+    :type residue_id: int
+    :param residue_name: The name of the residue containing the atom.
+    :type residue_name: str
+    :param atom_name: The name of the atom, often based on its position within the residue.
+    :type atom_name: str
+    :param charge_group_num: The charge group the atom belongs to.
+    :type charge_group_num: int
+    :param partial_charge: The partial charge of the atom.
+    :type partial_charge: float
+    :param mass: The mass of the atom.
+    :type mass: float
+    :param x: The Atom's x position in 3D space, defaults to 0.0
+    :type x: float, optional
+    :param y: The Atom's y position in 3D space, defaults to 0.0
+    :type y: float, optional
+    :param z: The Atom's z position in 3D space, defaults to 0.0
+    :type z: float, optional
+    :param formerly: The atom id of the atom this atom was before
+            renumbering, defaults to None
+    :type formerly: int, optional
     """
     def __init__(
         self,
@@ -48,6 +52,35 @@ class Atom:
         z: float = 0.0,
         formerly = None
     ) -> None:
+        """
+        Represents an atom with its properties in a molecular system.
+
+        :param atom_id: The unique identifier of the atom.
+        :type atom_id: int
+        :param atom_type: The type of the atom, usually based on its element.
+        :type atom_type: str
+        :param residue_id: The unique identifier of the residue containing the atom.
+        :type residue_id: int
+        :param residue_name: The name of the residue containing the atom.
+        :type residue_name: str
+        :param atom_name: The name of the atom, often based on its position within the residue.
+        :type atom_name: str
+        :param charge_group_num: The charge group the atom belongs to.
+        :type charge_group_num: int
+        :param partial_charge: The partial charge of the atom.
+        :type partial_charge: float
+        :param mass: The mass of the atom.
+        :type mass: float
+        :param x: The Atom's x position in 3D space, defaults to 0.0
+        :type x: float, optional
+        :param y: The Atom's y position in 3D space, defaults to 0.0
+        :type y: float, optional
+        :param z: The Atom's z position in 3D space, defaults to 0.0
+        :type z: float, optional
+        :param formerly: The atom id of the atom this atom was before
+                renumbering, defaults to None
+        :type formerly: int, optional
+        """
         self.atom_id = atom_id
         self.rank = atom_id
         self.atom_type = atom_type
@@ -64,10 +97,10 @@ class Atom:
         self.y = y
         self.z = z
         self.visited = False
-        self.formerly = formerly # when renumbering atoms to extend a polymer we need to keep track of where the atom came from
-        # if not any(chr.isdigit() for chr in self.atom_name):
-        #     raise ValueError(f"No index in atom {self.atom_name}, atom id {self.atom_id}. Please check your ITP file.")
-            
+        # when renumbering atoms to extend a polymer we need to keep track of
+        # where the atom came from
+        self.formerly = formerly
+
     @property
     def element(self) -> str:
         # compatible with GROMOS 54a7 forcefield, ATB and test files
@@ -103,27 +136,60 @@ class Atom:
     #TO DO: deconvulute following 3 functions, and atom_name, atom_id and index properties...
     @element.setter
     def element(self, value: str):
-        self.atom_name = f"{value}{self.index}" # or self.atom_id?
+        """
+        Set the Atom's atom_name attribute to {value}{self.index}. For example,
+        a value of 'H' and atom index of 1 will make the atom's name 'H1'.
+
+        :param value: The desired element name for this Atom.
+        :type value: str
+        """
+        self.atom_name = f"{value}{self.index}"
 
     @property 
     def index(self) -> int:
+        """
+        Retrieve the atom's index number.
+
+        :return: this Atom's index.
+        :rtype: int
+        """
         index = re.sub("[^0-9]", "", self.atom_name)
         if index != "":
             return int(index)
         else:
             return self.atom_id
-        #return int(re.sub("[^0-9]", "", self.atom_name))
     
     @index.setter
     def index(self, value: int):
-        #self.atom_id = value # does this work?
-        self.atom_name = f"{self.element}{value}" #self.atom_type = ...
+        """
+        Set the Atom's atom_name attribute to {self.element}{value}. For example,
+        an element of 'H' and value 1 will make the atom's name 'H1'.
+
+        :param value: numerical value of the Atom's name - such as its index
+                within its elemental type (e.g. H1, H2, H3, etc.).
+        :type value: int
+        """
+        self.atom_name = f"{self.element}{value}"
     
     @property
-    def is_virtual(self):
+    def is_virtual(self) -> bool:
+        """
+        Check if atom is 'virtual' or a dummy.
+
+        :return: True if Atom's atom_type is 'X', but False otherwise
+        :rtype: bool
+        """
         return self.atom_type == "X"
     
     def virtualize(self, index: int):
+        """
+        Make atom 'virtual' (i.e. a dummy), by setting its type to X, and
+        adjusting the name to match, and its mass and partial charges both to 0.0.
+
+        :param index: desired number for the atom's name and index (e.g. an
+                index of 1 will set the Atom's name to 'X1')
+        :type index: int
+        """
         self.atom_type = "X"
         self.atom_name = f"X{index}"
         self.mass = 0.0
@@ -131,6 +197,14 @@ class Atom:
     
     @classmethod
     def from_line(cls, line: str) -> "Atom":
+        """
+        Class method to construct Atom from the line of an ITP file
+
+        :param line: the ITP file line
+        :type line: str
+        :return: the new Atom
+        :rtype: Atom
+        """
         parts = line.split()
         atom_id = int(parts[0])
         atom_type = parts[1]
@@ -158,6 +232,10 @@ class Atom:
         return f"{self.residue_name}.{self.atom_name}->[{','.join([f'{bond.other_atom(self).residue_name}.{bond.other_atom(self).atom_name}' for bond in self.bonds])}]"
 
     def remove(self):
+        """
+        Delete self from all related Bonds, Pairs and Exclusions. Used to
+        cleanup and remove attributes during Polymer.extend().
+        """
         while self.bonds:
             self.bonds.pop().remove()
         while self.pairs:
@@ -166,11 +244,23 @@ class Atom:
             self.exclusions.pop().remove()
 
     def bond_neighbours(self) -> set["Atom"]:
-        """ List all the atoms that this atom bonds with """
+        """
+        List all the atoms that this atom bonds with.
+
+        :return: set of Atoms that this Atom is bonded to.
+        :rtype: set[Atom]
+        """
         return {bond.other_atom(self) for bond in self.bonds}
 
     def deduplicate_bonds(self):
-        """ Remove any bonds from this atom that are duplicates """
+        """
+        Remove any bonds from this atom that are duplicates. Used by
+        Polymer.extend() to remove duplicated bonds after new ones are made
+        during extension. The 'extend' function creates two new identical bonds
+        between the existing polymer and incoming monomer, one from the polymer
+        to the monomer and the other from the monomer to the polymer, but only
+        one of them is needed.
+        """
         neighbours = []  # list of all atoms this atom bonds to 
         bonds_to_remove = [] 
         for bond in self.bonds:
@@ -183,6 +273,12 @@ class Atom:
             self.bonds.remove(bond)
 
     def angle_neighbours(self) -> set["Atom"]:
+        """
+        Find neighbouring Atoms that this Atom produces Angles with.
+
+        :return: set of Atoms that this Atom participates in Angles with.
+        :rtype: set[Atom]
+        """
         neighbours = set()
         for bond in self.bonds:
             for angle in bond.angles:
@@ -193,6 +289,12 @@ class Atom:
         return neighbours
 
     def dihedral_neighbours(self) -> set["Atom"]:
+        """
+        Find neighbouring Atoms that this Atom produces Dihedrals with.
+
+        :return: set of Atoms that this Atom participates in Dihedrals with.
+        :rtype: set[Atom]
+        """
         neighbours = set()
         for bond in self.bonds:
             for angle in bond.angles:
@@ -205,7 +307,28 @@ class Atom:
             neighbours.remove(self)
         return neighbours
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """
+        Convert this Atom to a dictionary representation.
+
+        The structure of the dictionary is as below:
+        {"atom_id": self.atom_id,
+        "atom_type": self.atom_type,
+        "residue_id": self.residue_id,
+        "residue_name": self.residue_name,
+        "atom_name": self.atom_name,
+        "charge_group_num": self.charge_group_num,
+        "partial_charge": self.partial_charge,
+        "mass": self.mass,
+        "x": self.x,
+        "y": self.y,
+        "z": self.z}
+        * Note that the self.formerly attribute will only be included with a
+                "formerly" key if the attribute is not None.
+
+        :return: a dictionary containing the attributes of this Atom.
+        :rtype: dict
+        """
         atom_dict = {
             "atom_id": self.atom_id,
             "atom_type": self.atom_type,
@@ -220,13 +343,39 @@ class Atom:
             "z": self.z,
         }
         
-        if hasattr(self, 'formerly'): # if we have decorated this atom with a formerly attribute
+        # if we have decorated this atom with a formerly attribute, save it
+        if hasattr(self, 'formerly'):
             atom_dict["formerly"] = self.formerly
         
         return atom_dict
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data) -> "Atom":
+        """
+        Create a new Atom from a dictionary, such as that created with
+        Atom.to_dict(). 
+
+        The structure of the dictionary is as below:
+        {"atom_id": self.atom_id,
+        "atom_type": self.atom_type,
+        "residue_id": self.residue_id,
+        "residue_name": self.residue_name,
+        "atom_name": self.atom_name,
+        "charge_group_num": self.charge_group_num,
+        "partial_charge": self.partial_charge,
+        "mass": self.mass,
+        "x": self.x,
+        "y": self.y,
+        "z": self.z}
+        * Note that the "formerly" kew will only be present if it's value
+                is not None.
+
+        :param data: dictionary containing data to make an Atom, generate
+                with 'to_dict()'.
+        :type data: dict
+        :return: a new Atom
+        :rtype: Atom
+        """
         kwargs = {
             "atom_id": data["atom_id"],
             "atom_name": data["atom_name"],
@@ -244,7 +393,4 @@ class Atom:
         if "formerly" in data:  # only if this is part of the dictionary
             kwargs["formerly"] = data["formerly"]
         
-        return cls(**kwargs)        
-    
-    # def __hash__(self) -> int:
-    #     return hash((self.residue_name, self.atom_name))
+        return cls(**kwargs)
