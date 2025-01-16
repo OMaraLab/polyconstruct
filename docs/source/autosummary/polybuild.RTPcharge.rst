@@ -1,4 +1,4 @@
-﻿polybuild.RTPcharge
+polybuild.RTPcharge
 ===================
 
 .. automodule:: polybuild.RTPcharge

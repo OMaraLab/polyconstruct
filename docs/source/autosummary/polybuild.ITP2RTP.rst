@@ -1,4 +1,4 @@
-﻿polybuild.ITP2RTP
+polybuild.ITP2RTP
 =================
 
 .. automodule:: polybuild.ITP2RTP
