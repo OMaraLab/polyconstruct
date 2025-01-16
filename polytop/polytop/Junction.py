@@ -191,7 +191,7 @@ class Junctions(list):
         :param name: the name of a Junction/s to retrieve.
         :type name: str
         :return: list[Junction]
-        :rtype: _type_
+        :rtype: list
         """
         return [junction for junction in self if junction.name == name]
 

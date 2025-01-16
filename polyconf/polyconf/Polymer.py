@@ -92,19 +92,6 @@ class Polymer:
             self.polymer.select_atoms(f"resid {resid} and name {namein} and index {x}").atoms.names=[nameout+str(i)]
 
 
-    def newresid(self):
-        """
-        Generates a resid that is one larger than the highest existing resid in
-        the polymer. Excellent for finding what the number of the next residue
-        should be set to, for the nn argument to 'extend()'.
-
-        :return: resid one greater than the polymer's current highest resid
-        :rtype: int
-        """
-        nn = max(self.polymer.residues.resids) + 1
-        return nn
-
-
     def maxresid(self):
         """
         Returns maximum resid in the polymer

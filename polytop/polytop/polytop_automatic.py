@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import random
 import re
+from tqdm import tqdm
 from typing import Dict, List, Optional, Tuple, Union
 from .Bonds import Bond
 from .Junction import Junction, Junctions
@@ -45,7 +46,7 @@ class Automatic:
             monomers.append(mono)
         
         polymer = Polymer(monomers[0])
-        for i in range(1, self.sizeOfPolymer):
+        for i in tqdm(range(1, self.sizeOfPolymer), desc='Building polymer topology with PolyTop'):
             polymer.extend(monomers[i], "from", "to")
 
         polymer.save_to_file(f'{outputName}.json')

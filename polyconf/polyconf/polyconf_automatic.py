@@ -78,21 +78,20 @@ def main():
         for m in l:
             print(m,':',len([x for x in polyList if x == m]))
 
-    print(f"\nPolymer building by joining atom {args.junctions[0]} to atom {args.junctions[1]}")
+    print(f"\nPolymer building by joining atom {args.junctions[0]} to atom {args.junctions[1]}\n")
 
     # has paths to all ITP and PDB files
     itp_monomers = [x for x in mdict['itp path'].keys()]
 
+    # Build polymer topology with PolyTop
     polymerITP = Automatic(polyList, mdict['itp path'], args.length, itp_monomers, args.junctions, args.joiners)
-    print("\n\nBuilding polymer topology with PolyTop...\n")
     polymerITP.build(outputName=args.name)
-    print(f"Saved polymer topology as '{fname}.itp'\n")
-
-
+    print(f"\nSaved polymer topology as '{fname}.itp'\n")
 
     # Generate and save linear polymer
     j_a = args.junctions
     d_a = args.joiners
+    atoms_to_rename = dict.fromkeys(list(range(1, args.length+1)))
     polymer = Polymer(Monomer(mdict['pdb path'][polyList[0]]))
     for i in tqdm(range(len(polyList)),desc='Building initial polymer geometry with PolyConf'):
         if i >= 1:
@@ -100,14 +99,24 @@ def main():
             j_t = (j_a[0], j_a[1])
             joins = [j_t]
             polymer.extend(Monomer(mdict['pdb path'][polyList[i]]),n=i,nn=i+1,names=names, joins=joins, linearise=True)
-            # rename the dummy atoms to 'X' to flag for removal
+            # save dummy atoms for later renaming
             for j, name in enumerate(args.joiners):
-                polymer.renamer(i+j, name, nameout='X')
-        
+                if atoms_to_rename[i+j] == None:
+                    atoms_to_rename[i+j] = [name]
+                else:
+                    atoms_to_rename[i+j].append(name)
+            
+
+    # rename the dummy atoms to 'X' to flag for removal
+    for resid in atoms_to_rename:
+        for atom in atoms_to_rename[resid]:
+            polymer.renamer(resid, atom, nameout='X')
+    
+    # save the polymer
     polymerSaver = PDB(polymer)
     polymerSaver.cleanup()
     polymerSaver.save(fname = f'{fname}_linear', selectionString=None)
-    print(f"\n\nSaved linear polymer geometry as '{fname}_linear.pdb'\n\n")
+    print(f"\nSaved linear polymer geometry as '{fname}_linear.pdb'\n")
 
 
     # Copy linear polymer, generate different conformations without steric clashes and save
