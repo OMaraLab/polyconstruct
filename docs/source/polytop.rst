@@ -1,31 +1,11 @@
-﻿polytop
-=======
+PolyTop
+================
 
-.. automodule:: polytop
+Classes
+----------
 
-   
-   
-   
-
-   
-   
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :recursive:
+.. toctree::
+   :titlesonly:
 
    polytop.Angles
    polytop.Atoms
@@ -33,15 +13,21 @@
    polytop.Dihedrals
    polytop.Exclusions
    polytop.Gromacs
-   polytop.ITP
    polytop.Junction
-   polytop.Molecule
    polytop.Molecule_type
    polytop.Monomer
    polytop.Pairs
    polytop.Polymer
-   polytop.Polymerization_type
    polytop.Topology
    polytop.Visualize
    polytop.polytop_automatic
 
+
+Module contents
+---------------
+
+.. automodule:: polytop
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :no-index:

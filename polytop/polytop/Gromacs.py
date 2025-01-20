@@ -50,12 +50,18 @@ class Gromacs:
     def run_simulation(self, mdp_file: str, gro_file: str, top_file: str, tpr_file: str, block: bool = True):
         """
         Runs a GROMACS simulation using the given mdp, gro, and top files.
-        Args:
-            mdp_file (str): the name of the parameter file
-            gro_file (str): the name of the molecular structure file
-            top_file (str): the name of the topology file
-            tpr_file (str): the name of the portable binary run input file
-            block (bool): if True, then wait until the simulation has finished, otherwise run in the background
+
+        :param mdp_file: the name of the parameter file
+        :type mdp_file: str
+        :param gro_file: the name of the molecular structure file
+        :type gro_file: str
+        :param top_file: the name of the topology file
+        :type top_file: str
+        :param tpr_file: the name of the portable binary run input file
+        :type tpr_file: str
+        :param block: if True, then wait until the simulation has finished,
+                otherwise run in the background, defaults to True
+        :type block: bool, optional
         """
         gromacs_commands = ["gmx", "grompp", "-f", f"/data/{mdp_file}", "-c", f"/data/{gro_file}", "-p", f"/data/{top_file}", "-o", f"/output/{tpr_file}"]
         docker_commands = [

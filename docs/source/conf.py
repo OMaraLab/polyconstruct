@@ -101,8 +101,10 @@ language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "default"
+pygments_style = "sphinx"
 
+# Suppress duplicate object description warnings
+suppress_warnings = ['autosectionlabel.*']
 
 # -- Options for HTML output -------------------------------------------------
 

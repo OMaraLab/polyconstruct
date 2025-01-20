@@ -1,5 +1,6 @@
 #!/usr/bin/env python 
 import MDAnalysis as mda
+from MDAnalysis import Merge
 
 class Monomer:
     """
@@ -12,7 +13,7 @@ class Monomer:
             connectivity information (e.g. CONECT records in a pdb),
             these may not work as intended.
     """
-    def __init__(self, monomerName:str) -> None:
+    def __init__(self, monomerName, fromUni = False) -> None:
         """
         Create a Monomer MDAnalysis Universe from the filepath to a PDB, and
         saves a copy of the Monomer's residues and atoms for quicker access.
@@ -20,9 +21,23 @@ class Monomer:
         :param monomerName: filepath to the monomer .pdb file
         :type monomerName: str
         """
-        self.monomer = mda.Universe(monomerName)
+        if fromUni:
+            self.monomer = monomerName
+        else:
+            self.monomer = mda.Universe(monomerName)
         self.residues = self.monomer.residues
         self.atoms = self.monomer.atoms
+
+    @classmethod
+    def monomer_from_u(cls, universe:mda.Universe) -> 'Monomer':
+        """
+
+        :param universe: _description_
+        :type universe: mda.Universe
+        :return: _description_
+        :rtype: Monomer
+        """
+        return cls(universe.select_atoms("all"), fromUni=True)
     
     def select_atoms(self, selection:str) -> mda.AtomGroup:
         """

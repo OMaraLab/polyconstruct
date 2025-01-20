@@ -20,6 +20,7 @@ dependencies = [
     "click",
     "py3Dmol",
     "rdkit",
+    "tqdm"
 ]
 
 [tool.setuptools.packages.find]

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import random
 import re
+from tqdm import tqdm
 from typing import Dict, List, Optional, Tuple, Union
 from .Bonds import Bond
 from .Junction import Junction, Junctions
@@ -30,13 +31,8 @@ class Automatic:
     def build(self, outputName = 'polymer'):
         monomers = []
         names = ["from", "to"]
-        print(self.monomer_paths_dict)
-        print(self.junction_atoms[0])
-        print(self.leaving_atoms[0])
-        print(names[0])
 
         for index, monomer in enumerate(self.directions):
-            print(monomer)
             m = Topology.from_ITP(self.monomer_paths_dict[self.directions[index]])
             junctions = []
             if (index == 0): #keeping leaving
@@ -50,10 +46,14 @@ class Automatic:
             monomers.append(mono)
         
         polymer = Polymer(monomers[0])
-        for i in range(1, self.sizeOfPolymer):
+        for i in tqdm(range(1, self.sizeOfPolymer), desc='Building polymer topology with PolyTop'):
             polymer.extend(monomers[i], "from", "to")
 
         polymer.save_to_file(f'{outputName}.json')
         polymer_topology = polymer.topology
         polymer_topology.to_ITP(f'{outputName}.itp')
-        Visualize.polymer(polymer,infer_bond_order=False).draw2D(f'{outputName}.png',(400,200))
+        try:
+            Visualize.polymer(polymer,infer_bond_order=False).draw2D(f'{outputName}.png',(400,200))
+        except Exception as e:
+            print("Unable to generate RDKit render")
+            print(f"Failed with: '{e}'")
