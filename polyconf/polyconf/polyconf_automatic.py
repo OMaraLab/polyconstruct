@@ -123,16 +123,19 @@ def main():
     CN=polymer.gen_pairlist(a1=args.rotate[0],a2=args.rotate[1],first_resid=1,last_resid=args.length,mult=3)
 
     for i in range(args.nconfs):
-        failed = True
+        # failed = True
         polymerToShuffle = polymer.copy()
         for j in range(args.shuffles):
-            failed = polymerToShuffle.dihedral_solver(CN,dummy=args.joiners,cutoff=0.7)
+            failed = polymerToShuffle.dihedral_solver(CN, cutoff=0.7)
             if failed == False:
                 print(f"successfully generated conformation {i+1} without clashes")
                 Saver = PDB(polymerToShuffle)
                 Saver.cleanup() # center in box
-                Saver.save(dummyAtoms=args.joiners,fname=f'{args.name}_solved{i+1}')
+                Saver.save(fname=f'{args.name}_solved{i+1}')
                 print(f"Saved polymer geometry {i+1} as '{fname}_solved{i+1}.pdb'\n\n")
                 break
+            else:
+                print("Shuffling geometry and retrying")
+                polymerToShuffle.shuffler(CN,dummy='X*',cutoff=0.5,clashcheck=False)
         if failed == True:
             print(f"Unable to generate conformation number {i+1} - moving onto the next conformation\n\n")

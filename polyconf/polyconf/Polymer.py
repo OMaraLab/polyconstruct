@@ -103,6 +103,17 @@ class Polymer:
         return n
 
 
+    def newresid(self):
+        """
+        Returns next numerical resid possible for the polymer
+        
+        :return: the polymer's current highest resid plus 1
+        :rtype: int
+        """
+        n = max(self.polymer.residues.resids) + 1
+        return n
+
+
     def extend(self, monomer, n, nn, names, joins, ortho=[1,1,1], 
                linearise=False, beta=0):
         """
@@ -430,8 +441,12 @@ class Polymer:
                 done=True
         if failed or i<0: # hard coded to detect failure if you stop at i<=0 because detecting this automatically wasn't working
             print('Could not reach a valid conformation')
-            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again') 
-        return(failed or i<0)
+            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again')
+            return True
+        else:
+            return False
+        # return(failed or i<0)
+        # return(failed)
 
     def shuffler(self,pairlist,dummy='X*',cutoff=0.5,clashcheck=False):
         """
