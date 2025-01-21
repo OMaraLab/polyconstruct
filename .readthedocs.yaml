@@ -20,9 +20,4 @@ python:
 python:
   install:
     - method: pip
-      path: .
-
-python:
-  install:
-    - method: pip
-      path: .docs/source/polyconstruct-sphinx-theme
+      path: docs/source/polyconstruct-sphinx-theme
