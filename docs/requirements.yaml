@@ -2,8 +2,6 @@ name: polyconstruct-docs
 channels:
   - conda-forge
   - defaults
-source:
-  path: ./source/polyconstruct-sphinx-theme
 dependencies:
   # Base depends
   - python
