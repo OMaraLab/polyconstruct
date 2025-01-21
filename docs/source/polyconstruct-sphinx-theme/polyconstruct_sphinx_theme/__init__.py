@@ -1,4 +1,4 @@
-"""MDAnalysis Sphinx theme."""
+"""PolyConstruct Sphinx theme."""
 
 import logging
 import os
