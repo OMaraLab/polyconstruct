@@ -6,7 +6,6 @@ dependencies:
   # Base depends
   - python
   - pip
-  - polyconstruct-sphinx-theme
 
   # MDAnalysis
   - MDAnalysis
