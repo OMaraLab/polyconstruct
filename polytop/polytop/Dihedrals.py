@@ -19,9 +19,10 @@ class Dihedral_type(IntEnum):
     def is_rotational_constraint(self) -> bool:
         """
         Proper dihedral: constrains torsional rotation around the BC bond
-        A -◟B
-          /
-        C◝- D 
+
+        | A -◟B  |
+        |   /    |
+        | C◝- D  |
 
         :return: True if this Dihedral is proper, and False if not.
         :rtype: bool
@@ -33,9 +34,10 @@ class Dihedral_type(IntEnum):
         """
         Improper dihedral: constrains orientation of D WRT the CAB plane. In
                            other words, the two angles are B-A-C and B-A-D
-            B
-            |
-        C -◜A◝ - D
+
+        |     B      |
+        |     |      |
+        | C -◜A◝ - D |
 
         :return: True if this Dihedral is improper, and False if not.
         :rtype: bool

@@ -20,7 +20,6 @@ Classes
    polytop.Polymer
    polytop.Topology
    polytop.Visualize
-   polytop.polytop_automatic
 
 
 Module contents

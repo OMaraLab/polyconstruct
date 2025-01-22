@@ -33,7 +33,64 @@ parser.add_argument('--junctions', metavar='N', type=str, nargs='*', required=Tr
 # fill = after polymer is extended based on count or frac, gencomp checks if the desired  length is required
 #           if the polymer has not reached the desired length, extends by choosing randomly from monomers where fill = True
 
+
 def main():
+    """
+    A module for automatic, simultaneous building of united-atom, linear polymer
+    structures and parameters is accessible from the command line. The user
+    specifies the monomer chemistry, polymer length, and the number of structures
+    to create. This module is suitable for rapid creation of linear homopolymers,
+    or heteropolymers with random monomer ordering. A CSV of a specific format
+    (see below) must be made and supplied to the automated linear polymer
+    builder after the ‘--monomers’ argument.
+
+    This CSV must have a column for each: ‘pdb path’, ‘itp path’, ‘position’,
+    ‘resname’, ‘fill’ and at least one of ‘count’ or ‘frac’.
+
+    .. list-table:: Example csv
+        :widths: 25 25 25 25 25 25
+        :header-rows: 1
+
+        * - resname
+          - count
+          - fill
+          - pdb path
+          - itp path
+          - position
+        * - PEII
+          - 1
+          - 0
+          - /path/to/PEII-monomer.pdb
+          - /path/to/PEII-monomer.itp
+          - initial
+        * - PEI_M
+          - 100
+          - 1
+          - /path/to/PEI_M-monomer.pdb
+          - /path/to/PEI_M-monomer.itp
+          - middle
+        * - PEIT
+          - 1
+          - 0
+          - /path/to/PEIT-monomer.pdb
+          - /path/to/PEIT-monomer.itp
+          - terminal
+
+    A general and a specific command line example are both provided below:
+
+    .. code-block::
+        
+        polyconf-automatic --name desired-polymer-filename --nconfs 10 --count
+        --length 50 --monomers path/to/monomers.csv --shuffles 20
+        --rotate bonded-atoms-to-shuffle --junctions real-atoms-to-join
+        --joiners corresponding-dummy-atoms
+
+    .. code-block::
+        
+        polyconf-automatic --count --length 10 --monomers monomers.csv
+        --name peipolymer --junctions N7 C51 --joiners C6 C62 --rotate C61 C5
+
+    """
     print("\nWARNING")
     print("This automatic linear, united-atom polymer builder is newly developed and may not "
           "construct polymer topologies and coordinates as expected, please "

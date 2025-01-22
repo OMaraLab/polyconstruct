@@ -4,7 +4,7 @@ import json
 from typing import Tuple, Union, List
 
 from .Junction import Junction, Junctions
-
+from .Polymer import Polymer
 from .Bonds import Bond
 from .Topology import Topology
     
@@ -36,8 +36,6 @@ class Monomer:
             for junction in junctions:
                 junctions_obj.add(junction)
             self.junctions = junctions_obj
-
-    from .Polymer import Polymer
 
     @classmethod
     def from_Polymer(cls, polymer: Polymer) -> Monomer:

@@ -1,5 +1,5 @@
-polyconf\_automatic
------------------------------------
+Automated Linear, United-Atom Polymer Builder
+----------------------------------------------
 
 .. automodule:: polyconf.polyconf_automatic
    :members:

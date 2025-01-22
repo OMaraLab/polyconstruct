@@ -1,8 +1,8 @@
 .. _quickstart:
 
-==================================
-MDAnalysis Sphinx theme Quickstart
-==================================
+======================================
+PolyConstruct Sphinx theme Quickstart
+======================================
 
 This theme provides a responsive theme for Sphinx documentation by the Open Force Field Initiative.
 It is inspired by `Material for Sphinx <https://bashtage.github.io/sphinx-material/>`_ and `Material for MkDocs <https://squidfunk.github.io/mkdocs-material/>`_, but has been rewritten with the `Bulma <https://bulma.io>`_ CSS framework to remove any JavaScript dependencies.
@@ -13,7 +13,7 @@ Install from git
 
 .. code-block:: shell-session
 
-   $ pip install git+https://github.com/mdanalysis/mdanalysis-sphinx-theme.git@main
+   $ pip install git+https://github.com/lunamorrow/polyconstruct-sphinx-theme.git@main
 
 Or, add to your ReadTheDocs environment.yml
 
@@ -26,14 +26,14 @@ Or, add to your ReadTheDocs environment.yml
         - <conda dependency>
         # --- snip --- #
         - pip:
-            - git+https://github.com/mdanalysis/mdanalysis-sphinx-theme.git@main
+            - git+https://github.com/lunamorrow/polyconstruct-sphinx-theme.git@main
 
 Update your ``conf.py`` with the required changes:
 
 .. code-block:: python
 
-    extensions.append("mdanalysis_sphinx_theme")
-    html_theme = "mdanalysis_sphinx_theme"
+    extensions.append("polyconstruct_sphinx_theme")
+    html_theme = "polyconstruct_sphinx_theme"
     html_sidebars = {"**": ["globaltoc.html", "localtoc.html", "searchbox.html"]}
 
 
@@ -43,8 +43,8 @@ or ``theme.conf`` for more details.
 .. code-block:: python
 
     # Enable the theme itself
-    extensions.append("mdanalysis_sphinx_theme")
-    html_theme = "mdanalysis_sphinx_theme"
+    extensions.append("polyconstruct_sphinx_theme")
+    html_theme = "polyconstruct_sphinx_theme"
 
     # (Optional) Logo in PNG format.
     # If not provided and mda_official is False, no logo will be added.
@@ -104,29 +104,6 @@ or ``theme.conf`` for more details.
         "**": ["globaltoc.html", "localtoc.html", "searchbox.html"]
     }
 
-
-.. toctree::
-    :caption: Basic Use
-    :maxdepth: 1
-
-    customization
-    writing-references
-    specimen
-    additional_samples
-    subpage/index
-
-
-.. toctree::
-    :caption: Other Examples and Uses
-    :maxdepth: 1
-
-    pymethod
-    numpydoc_example
-    autodoc_pydantic_example
-    mdanalysis
-    notebook.ipynb
-    rst-cheatsheet/rst-cheatsheet
-    primer
 
 .. toctree::
     :caption: Changes and License

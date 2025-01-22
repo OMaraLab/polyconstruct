@@ -55,6 +55,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
+    "sphinx.ext.autosectionlabel",
     "polyconstruct_sphinx_theme",
 ]
 
