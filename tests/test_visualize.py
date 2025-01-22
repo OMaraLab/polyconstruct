@@ -30,7 +30,7 @@ def test_2D_monomer(data_dir: Path, output_dir: Path):
     # assert image was created
     assert os.path.exists(image_path)
 
-@pytest.mark.xfail(reason="Visualize can not infer hydrogen atom types from 'HC' atoms in the glucose topology file.")
+# @pytest.mark.xfail(reason="Visualize can not infer hydrogen atom types from 'HC' atoms in the glucose topology file.")
 def test_visualize_GLU(data_dir: Path, output_dir: Path):
     glu = Topology.from_ITP(data_dir/"glucose.itp")
     
