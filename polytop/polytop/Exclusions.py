@@ -2,11 +2,6 @@ from __future__ import annotations
 
 from typing import Dict, List, Union
 
-
-class Atom:
-    ...
-
-
 class Exclusion:
     """
     Represents non-bonded interactions between two atoms in a molecular system.
@@ -16,7 +11,7 @@ class Exclusion:
     :param atom_b: The second atom involved in the exclusion.
     :type atom_b: Atom
     """
-    def __init__(self, atom_a: Atom, atom_b: Atom):
+    def __init__(self, atom_a: "Atom", atom_b: "Atom"):
         """
         Represents exclusions (i.e. non-bonded interactions) between two atoms
         in a molecular system.
@@ -32,7 +27,7 @@ class Exclusion:
         atom_b.exclusions.add(self)
 
     @classmethod
-    def from_line(cls, line: str, atoms: List[Atom], indexes=[0, 1]) -> Exclusion:
+    def from_line(cls, line: str, atoms: List["Atom"], indexes=[0, 1]) -> Exclusion:
         """
         Class method to construct Exclusion from the line of an ITP file and a
         list of all Atom's present in the topology.
@@ -40,7 +35,7 @@ class Exclusion:
         :param line: the ITP file line
         :type line: str
         :param atoms: list of all Atoms in the Topology 
-        :type atoms: List[Atom]
+        :type atoms: List["Atom"]
         :param indexes: optional tuple of values to index into elements of the
                 line, defaults to [0, 1]
         :type indexes: list, optional
@@ -85,7 +80,7 @@ class Exclusion:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]) -> Exclusion:
+    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List["Atom"]) -> Exclusion:
         """
         Create a new Exclusion from a dictionary (such as that created with
         Exclusion.to_dict()) and list of Atoms.
@@ -100,7 +95,7 @@ class Exclusion:
         :param atoms: list of Atoms. The list may contain more than 2 atoms, as
                 long as the id's of the two atoms specified in the data dict
                 are present.
-        :type atoms: List[Atom]
+        :type atoms: List["Atom"]
         :return: a new Exclusion
         :rtype: Exclusion
         """

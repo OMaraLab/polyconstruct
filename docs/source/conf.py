@@ -27,8 +27,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 project = "polyconstruct"
 copyright = (
     "2024, Luna Morrow. "
-    "Project structure based on the "
-    "MDAnalysis Cookiecutter version 0.1"
+    "A Python library for constructing polymer topologies and coordinates"
 )
 author = "Luna Morrow"
 add_module_names = False
@@ -56,7 +55,8 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
-    "mdanalysis_sphinx_theme",
+    "sphinx.ext.autosectionlabel",
+    "polyconstruct_sphinx_theme",
 ]
 
 autosummary_generate = True
@@ -103,14 +103,15 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-
+# Suppress duplicate object description warnings
+suppress_warnings = ['autosectionlabel.*']
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "mdanalysis_sphinx_theme"
+html_theme = "polyconstruct_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -122,7 +123,7 @@ html_theme_options = {
 
 }
 # Set your logo and favicon here -- replace the placeholders!
-html_logo = "_static/logo/placeholder_logo.png"
+html_logo = "_static/logo/polyconstruct_logo.png"
 html_favicon = "_static/logo/placeholder_favicon.svg"
 
 

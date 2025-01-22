@@ -17,9 +17,6 @@ import copy
 
 
 class Automatic:
-    """
-    doctrings go brr
-    """
     def __init__(self, orderedList, itp_monomers, numMonomers, monomerList, junctions, dummies) -> None:
         self.directions = orderedList
         self.sizeOfPolymer = numMonomers

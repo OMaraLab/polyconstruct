@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from polytop.Molecule_type import MoleculeType
+from polytop.polytop.Molecule_type import MoleculeType
 
 def test_serialization(output_dir: Path):
     moltype = MoleculeType("ARG", 3) 

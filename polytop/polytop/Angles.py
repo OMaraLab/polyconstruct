@@ -61,18 +61,7 @@ class Angle:
         self.dihedrals = set()
 
     @classmethod
-    def from_line(cls, line: str, atoms) -> Angle:
-        """
-        Class method to construct Angle from the line of an ITP file and a
-        list of all Atoms present in the topology.
-
-        :param line: the ITP file line
-        :type line: str
-        :param atoms: list of all Atoms in the Topology 
-        :type atoms: List[Atom]
-        :return: the new Angle
-        :rtype: Angle
-        """
+    def from_line(cls, line: str, atoms):
         parts = line.split()
         atom_a = atoms[int(parts[0]) - 1]
         atom_b = atoms[int(parts[1]) - 1]
@@ -83,39 +72,13 @@ class Angle:
         return cls(atom_a, atom_b, atom_c, angle_type, angle_value, force_constant)
 
     @staticmethod
-    def find_bonds(atom_a: Atom, atom_b: Atom, atom_c: Atom) -> tuple[Bond, Bond]:
-        """
-        Class method to find two bonds present in this angle, between
-        A-B and B-C Atoms.
-
-        :param atom_a: The first atom involved in the angle.
-        :type atom_a: Atom
-        :param atom_b: The central atom in the angle.
-        :type atom_b: Atom
-        :param atom_c: The third atom involved in the angle.
-        :type atom_c: Atom
-        :return: a tuple containing the A-B and B-C atom bonds in that order 
-        :rtype: tuple[Bond, Bond]
-        """
+    def find_bonds(atom_a: Atom, atom_b: Atom, atom_c: Atom):
         bond_ab = Bond.from_atoms(atom_a, atom_b)
         bond_bc = Bond.from_atoms(atom_b, atom_c)
         return bond_ab, bond_bc
 
     @staticmethod
-    def from_atoms(atom_a: Atom, atom_b: Atom, atom_c: Atom) -> Angle:
-        """
-        Class method to construct Angle from three Atoms. There must be a bond
-        from atom_a to atom_b, and from atom_b to atom_c.
-
-        :param atom_a: The first atom involved in the angle.
-        :type atom_a: Atom
-        :param atom_b: The central atom in the angle.
-        :type atom_b: Atom
-        :param atom_c: The third atom involved in the angle.
-        :type atom_c: Atom
-        :return: the new Angle
-        :rtype: Angle
-        """
+    def from_atoms(atom_a: Atom, atom_b: Atom, atom_c: Atom):
         bond_a, bond_b = Angle.find_bonds(atom_a, atom_b, atom_c)
         if bond_a is None or bond_b is None:
             return None
@@ -193,22 +156,7 @@ class Angle:
     def __repr__(self) -> str:
         return f"Angle({self.atom_a.atom_id}, {self.atom_b.atom_id}, {self.atom_c.atom_id})"
 
-    def to_dict(self) -> dict:
-        """
-        Convert this Angle to a dictionary representation.
-
-        The structure of the dictionary is as below:
-        {'atom_a': self.atom_a.atom_id,
-        'atom_b': self.atom_b.atom_id,
-        'atom_c': self.atom_c.atom_id,
-        'angle_type': self.angle_type,
-        'angle_value': self.angle_value,
-        'force_constant': self.force_constant}
-
-        :return: a dictionary containing the id's of its Atoms and other
-                attributes of this Angle.
-        :rtype: dict
-        """
+    def to_dict(self):
         data = {
             'atom_a': self.atom_a.atom_id,
             'atom_b': self.atom_b.atom_id,

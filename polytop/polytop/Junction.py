@@ -1,6 +1,9 @@
 from __future__ import annotations
 from typing import List
 
+from .Atoms import Atom
+from .Bonds import Bond
+
 class Junction:
     """
     Junctions are the polymerization sites of a monomer topology. They are
@@ -20,8 +23,6 @@ class Junction:
     :raises ValueError: if a Junction cannot be determined from the two
             provided atoms (i.e. if they are not bonded).
     """
-    from .Atoms import Atom
-    from .Bonds import Bond
 
     #TODO: make name enforcably not optional
     def __init__(self, monomer_atom: Atom, residue_atom: Atom, name: str = None):
@@ -63,7 +64,7 @@ class Junction:
 
         Depreciation warning:
         * This function will be depreciated shortly in favour of enforced
-            setting the name attribute of a Junction when it is created.
+        setting the name attribute of a Junction when it is created.
 
         Instead of:   junction = Junction(atomA, atomB).named("name")
         Use:          junction = Junction(atomA, atomB, name="name")
@@ -111,7 +112,6 @@ class Junction:
         :rtype: Junction
         """
         name = data["name"]
-        from .Atoms import Atom
         monomer_atom_name = data["monomer_atom"]
         monomer_atom = next(atom for atom in atoms if atom.atom_name == monomer_atom_name)
         residue_atom_name = data["residue_atom"]
@@ -210,7 +210,6 @@ class Junctions(list):
         """
         return [junction.to_dict() for junction in self]
 
-    from .Atoms import Atom
     @classmethod
     def from_dict(cls, data: list, atoms: List[Atom]) -> "Junctions":
         """
