@@ -1,7 +1,7 @@
 import json
-from polytop.Monomer import Monomer
-from polytop.Topology import Topology
-from polytop.Polymerization_type import PolymerizationType
+from polytop.polytop.Monomer import Monomer
+from polytop.polytop.Topology import Topology
+from polytop.polytop.Polymerization_type import PolymerizationType
 
 def test_PolymerJunction():
     junction_type = PolymerizationType("carboxylic","amino")

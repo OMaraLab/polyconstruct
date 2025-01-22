@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
-from polytop.Junction import Junction, Junctions
-from polytop.Monomer import Monomer
-from polytop.Topology import Topology
-from polytop.Visualize import Visualize
+from polytop.polytop.Junction import Junction, Junctions
+from polytop.polytop.Monomer import Monomer
+from polytop.polytop.Topology import Topology
+from polytop.polytop.Visualize import Visualize
 import os
 import py3Dmol
 

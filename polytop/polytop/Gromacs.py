@@ -1,5 +1,6 @@
 import subprocess
 from pathlib import Path
+from typing import List
 
 class Gromacs:
     """
@@ -26,7 +27,7 @@ class Gromacs:
         self.data_dir = data_dir
         self.output_dir = output_dir
 
-    def run(self, gromacs_commands: list[str], output_file_name: str):
+    def run(self, gromacs_commands: list, output_file_name: str): # gromacs_commands type = list[str]
         docker_commands = [
             "docker",
             "run",

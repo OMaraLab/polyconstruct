@@ -16,7 +16,6 @@ class Molecule:
         raise NotImplemented("fromITP only accepts ITP or str(filename) as arguments")
 
     @fromITP.register
-    @classmethod
     def _(cls, ITPObject: ITP):
         newMolecule = cls()
         newMolecule.atoms = ITPObject.atoms
@@ -25,7 +24,6 @@ class Molecule:
         return newMolecule
 
     @fromITP.register
-    @classmethod
     def _(cls, filename: str):
         ITP_file = ITP()
         ITP_file.load(filename)

@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
-from polytop.Angles import Angle
-from polytop.Atoms import Atom
-from polytop.Bonds import Bond
+from polytop.polytop.Angles import Angle
+from polytop.polytop.Atoms import Atom
+from polytop.polytop.Bonds import Bond
 
 
 def test_angle_creation()->None:
