@@ -16,4 +16,3 @@ __website__ = "https://aibn.uq.edu.au/omara"
 from .Monomer import Monomer
 from .Polymer import Polymer
 from .PDB import PDB
-from .polyconf_automatic import main

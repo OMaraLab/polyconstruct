@@ -254,30 +254,6 @@ All of the monomer ITP files used in the above two examples, and the resulting
 polymer files, are also readily available at 'polyconstruct/data_paper_examples/'.
 
 
-**Automated Builder**
-
-An automated builder is available from the command line, to simultaneously
-construct united-atom, linear polymer structures and parameters. 
-
-This builder streamlines the process of making matching polymer structure and
-parameter files, as it leverages PolyConf and PolyTop to build the polymer
-simultaneously. Additionally, no coding is required to use this module, as it
-is fully available from the command line.
-
-This automated builder is recently developed and still undergoing development
-to ensure it is robust and suitable for all cases. Please manually check the
-topology and structure files produced by this module for correctness (e.g. with
-GROMACS 'gmx grompp' and visual inspection with VMD).
-
-The builder is not working for your case? Please open an issue on the
-`PolyConstruct GitHub repository <https://github.com/OMaraLab/polyconstruct>`_
-with the command used, a copy of your monomer CSV file and a description of the
-issue observed.
-
-For more information and how to use it, see
-:ref:`Automated Linear, United-Atom Polymer Builder` documentation.
-
-
 --------------------------------------------------------------------------------------
 
 Find the above and additional worked examples as executable Python scripts or Jupyter
