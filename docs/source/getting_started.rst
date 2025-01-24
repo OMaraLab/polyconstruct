@@ -122,12 +122,24 @@ polymer file are readily available at 'polyconstruct/polyconf_examples/'.
 **PolyTop**
 
 
+.. note::
+    The import path provided in the examples below is *different* to the path
+    in the examples contained within 'polyconstruct/data_paper_examples/', as
+    the path used to locate modules from within the package structure is
+    different. You must use the structure in the examples below for the module
+    import to be correctly resolved.
+
+
 Simple example - construction of a linear homopolymer:
 
 .. code-block:: python
 
     # Import required classes from PolyTop
-    from polytop.polytop import Topology, Junction, Monomer, Polymer, Visualize
+    from polytop.Junction import Junction
+    from polytop.Monomer import Monomer
+    from polytop.Visualize import Visualize
+    from polytop.Polymer import Polymer
+    from polytop.Topology import Topology
 
     # Load in monomer Topology from ITP file
     top = Topology.from_ITP("data_paper_examples/pei.itp")
@@ -162,7 +174,11 @@ Complex example - construction of a 4-arm PEG star polymer from single monomeric
 .. code-block:: python
 
     # Import required classes from PolyTop
-    from polytop.polytop import Topology, Junction, Monomer, Polymer, Visualize
+    from polytop.Junction import Junction
+    from polytop.Monomer import Monomer
+    from polytop.Visualize import Visualize
+    from polytop.Polymer import Polymer
+    from polytop.Topology import Topology
 
     # Load in monomer topologies from ITP files
     ethanol = Topology.from_ITP("data_paper_examples/extended_ethanol.itp") # main arm monomer
