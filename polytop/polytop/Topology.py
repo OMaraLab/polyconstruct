@@ -370,18 +370,18 @@ class Topology:
                 f.write(str(angle) + "\n")
 
             if any(
-                dihedral.dihedral_type.is_planar_constraint
+                dihedral.dihedral_type.is_planar_constraint or dihedral.dihedral_type.is_periodic_planar_constraint
                 for dihedral in self.dihedrals
             ):
                 f.write("\n[ dihedrals ]\n")
-                f.write("; GROMOS improper dihedrals\n")
+                f.write("; improper dihedrals\n")
                 for dihedral in self.dihedrals:
-                    if dihedral.dihedral_type.is_planar_constraint:
+                    if dihedral.dihedral_type.is_planar_constraint or dihedral.dihedral_type.is_periodic_planar_constraint:
                         f.write(str(dihedral) + "\n")
 
             f.write("\n[ dihedrals ]\n")
             for dihedral in self.dihedrals:
-                if dihedral.dihedral_type.is_rotational_constraint:
+                if dihedral.dihedral_type.is_rotational_constraint or dihedral.dihedral_type.is_rotational_constraint_with_constants:
                     f.write(str(dihedral) + "\n")
 
             f.write("\n[ exclusions ]\n")

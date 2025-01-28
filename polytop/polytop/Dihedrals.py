@@ -161,6 +161,7 @@ class Dihedral:
         self.phase_angle = phase_angle
         self.force_constant = force_constant
         self.multiplicity = multiplicity
+        self.constants = constants
         self.format = format
         # angles and bonds for OPLS forcefield atom order
         if self.format == "opls":
@@ -397,22 +398,24 @@ class Dihedral:
         :rtype: Dihedral
         """
         if self.atom_a == from_atom:
-            new_dihedral = Dihedral(to_atom, self.atom_b, self.atom_c, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+            new_dihedral = Dihedral(to_atom, self.atom_b, self.atom_c, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity, self.constants, self.format)
         elif self.atom_b == from_atom:
-            new_dihedral = Dihedral(self.atom_a, to_atom, self.atom_c, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+            new_dihedral = Dihedral(self.atom_a, to_atom, self.atom_c, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity, self.constants, self.format)
         elif self.atom_c == from_atom:
-            new_dihedral = Dihedral(self.atom_a, self.atom_b, to_atom, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+            new_dihedral = Dihedral(self.atom_a, self.atom_b, to_atom, self.atom_d, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity, self.constants, self.format)
         elif self.atom_d == from_atom:
-            new_dihedral = Dihedral(self.atom_a, self.atom_b, self.atom_c, to_atom, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity)
+            new_dihedral = Dihedral(self.atom_a, self.atom_b, self.atom_c, to_atom, self.dihedral_type, self.phase_angle, self.force_constant, self.multiplicity, self.constants, self.format)
         else:
             raise ValueError(f"Atom {from_atom} is not in dihedral {self}")
         return new_dihedral
 
     def __str__(self):
-        if self.dihedral_type.is_rotational_constraint:
+        if self.dihedral_type.is_rotational_constraint or self.dihedral_type.is_periodic_planar_constraint:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e} {self.multiplicity:>5}"
         elif self.dihedral_type.is_planar_constraint:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e}"
+        elif self.dihedral_type.is_rotational_constraint_with_constants:
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.constants[0]:>10.3f} {self.constants[1]:>10.3f} {self.constants[2]:>10.3f} {self.constants[3]:>10.3f} {self.constants[4]:>10.3f} {self.constants[5]:>10.3f}"
 
     def __repr__(self) -> str:
         return f"Dihedral({self.atom_a.atom_id}, {self.atom_b.atom_id}, {self.atom_c.atom_id}, {self.atom_d.atom_id})"
