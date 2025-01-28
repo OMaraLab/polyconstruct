@@ -7,7 +7,6 @@ PolyConf
    polyconf.Monomer
    polyconf.PDB
    polyconf.Polymer
-   polyconf.polyconf_automatic
 
 
 Module contents

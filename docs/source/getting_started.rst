@@ -28,11 +28,16 @@ To setup an environment for polyconstruct, run:
 
     pip install -r requirements.txt
 
-    # polytop requires python 3.10
-    # you may need to install python=3.10 before you are able to install
-    # requirements (as per above), depending on your setup
+
+If you recieve an error in the last step above, it may be from the Python
+version on your computer setup, as PolyTop has a strict requirement for version
+3.10. Run the below commands then repeat `pip install -r requirements.txt` :
+
+.. code-block:: python
+
     conda uninstall python
     conda install "python=3.10"
+
 
 Then, build the PolyTop, PolyConf and PolyBuild packages:
 
@@ -68,6 +73,19 @@ Then, build the PolyTop, PolyConf and PolyBuild packages:
     simply ensure that each junction type has a unique name that does not allow for any
     discrepancy in exactly which junctions are joined and where.
 
+
+To utilise PolyConf and PolyTop, you will need extended topology files of the
+monomeric units used to build your polymer. These monomer PDB and ITP files,
+respectively can be obtained from the `ATB <https://atb.uq.edu.au/>`_ or
+other sources.
+
+These files do not need to be pre-processed, and can simply be loaded into
+either a PolyConf or PolyTop Monomer object, depending on the file format. For
+more information see the worked examples below, which demonstrate how to load a
+monomer file into a Monomer object in both PolyConf and PolyTop. 
+
+PolyBuild leverages GROMACS tools and does require ITP files to be
+pre-processed. For more information see the :ref:`PolyBuild` documentation.
 
 
 Worked Examples
@@ -122,12 +140,24 @@ polymer file are readily available at 'polyconstruct/polyconf_examples/'.
 **PolyTop**
 
 
+.. note::
+    The import path provided in the examples below is *different* to the path
+    in the examples contained within 'polyconstruct/data_paper_examples/', as
+    the path used to locate modules from within the package structure is
+    different. You must use the structure in the examples below for the module
+    import to be correctly resolved.
+
+
 Simple example - construction of a linear homopolymer:
 
 .. code-block:: python
 
     # Import required classes from PolyTop
-    from polytop.polytop import Topology, Junction, Monomer, Polymer, Visualize
+    from polytop.Junction import Junction
+    from polytop.Monomer import Monomer
+    from polytop.Visualize import Visualize
+    from polytop.Polymer import Polymer
+    from polytop.Topology import Topology
 
     # Load in monomer Topology from ITP file
     top = Topology.from_ITP("data_paper_examples/pei.itp")
@@ -162,7 +192,11 @@ Complex example - construction of a 4-arm PEG star polymer from single monomeric
 .. code-block:: python
 
     # Import required classes from PolyTop
-    from polytop.polytop import Topology, Junction, Monomer, Polymer, Visualize
+    from polytop.Junction import Junction
+    from polytop.Monomer import Monomer
+    from polytop.Visualize import Visualize
+    from polytop.Polymer import Polymer
+    from polytop.Topology import Topology
 
     # Load in monomer topologies from ITP files
     ethanol = Topology.from_ITP("data_paper_examples/extended_ethanol.itp") # main arm monomer
@@ -236,30 +270,6 @@ Complex example - construction of a 4-arm PEG star polymer from single monomeric
 
 All of the monomer ITP files used in the above two examples, and the resulting
 polymer files, are also readily available at 'polyconstruct/data_paper_examples/'.
-
-
-**Automated Builder**
-
-An automated builder is available from the command line, to simultaneously
-construct united-atom, linear polymer structures and parameters. 
-
-This builder streamlines the process of making matching polymer structure and
-parameter files, as it leverages PolyConf and PolyTop to build the polymer
-simultaneously. Additionally, no coding is required to use this module, as it
-is fully available from the command line.
-
-This automated builder is recently developed and still undergoing development
-to ensure it is robust and suitable for all cases. Please manually check the
-topology and structure files produced by this module for correctness (e.g. with
-GROMACS 'gmx grompp' and visual inspection with VMD).
-
-The builder is not working for your case? Please open an issue on the
-`PolyConstruct GitHub repository <https://github.com/OMaraLab/polyconstruct>`_
-with the command used, a copy of your monomer CSV file and a description of the
-issue observed.
-
-For more information and how to use it, see
-:ref:`Automated Linear, United-Atom Polymer Builder` documentation.
 
 
 --------------------------------------------------------------------------------------
