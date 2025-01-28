@@ -130,7 +130,7 @@ def test_topology_auto_rename_atoms(data_dir: Path, output_dir: Path):
     assert arg_max_atom_index["O"] == 2
 
 def test_topology_OPLS_parser(data_dir: Path, output_dir: Path):
-    opls = Topology.from_OPLS_ITP(data_dir/"OPLS_UNK_460A12.itp")
+    opls = Topology.from_ITP(data_dir/"OPLS_UNK_460A12.itp", format="opls")
     opls.to_ITP(output_dir/"OPLS_topology.itp")
     # opls_new = Topology.from_OPLS_ITP(output_dir/"OPLS_topology.itp")
 
