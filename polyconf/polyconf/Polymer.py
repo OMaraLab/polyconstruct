@@ -425,8 +425,6 @@ class Polymer:
         while not (done) :
             with tqdm(total=steps) as pbar:
                 while i < steps and i >=0:
-
-
                     dh=pairlist[i]
                     check=self.dist(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],dummy=dummy)
                     if check > cutoff and not retry:
@@ -457,8 +455,6 @@ class Polymer:
             return True
         else:
             return False
-        # return(failed or i<0)
-        # return(failed)
 
     def shuffler(self,pairlist,dummy='X*',cutoff=0.5,clashcheck=False):
         """
