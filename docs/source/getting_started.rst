@@ -28,11 +28,16 @@ To setup an environment for polyconstruct, run:
 
     pip install -r requirements.txt
 
-    # polytop requires python 3.10
-    # you may need to install python=3.10 before you are able to install
-    # requirements (as per above), depending on your setup
+
+If you recieve an error in the last step above, it may be from the Python
+version on your computer setup, as PolyTop has a strict requirement for version
+3.10. Run the below commands then repeat `pip install -r requirements.txt` :
+
+.. code-block:: python
+
     conda uninstall python
     conda install "python=3.10"
+
 
 Then, build the PolyTop, PolyConf and PolyBuild packages:
 
@@ -68,6 +73,19 @@ Then, build the PolyTop, PolyConf and PolyBuild packages:
     simply ensure that each junction type has a unique name that does not allow for any
     discrepancy in exactly which junctions are joined and where.
 
+
+To utilise PolyConf and PolyTop, you will need extended topology files of the
+monomeric units used to build your polymer. These monomer PDB and ITP files,
+respectively can be obtained from the `ATB <https://atb.uq.edu.au/>`_ or
+other sources.
+
+These files do not need to be pre-processed, and can simply be loaded into
+either a PolyConf or PolyTop Monomer object, depending on the file format. For
+more information see the worked examples below, which demonstrate how to load a
+monomer file into a Monomer object in both PolyConf and PolyTop. 
+
+PolyBuild leverages GROMACS tools and does require ITP files to be
+pre-processed. For more information see the :ref:`PolyBuild` documentation.
 
 
 Worked Examples
