@@ -1,6 +1,6 @@
 from pathlib import Path
 from polytop import *
-from polytop.Gromacs import Gromacs
+from polytop.polytop.Gromacs import Gromacs
 import subprocess
 import os
 

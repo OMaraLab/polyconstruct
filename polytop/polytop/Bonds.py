@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import Dict, List, Union
 
-class Atom:
-    ...
-
 class Bond:
     """
     Represents a bond between two atoms in a molecular system.
@@ -25,8 +22,8 @@ class Bond:
     """
     def __init__(
         self,
-        atom_a: Atom,
-        atom_b: Atom,
+        atom_a: "Atom",
+        atom_b: "Atom",
         bond_type: int,
         bond_length: float,
         force_constant: float,
@@ -86,7 +83,7 @@ class Bond:
         return cls(atom_a, atom_b, bond_type, bond_length, force_constant)
 
     @staticmethod
-    def from_atoms(atom_a: Atom, atom_b: Atom) -> Bond:
+    def from_atoms(atom_a: "Atom", atom_b: "Atom") -> Bond:
         """
         Class method to find and return Bond from between two Atoms. 
 
@@ -118,26 +115,26 @@ class Bond:
             None,
         )
 
-    def contains_atom(self, atom: Atom) -> bool:
+    def contains_atom(self, atom: "Atom") -> bool:
         """
         Check if this Bond contains a given atom.
 
         :param atom: the Atom you wish to check if it is in this Bond or not
         :type atom: Atom
-        :return: True if the Bond contains the given Atom, or False if not.
+        :return: True if the Bond contains the given "Atom", or False if not.
         :rtype: bool
         """
         return atom in [self.atom_a, self.atom_b]
 
-    def clone_bond_changing(self, from_atom: Atom, to_atom: Atom) -> Bond:
+    def clone_bond_changing(self, from_atom: "Atom", to_atom: "Atom") -> Bond:
         """
         Clone the bond, changing the atom that is being replaced. Used during
         the polymer.extend() algorithm to copy and modify bonds where a new
         Monomer is joined to the Polymer.
 
-        :param from_atom: the outgoing Atom, to be replaced
+        :param from_atom: the outgoing "Atom", to be replaced
         :type from_atom: Atom
-        :param to_atom: the incoming Atom, will replace the position of the
+        :param to_atom: the incoming "Atom", will replace the position of the
                 outgoing Atom in this Bond
         :type to_atom: Atom
         :raises ValueError: if 'from_atom' is not in the Bond
@@ -152,7 +149,7 @@ class Bond:
             raise ValueError(f"Atom {from_atom} is not in bond {self}")
         return new_bond
 
-    def other_atom(self, atom: Atom)-> Atom:
+    def other_atom(self, atom: "Atom")-> Atom:
         """
         Check if the given Atom is in this Angle and return a list of the other
         atoms present in this Angle (i.e. discluding 'atom').
@@ -171,7 +168,7 @@ class Bond:
         else:
             raise ValueError(f"Atom {atom} is not in bond {self}")
     
-    def LHS(self) -> set[Atom]:
+    def LHS(self) -> set["Atom"]:
         """
         List of all atoms in the left-hand side of the bond.
 
@@ -179,7 +176,7 @@ class Bond:
         :rtype: set[Atom]
         """
         LHS_atoms = set()
-        def traverse(atom: Atom):
+        def traverse(atom: "Atom"):
             if atom != self.atom_b:
                 LHS_atoms.add(atom)
                 neighbours = atom.bond_neighbours()
@@ -190,7 +187,7 @@ class Bond:
         traverse(self.atom_a)
         return LHS_atoms
     
-    def RHS(self) -> set[Atom]:
+    def RHS(self) -> set["Atom"]:
         """
         List of all atoms in the right-hand side of the bond.
 
@@ -198,7 +195,7 @@ class Bond:
         :rtype: set[Atom]
         """
         RHS_atoms = set()
-        def traverse(atom: Atom):
+        def traverse(atom: "Atom"):
             if atom != self.atom_a:
                 RHS_atoms.add(atom)
                 neighbours = atom.bond_neighbours()
@@ -261,7 +258,7 @@ class Bond:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]) -> Bond:
+    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List["Atom"]) -> Bond:
         """
         Create a new Bond from a dictionary, such as that created with
         Bond.to_dict(). Will retrieve an existing Bond if

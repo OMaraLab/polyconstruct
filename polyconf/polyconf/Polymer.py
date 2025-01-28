@@ -92,6 +92,18 @@ class Polymer:
             self.polymer.select_atoms(f"resid {resid} and name {namein} and index {x}").atoms.names=[nameout+str(i)]
 
 
+    def newresid(self):
+        """
+        Returns maximum resid in the polymer plus 1, thus the next available
+        resid number an incoming monomer can be assigned.
+        
+        :return: the polymer's current highest resid plus one.
+        :rtype: int
+        """
+        n = max(self.polymer.residues.resids) + 1
+        return n
+
+
     def maxresid(self):
         """
         Returns maximum resid in the polymer
@@ -161,9 +173,9 @@ class Polymer:
 
         Further notes:
             * n and nn enable branching by specifying from and to connections between monomers and beta is analogous to segments 
-            * extend a polymer u by a monomer u_, by fitting the backbone atoms (P2, Q2) from the new monomer to (P1,Q1) from the existing residue n, 
+            * extend a polymer 'u' by a monomer 'u\_', by fitting the backbone atoms (P2, Q2) from the new monomer to (P1,Q1) from the existing residue n, 
                 then joins the monomer nn to the existing universe with a bond between each pair of atoms in joins
-        
+
             ATOM NOMENCLATURE:
                 * P1 and Q1 are atoms in monomer n
                 * P2 and Q2 are dummy atoms in monomer nn, which correspond to the atoms P1 and Q1

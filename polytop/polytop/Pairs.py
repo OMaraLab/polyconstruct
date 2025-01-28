@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import Dict, List, Union
 
-class Atom:
-    ...
-
 class Pair:
     """
     Represents interactions between a pair of atoms in a molecular system not
@@ -17,7 +14,7 @@ class Pair:
     :param pair_type: The type of the pair (e.g., 1-4 interactions).
     :type pair_type: int
     """
-    def __init__(self, atom_a: Atom, atom_b: Atom, pair_type: int):
+    def __init__(self, atom_a: "Atom", atom_b: "Atom", pair_type: int):
         """
         Represents interactions between a pair of atoms in a molecular system not
         reflected by bonds.
@@ -36,7 +33,7 @@ class Pair:
         atom_b.pairs.add(self)
 
     @classmethod
-    def from_line(cls, line: str, atoms: List[Atom]) -> Pair:
+    def from_line(cls, line: str, atoms: List["Atom"]) -> Pair:
         """
         Class method to construct Pair from the line of an ITP file.
 
@@ -54,7 +51,7 @@ class Pair:
         return cls(atom_a, atom_b, pair_type)
 
     @staticmethod
-    def from_atoms(atom_a: Atom, atom_b: Atom) -> Pair:
+    def from_atoms(atom_a: "Atom", atom_b: "Atom") -> Pair:
         """
         Class method to construct Pair from two Atoms.
 
@@ -112,7 +109,7 @@ class Pair:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]) -> Pair:
+    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List["Atom"]) -> Pair:
         """
         Create a new Pair from a dictionary (such as that created with
         Pair.to_dict()) and list of Atoms. 

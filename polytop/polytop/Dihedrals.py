@@ -6,10 +6,6 @@ from typing import Dict, List, Union
 
 from .Angles import Angle
 
-
-class Atom:
-    ...
-
 class Dihedral_type(IntEnum):
     """
     Enum to track Dihedral types including proper (1) and improper (2).
@@ -23,9 +19,10 @@ class Dihedral_type(IntEnum):
     def is_rotational_constraint(self) -> bool:
         """
         Proper dihedral: constrains torsional rotation around the BC bond
-        A -◟B
-          /
-        C◝- D 
+
+        | A -◟B  |
+        |   /    |
+        | C◝- D  |
 
         :return: True if this Dihedral is proper, and False if not.
         :rtype: bool
@@ -37,9 +34,10 @@ class Dihedral_type(IntEnum):
         """
         Improper dihedral: constrains orientation of D WRT the CAB plane. In
                            other words, the two angles are B-A-C and B-A-D
-            B
-            |
-        C -◜A◝ - D
+
+        |     B      |
+        |     |      |
+        | C -◜A◝ - D |
 
         :return: True if this Dihedral is improper, and False if not.
         :rtype: bool
@@ -71,10 +69,10 @@ class Dihedral:
     """
     def __init__(
         self,
-        atom_a: Atom,
-        atom_b: Atom,
-        atom_c: Atom,
-        atom_d: Atom,
+        atom_a: "Atom",
+        atom_b: "Atom",
+        atom_c: "Atom",
+        atom_d: "Atom",
         dihedral_type: Dihedral_type,
         phase_angle: float,
         force_constant: float,
@@ -176,10 +174,10 @@ class Dihedral:
 
     @staticmethod
     def find_angles(
-        atom_a: Atom,
-        atom_b: Atom,
-        atom_c: Atom,
-        atom_d: Atom,
+        atom_a: "Atom",
+        atom_b: "Atom",
+        atom_c: "Atom",
+        atom_d: "Atom",
     ) -> tuple[Angle|None, Angle|None]:
         """
         Class method to find Angles present in this Dihedral.
@@ -220,18 +218,18 @@ class Dihedral:
             return angle_bac, angle_bad
         return None, None
 
-    def contains_atom(self, atom: Atom) -> bool:
+    def contains_atom(self, atom: "Atom") -> bool:
         """
         Check if this Dihedral contains a given Atom.
 
         :param atom: the Atom you wish to check if it is in this Dihedral or not
         :type atom: Atom
-        :return: True if the Dihedral contains the given Atom, or False if not
+        :return: True if the Dihedral contains the given "Atom", or False if not
         :rtype: bool
         """
         return atom in [self.atom_a, self.atom_b, self.atom_c, self.atom_d]
     
-    def other_atoms(self, atom: Atom) -> List[Atom]:
+    def other_atoms(self, atom: "Atom") -> List["Atom"]:
         """
         Check if the given Atom is in this Dihedral and return a list of the
         other atoms present in this Dihedral (i.e. discluding 'atom').
@@ -261,10 +259,10 @@ class Dihedral:
 
     @staticmethod
     def from_atoms(
-        atom_a: Atom,
-        atom_b: Atom,
-        atom_c: Atom,
-        atom_d: Atom,
+        atom_a: "Atom",
+        atom_b: "Atom",
+        atom_c: "Atom",
+        atom_d: "Atom",
     ) -> Dihedral:
         """
         Class method to construct Dihedral from four Atoms. There must be at
@@ -289,15 +287,15 @@ class Dihedral:
         common_dihedrals = angle_a.dihedrals & angle_b.dihedrals
         return next(iter(common_dihedrals), None)
     
-    def clone_dihedral_changing(self, from_atom: Atom, to_atom: Atom) -> Dihedral:
+    def clone_dihedral_changing(self, from_atom: "Atom", to_atom: "Atom") -> Dihedral:
         """
         Clone the dihedral, changing the atom that is being replaced. Used
         during the polymer.extend() algorithm to copy and modify angles where a
         new Monomer is joined to the Polymer.
 
-        :param from_atom: the outgoing Atom, to be replaced
+        :param from_atom: the outgoing "Atom", to be replaced
         :type from_atom: Atom
-        :param to_atom: the incoming Atom, will replace the position of the
+        :param to_atom: the incoming "Atom", will replace the position of the
                 outgoing Atom in this Dihedral
         :type to_atom: Atom
         :raises ValueError: if 'from_atom' is not in the Dihedral
@@ -355,7 +353,7 @@ class Dihedral:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List[Atom]) -> Dihedral:
+    def from_dict(cls, data: Dict[str, Union[int, float]], atoms: List["Atom"]) -> Dihedral:
         """
         Create a new Dihedral from a dictionary (such as that created with
         Dihedral.to_dict()) and list of Atoms. Will retrieve an existing

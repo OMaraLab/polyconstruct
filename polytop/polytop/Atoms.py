@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 from typing import Any, List, Optional
 import warnings
@@ -243,7 +244,7 @@ class Atom:
         while self.exclusions:
             self.exclusions.pop().remove()
 
-    def bond_neighbours(self) -> set["Atom"]:
+    def bond_neighbours(self) -> set[Atom]:
         """
         List all the atoms that this atom bonds with.
 
@@ -324,7 +325,7 @@ class Atom:
         "y": self.y,
         "z": self.z}
         * Note that the self.formerly attribute will only be included with a
-                "formerly" key if the attribute is not None.
+        "formerly" key if the attribute is not None.
 
         :return: a dictionary containing the attributes of this Atom.
         :rtype: dict
@@ -368,7 +369,7 @@ class Atom:
         "y": self.y,
         "z": self.z}
         * Note that the "formerly" kew will only be present if it's value
-                is not None.
+        is not None.
 
         :param data: dictionary containing data to make an Atom, generate
                 with 'to_dict()'.
