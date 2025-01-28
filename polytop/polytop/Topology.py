@@ -261,12 +261,12 @@ class Topology:
     @classmethod
     def from_ITP(cls, file_path: str, preprocess=None) -> Topology:
         """
-        Class method to create a Topology object from a GROMACS ITP file.
+        Class method to create a Topology object from a GROMOS forcefield ITP file.
 
         Note: this function does not explicitly check that
         moleculetype.nrexcl = number of exclusions associated with atoms.
 
-        :param file_path: the path to the GROMACS ITP file.
+        :param file_path: the path to the GROMOS ITP file.
         :type file_path: str
         :param preprocess: function to preprocess the topology, that must
                 accept the section and line as arguments in that order,
@@ -311,6 +311,70 @@ class Topology:
                 Pair.from_line(line, atoms)
             elif section == "dihedrals":
                 Dihedral.from_line(line, atoms)
+            elif section == "exclusions":
+                if len(line.split()) > 2:
+                    for second_atom in range(1, len(line.split())):
+                        indexes = [0, second_atom]
+                        Exclusion.from_line(line, atoms, indexes=indexes)
+                else:
+                    Exclusion.from_line(line, atoms)
+            else:
+                warnings.warn(f"Unknown section {section} in {file_path}")
+        return cls(atoms, preamble, molecule_type)
+
+    @classmethod
+    def from_OPLS_ITP(cls, file_path: str, preprocess=None) -> Topology:
+        """
+        Class method to create a Topology object from an OPLS forcefield ITP file.
+
+        Note: this function does not explicitly check that
+        moleculetype.nrexcl = number of exclusions associated with atoms.
+
+        :param file_path: the path to the OPLS ITP file.
+        :type file_path: str
+        :param preprocess: function to preprocess the topology, that must
+                accept the section and line as arguments in that order,
+                defaults to None.
+        :type preprocess: lambda function, optional
+        :return: the created Topology object.
+        :rtype: Topology
+        """
+
+        with open(file_path, "r") as f:
+            lines = f.readlines()
+
+        preamble = []
+        molecule_type = None
+        atoms = []
+
+        section = None
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith(";"):
+                if section is None:
+                    preamble.append(line)
+                continue
+            if line.startswith("["):
+                section = line.strip("[] ").lower()
+                continue
+            if preprocess is not None:
+                line = preprocess(section, line)
+            if section == "moleculetype":
+                molecule_type = MoleculeType.from_line(line)
+                continue
+            elif section == "atoms":
+                atom = Atom.from_line(line)
+                # check for issues with atom type or name
+                atom.element #TODO: add support OR remove this check?
+                atoms.append(atom)
+            elif section == "bonds":
+                Bond.from_line(line, atoms)
+            elif section == "angles":
+                Angle.from_line(line, atoms)
+            elif section == "pairs":
+                Pair.from_line(line, atoms)
+            elif section == "dihedrals":
+                Dihedral.from_line(line, atoms, format="opls")
             elif section == "exclusions":
                 if len(line.split()) > 2:
                     for second_atom in range(1, len(line.split())):

@@ -80,6 +80,9 @@ class Angle:
     @staticmethod
     def from_atoms(atom_a: Atom, atom_b: Atom, atom_c: Atom):
         bond_a, bond_b = Angle.find_bonds(atom_a, atom_b, atom_c)
+        print(f"Bond a = {bond_a}")
+        print(f"Bond b = {bond_b}")
+        print(f"Atom a = {atom_a}, atom b = {atom_b} and atom c = {atom_c}")
         if bond_a is None or bond_b is None:
             return None
         return next((angle for angle in bond_a.angles if angle in bond_b.angles), None)

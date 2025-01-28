@@ -129,6 +129,38 @@ def test_topology_auto_rename_atoms(data_dir: Path, output_dir: Path):
     assert arg_max_atom_index["N"] == 4
     assert arg_max_atom_index["O"] == 2
 
+def test_topology_OPLS_parser(data_dir: Path, output_dir: Path):
+    opls = Topology.from_OPLS_ITP(data_dir/"OPLS_UNK_460A12.itp")
+    opls.to_ITP(output_dir/"OPLS_topology.itp")
+    # opls_new = Topology.from_OPLS_ITP(output_dir/"OPLS_topology.itp")
+
+    # def same_properties(atom_a, atom_b)-> bool: 
+    #     if atom.atom_type != new_atom.atom_type:
+    #         return False
+    #     if atom.residue_name != new_atom.residue_name:
+    #         return False
+    #     if atom.residue_id != new_atom.residue_id:
+    #         return False
+    #     if atom.partial_charge != new_atom.partial_charge:
+    #         return False
+    #     if atom.mass != new_atom.mass:
+    #         return False
+    #     return True
+        
+    # atoms = opls.atoms
+    # new_atoms = opls_new.atoms
+    # assert len(atoms) == len(new_atoms)
+    # for i in range(len(atoms)):
+    #     atom = atoms[i]
+    #     new_atom = new_atoms[-i-1]
+    #     assert same_properties(atom, new_atom)
+    #     for atom in atom.bond_neighbours():
+    #         assert any(same_properties(atom, rev_atom) for rev_atom in new_atom.bond_neighbours())
+    #     for atom in atom.angle_neighbours():
+    #         assert any(same_properties(atom, rev_atom) for rev_atom in new_atom.angle_neighbours())
+    #     for atom in atom.dihedral_neighbours():
+    #         assert any(same_properties(atom, rev_atom) for rev_atom in new_atom.dihedral_neighbours())
+
 @pytest.mark.xfail(reason="New method of separating atoms into unique charge groups and renumbering them before saving to ITP is breaking this test.")
 def test_reverse_topology(data_dir: Path, output_dir: Path):
     glu = Topology.from_ITP(data_dir/"glutamine.itp")

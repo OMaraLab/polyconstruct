@@ -9,9 +9,23 @@ from .Angles import Angle
 class Dihedral_type(IntEnum):
     """
     Enum to track Dihedral types including proper (1) and improper (2).
+
+    Proper dihedrals also include: Ryckaert-Bellemans (3), Fourier (5),
+        proper (multiple) (9), tabulated (8) and restricted (10).
+    Improper dihedrals also include: periodic improper (4).
+
+    For more information, see
+    `GROMACS documentation <https://manual.gromacs.org/nightly/reference-manual/topologies/topology-file-formats.html#tab-topfile2>`
+    and view Table 14.
     """
     proper = 1
     improper = 2
+    ryckaert_bellemans = 3
+    periodic_improper = 4
+    fourier = 5
+    multiple = 9
+    tabulated = 8
+    restricted = 10
     # TODO: add additional dihedral types here
     # but remember to update the constraint properties
 
@@ -27,10 +41,26 @@ class Dihedral_type(IntEnum):
         :return: True if this Dihedral is proper, and False if not.
         :rtype: bool
         """
-        return self in [Dihedral_type.proper]
+        return self in [Dihedral_type.proper, Dihedral_type.multiple,
+                        Dihedral_type.tabulated, Dihedral_type.restricted]
 
     @property
-    def is_planar_constraint(self) -> bool: # 
+    def is_rotational_constraint_with_constants(self) -> bool:
+        """
+        Proper dihedral: constrains torsional rotation around the BC bond, but
+        is defined with 6 constants increase of degrees, energy and multiplicity.
+
+        | A -◟B  |
+        |   /    |
+        | C◝- D  |
+
+        :return: True if this Dihedral is proper with constants, and False if not.
+        :rtype: bool
+        """
+        return self in [Dihedral_type.ryckaert_bellemans, Dihedral_type.fourier]
+
+    @property
+    def is_planar_constraint(self) -> bool:
         """
         Improper dihedral: constrains orientation of D WRT the CAB plane. In
                            other words, the two angles are B-A-C and B-A-D
@@ -43,6 +73,21 @@ class Dihedral_type(IntEnum):
         :rtype: bool
         """
         return self in [Dihedral_type.improper]
+
+    @property
+    def is_periodic_planar_constraint(self) -> bool:
+        """
+        Improper dihedral: constrains orientation of D WRT the CAB plane. In
+                           other words, the two angles are B-A-C and B-A-D
+
+        |     B      |
+        |     |      |
+        | C -◜A◝ - D |
+
+        :return: True if this Dihedral is periodic improper, and False if not.
+        :rtype: bool
+        """
+        return self in [Dihedral_type.periodic_improper]
     
 class Dihedral:
     """
@@ -74,9 +119,11 @@ class Dihedral:
         atom_c: "Atom",
         atom_d: "Atom",
         dihedral_type: Dihedral_type,
-        phase_angle: float,
-        force_constant: float,
-        multiplicity: int,
+        phase_angle: float = None,
+        force_constant: float = None,
+        multiplicity: int = None,
+        constants: list[float] = None,
+        format: str = "gromos",
     ) -> None:
         """
         Represents a dihedral angle formed by four atoms in a molecular system.
@@ -97,6 +144,12 @@ class Dihedral:
         :type force_constant: float
         :param multiplicity: The multiplicity of the dihedral angle.
         :type multiplicity: int
+        :param constants: The constants used to describe the dihedra
+                Ryckaert-Bellemans or Fourier potential.
+        :type constants: list[int]
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :raises ValueError: If unable to find an Angle for the Dihedral.
         :raises ValueError: If an unknown Dihedral_type is provided.
         """
@@ -108,33 +161,63 @@ class Dihedral:
         self.phase_angle = phase_angle
         self.force_constant = force_constant
         self.multiplicity = multiplicity
-        if self.dihedral_type.is_rotational_constraint:
-            if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
-                angle_abc.dihedrals.add(self)
-                self.angle_a = angle_abc
+        self.format = format
+        # angles and bonds for OPLS forcefield atom order
+        if self.format == "opls":
+            if self.dihedral_type.is_rotational_constraint or self.dihedral_type.is_rotational_constraint_with_constants:
+                if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
+                    angle_abc.dihedrals.add(self)
+                    self.angle_a = angle_abc
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
+                if angle_bcd := Angle.from_atoms(atom_b, atom_c, atom_d):
+                    angle_bcd.dihedrals.add(self)
+                    self.angle_b = angle_bcd
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
+            elif self.dihedral_type.is_planar_constraint or self.dihedral_type.is_periodic_planar_constraint:
+                if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
+                    angle_abc.dihedrals.add(self)
+                    self.angle_a = angle_abc
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
+                if angle_abd := Angle.from_atoms(atom_a, atom_b, atom_d):
+                    angle_abd.dihedrals.add(self)
+                    self.angle_b = angle_abd
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
             else:
-                raise ValueError(f"Could not find angle for dihedral: {self}")
-            if angle_bcd := Angle.from_atoms(atom_b, atom_c, atom_d):
-                angle_bcd.dihedrals.add(self)
-                self.angle_b = angle_bcd
+                raise ValueError(f"Unknown dihedral type: {dihedral_type}")
+
+        # angles and bonds for GROMOS forcefield atom order
+        if self.format == "gromos":
+            if self.dihedral_type.is_rotational_constraint or self.dihedral_type.is_rotational_constraint_with_constants:
+                if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
+                    angle_abc.dihedrals.add(self)
+                    self.angle_a = angle_abc
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
+                if angle_bcd := Angle.from_atoms(atom_b, atom_c, atom_d):
+                    angle_bcd.dihedrals.add(self)
+                    self.angle_b = angle_bcd
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
+            elif self.dihedral_type.is_planar_constraint or self.dihedral_type.is_periodic_planar_constraint:
+                if angle_bac := Angle.from_atoms(atom_b, atom_a, atom_c):
+                    angle_bac.dihedrals.add(self)
+                    self.angle_a = angle_bac
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
+                if angle_bad := Angle.from_atoms(atom_b, atom_a, atom_d):
+                    angle_bad.dihedrals.add(self)
+                    self.angle_b = angle_bad
+                else:
+                    raise ValueError(f"Could not find angle for dihedral: {self}")
             else:
-                raise ValueError(f"Could not find angle for dihedral: {self}")
-        elif self.dihedral_type.is_planar_constraint:
-            if angle_bac := Angle.from_atoms(atom_b, atom_a, atom_c):
-                angle_bac.dihedrals.add(self)
-                self.angle_a = angle_bac
-            else:
-                raise ValueError(f"Could not find angle for dihedral: {self}")
-            if angle_bad := Angle.from_atoms(atom_b, atom_a, atom_d):
-                angle_bad.dihedrals.add(self)
-                self.angle_b = angle_bad
-            else:
-                raise ValueError(f"Could not find angle for dihedral: {self}")
-        else:
-            raise ValueError(f"Unknown dihedral type: {dihedral_type}")
+                raise ValueError(f"Unknown dihedral type: {dihedral_type}")
 
     @classmethod
-    def from_line(cls, line: str, atoms) -> Dihedral:
+    def from_line(cls, line: str, atoms, format: str = "gromos") -> Dihedral:
         """
         Class method to construct Dihedral from the line of an ITP file and a
         list of all Atom's present in the topology.
@@ -154,12 +237,21 @@ class Dihedral:
         dihedral_type = Dihedral_type(int(parts[4]))
         phase_angle = float(parts[5])
         force_constant = float(parts[6])
-        if dihedral_type.is_rotational_constraint:
+        constants = []
+        if dihedral_type.is_rotational_constraint or dihedral_type.is_periodic_planar_constraint:
             multiplicity = int(parts[7])
-        elif dihedral_type.is_planar_constraint:
+        elif dihedral_type.is_planar_constraint or dihedral_type.is_rotational_constraint_with_constants:
             multiplicity = None # multiplicity is not required for improper dihedrals
         else:
             warnings.warn(f"Unknown dihedral type: {dihedral_type}")
+
+        if dihedral_type.is_rotational_constraint_with_constants:
+            constants = [float(parts[5]), float(parts[6]), float(parts[7]), float(parts[8]), float(parts[9])]
+            if len(parts) > 10: # only append sixth constant if available (in Rychaert-Bellemans, but not in Fourier dihedral type)
+                constants.append(float(parts[10]))
+            # set angle and force to None
+            phase_angle = None
+            force_constant = None
 
         return cls(
             atom_a,
@@ -170,6 +262,8 @@ class Dihedral:
             phase_angle,
             force_constant,
             multiplicity,
+            constants,
+            format
         )
 
     @staticmethod
