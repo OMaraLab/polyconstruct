@@ -325,13 +325,16 @@ class Topology:
                 warnings.warn(f"Unknown section {section} in {file_path}")
         return cls(atoms, preamble, molecule_type)
 
-    def to_ITP(self, file_path: str):
+    def to_ITP(self, file_path: str, format: str = "gromos"):
         """
-        Write the Topology to a GROMACS ITP file.
+        Write the Topology to a GROMACS ITP file of the desired forcefield format.
 
         :param file_path: the path to and the desired name of the GROMACS ITP
                 file.
         :type file_path: str
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         """
         with open(file_path, "w") as f:
             if self.title:
@@ -344,9 +347,10 @@ class Topology:
                     f.write(line + "\n")
                 else:
                     f.write("; " + line + "\n")
-
-            f.write("\n[ moleculetype ]\n")
-            f.write(str(self.molecule_type) + "\n")
+            
+            if self.molecule_type is not None:
+                f.write("\n[ moleculetype ]\n")
+                f.write(str(self.molecule_type) + "\n")
 
             f.write("[ atoms ]\n")
             self.atoms = self._rearrange_atoms()
