@@ -115,17 +115,6 @@ class Polymer:
         return n
 
 
-    def newresid(self):
-        """
-        Returns next numerical resid possible for the polymer
-        
-        :return: the polymer's current highest resid plus 1
-        :rtype: int
-        """
-        n = max(self.polymer.residues.resids) + 1
-        return n
-
-
     def extend(self, monomer, n, nn, names, joins, ortho=[1,1,1], 
                linearise=False, beta=0):
         """
