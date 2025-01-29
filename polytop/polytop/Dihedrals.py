@@ -191,7 +191,7 @@ class Dihedral:
                 raise ValueError(f"Unknown dihedral type: {dihedral_type}")
 
         # angles and bonds for GROMOS forcefield atom order
-        if self.format == "gromos":
+        if self.format == "gromos" or self.format == "charmm":
             if self.dihedral_type.is_rotational_constraint or self.dihedral_type.is_rotational_constraint_with_constants:
                 if angle_abc := Angle.from_atoms(atom_a, atom_b, atom_c):
                     angle_abc.dihedrals.add(self)
@@ -227,6 +227,9 @@ class Dihedral:
         :type line: str
         :param atoms: list of all Atoms in the Topology 
         :type atoms: List[Atom]
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :return: the new Dihedral
         :rtype: Dihedral
         """
@@ -236,12 +239,16 @@ class Dihedral:
         atom_c = atoms[int(parts[2]) - 1]
         atom_d = atoms[int(parts[3]) - 1]
         dihedral_type = Dihedral_type(int(parts[4]))
-        phase_angle = float(parts[5])
-        force_constant = float(parts[6])
+        if format=="charmm":
+            phase_angle = None
+            force_constant = None
+        else:
+            phase_angle = float(parts[5])
+            force_constant = float(parts[6])
         constants = []
-        if dihedral_type.is_rotational_constraint or dihedral_type.is_periodic_planar_constraint:
+        if format!="charmm" and (dihedral_type.is_rotational_constraint or dihedral_type.is_periodic_planar_constraint):
             multiplicity = int(parts[7])
-        elif dihedral_type.is_planar_constraint or dihedral_type.is_rotational_constraint_with_constants:
+        elif dihedral_type.is_planar_constraint or dihedral_type.is_rotational_constraint_with_constants or format=="charmm":
             multiplicity = None # multiplicity is not required for improper dihedrals
         else:
             warnings.warn(f"Unknown dihedral type: {dihedral_type}")
@@ -410,7 +417,9 @@ class Dihedral:
         return new_dihedral
 
     def __str__(self):
-        if self.dihedral_type.is_rotational_constraint or self.dihedral_type.is_periodic_planar_constraint:
+        if self.format == "charmm":
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5}"
+        elif self.dihedral_type.is_rotational_constraint or self.dihedral_type.is_periodic_planar_constraint:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e} {self.multiplicity:>5}"
         elif self.dihedral_type.is_planar_constraint:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.atom_d.atom_id:>5} {self.dihedral_type:>5} {self.phase_angle:>10.4f} {self.force_constant:.4e}"

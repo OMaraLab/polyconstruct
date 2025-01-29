@@ -278,6 +278,9 @@ class Topology:
         :return: the created Topology object.
         :rtype: Topology
         """
+        if format not in ["gromos", "charmm", "amber", "opls"]:
+            raise ValueError("Invalid format! Provide 'gromos', 'charmm', 'amber' or 'opls'\
+                   - note 'gromos' is default if format string is not provided")
 
         with open(file_path, "r") as f:
             lines = f.readlines()
@@ -307,9 +310,9 @@ class Topology:
                 atom.element
                 atoms.append(atom)
             elif section == "bonds":
-                Bond.from_line(line, atoms)
+                Bond.from_line(line, atoms, format=format)
             elif section == "angles":
-                Angle.from_line(line, atoms)
+                Angle.from_line(line, atoms, format=format)
             elif section == "pairs":
                 Pair.from_line(line, atoms)
             elif section == "dihedrals":

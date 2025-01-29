@@ -28,6 +28,7 @@ class Bond:
         bond_length: float,
         force_constant: float,
         order: int = 1,
+        format: str = "gromos"
     ) -> None:
         """
         Represents a bond between two atoms in a molecular system.
@@ -44,6 +45,9 @@ class Bond:
         :type force_constant: float
         :param order: The bond order, defaults to 1 (single bond)
         :type order: int, optional
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :raises ValueError: if either atom_a or atom_b are None
         """
         if atom_a is None or atom_b is None:
@@ -59,9 +63,10 @@ class Bond:
         atom_b.bonds.add(self)
         self.order = order
         self.angles = set()
+        self.format = format
 
     @classmethod
-    def from_line(cls, line: str, atoms: List["Atom"]) -> Bond:
+    def from_line(cls, line: str, atoms: List["Atom"], format: str = "gromos") -> Bond:
         """
         Class method to construct Bond from the line of an ITP file and a list
         of all Atom's present in the topology.
@@ -70,6 +75,9 @@ class Bond:
         :type line: str
         :param atoms: list of all Atoms in the Topology 
         :type atoms: List[Atom]
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :return: the new Bond
         :rtype: Bond
         """
@@ -77,10 +85,14 @@ class Bond:
         atom_a = atoms[int(parts[0]) - 1]
         atom_b = atoms[int(parts[1]) - 1]
         bond_type = int(parts[2])
-        bond_length = float(parts[3])
-        force_constant = float(parts[4])
+        if format=="charmm":
+            bond_length = None
+            force_constant = None
+        else:
+            bond_length = float(parts[3])
+            force_constant = float(parts[4])
 
-        return cls(atom_a, atom_b, bond_type, bond_length, force_constant)
+        return cls(atom_a, atom_b, bond_type, bond_length, force_constant, format=format)
 
     @staticmethod
     def from_atoms(atom_a: "Atom", atom_b: "Atom") -> Bond:
@@ -218,7 +230,10 @@ class Bond:
             self.atom_b.bonds.remove(self)
                 
     def __str__(self):
-        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5} {self.bond_length:>10.4f} {self.force_constant:.4e}"
+        if self.format == "charmm":
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5}"
+        else:
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5} {self.bond_length:>10.4f} {self.force_constant:.4e}"
 
     def __repr__(self) -> str:
         if self.order == 1:
