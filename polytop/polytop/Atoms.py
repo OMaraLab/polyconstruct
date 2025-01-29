@@ -134,7 +134,7 @@ class Atom:
             element_name = element_name[0]
         return element_name
     
-    #TO DO: deconvulute following 3 functions, and atom_name, atom_id and index properties...
+    #TODO: deconvulute following 3 functions, and atom_name, atom_id and index properties...
     @element.setter
     def element(self, value: str):
         """

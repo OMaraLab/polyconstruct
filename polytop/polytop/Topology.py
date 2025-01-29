@@ -259,22 +259,28 @@ class Topology:
         return atoms
     
     @classmethod
-    def from_ITP(cls, file_path: str, preprocess=None) -> Topology:
+    def from_ITP(cls, file_path: str, preprocess=None, format: str = "gromos") -> Topology:
         """
-        Class method to create a Topology object from a GROMACS ITP file.
+        Class method to create a Topology object from an ITP file.
 
         Note: this function does not explicitly check that
         moleculetype.nrexcl = number of exclusions associated with atoms.
 
-        :param file_path: the path to the GROMACS ITP file.
+        :param file_path: the path to the GROMOS ITP file.
         :type file_path: str
         :param preprocess: function to preprocess the topology, that must
                 accept the section and line as arguments in that order,
                 defaults to None.
         :type preprocess: lambda function, optional
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :return: the created Topology object.
         :rtype: Topology
         """
+        if format not in ["gromos", "charmm", "amber", "opls"]:
+            raise ValueError("Invalid format! Provide 'gromos', 'charmm', 'amber' or 'opls'\
+                   - note 'gromos' is default if format string is not provided")
 
         with open(file_path, "r") as f:
             lines = f.readlines()
@@ -304,13 +310,13 @@ class Topology:
                 atom.element
                 atoms.append(atom)
             elif section == "bonds":
-                Bond.from_line(line, atoms)
+                Bond.from_line(line, atoms, format=format)
             elif section == "angles":
-                Angle.from_line(line, atoms)
+                Angle.from_line(line, atoms, format=format)
             elif section == "pairs":
                 Pair.from_line(line, atoms)
             elif section == "dihedrals":
-                Dihedral.from_line(line, atoms)
+                Dihedral.from_line(line, atoms, format=format)
             elif section == "exclusions":
                 if len(line.split()) > 2:
                     for second_atom in range(1, len(line.split())):
@@ -322,13 +328,16 @@ class Topology:
                 warnings.warn(f"Unknown section {section} in {file_path}")
         return cls(atoms, preamble, molecule_type)
 
-    def to_ITP(self, file_path: str):
+    def to_ITP(self, file_path: str, format: str = "gromos"):
         """
-        Write the Topology to a GROMACS ITP file.
+        Write the Topology to a GROMACS ITP file of the desired forcefield format.
 
         :param file_path: the path to and the desired name of the GROMACS ITP
                 file.
         :type file_path: str
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         """
         with open(file_path, "w") as f:
             if self.title:
@@ -341,9 +350,10 @@ class Topology:
                     f.write(line + "\n")
                 else:
                     f.write("; " + line + "\n")
-
-            f.write("\n[ moleculetype ]\n")
-            f.write(str(self.molecule_type) + "\n")
+            
+            if self.molecule_type is not None:
+                f.write("\n[ moleculetype ]\n")
+                f.write(str(self.molecule_type) + "\n")
 
             f.write("[ atoms ]\n")
             self.atoms = self._rearrange_atoms()
@@ -363,18 +373,18 @@ class Topology:
                 f.write(str(angle) + "\n")
 
             if any(
-                dihedral.dihedral_type.is_planar_constraint
+                dihedral.dihedral_type.is_planar_constraint or dihedral.dihedral_type.is_periodic_planar_constraint
                 for dihedral in self.dihedrals
             ):
                 f.write("\n[ dihedrals ]\n")
-                f.write("; GROMOS improper dihedrals\n")
+                f.write("; improper dihedrals\n")
                 for dihedral in self.dihedrals:
-                    if dihedral.dihedral_type.is_planar_constraint:
+                    if dihedral.dihedral_type.is_planar_constraint or dihedral.dihedral_type.is_periodic_planar_constraint:
                         f.write(str(dihedral) + "\n")
 
             f.write("\n[ dihedrals ]\n")
             for dihedral in self.dihedrals:
-                if dihedral.dihedral_type.is_rotational_constraint:
+                if dihedral.dihedral_type.is_rotational_constraint or dihedral.dihedral_type.is_rotational_constraint_with_constants:
                     f.write(str(dihedral) + "\n")
 
             f.write("\n[ exclusions ]\n")

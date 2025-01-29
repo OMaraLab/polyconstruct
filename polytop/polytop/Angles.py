@@ -26,7 +26,8 @@ class Angle:
             B and atoms B and C
     """
     def __init__(self, atom_a: Atom, atom_b: Atom, atom_c: Atom,
-            angle_type: int, angle_value: float, force_constant: float) -> None:
+            angle_type: int, angle_value: float, force_constant: float,
+            format: str = "gromos") -> None:
         """
         Represents an angle between three atoms in a molecular system.
 
@@ -42,6 +43,9 @@ class Angle:
         :type angle_value: float
         :param force_constant: The force constant associated with the angle.
         :type force_constant: float
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :raises ValueError: If there are not bonds present between atoms A and
                 B and atoms B and C
         """
@@ -59,17 +63,36 @@ class Angle:
         self.bond_ab.angles.add(self)
         self.bond_bc.angles.add(self)
         self.dihedrals = set()
+        self.format = format
 
     @classmethod
-    def from_line(cls, line: str, atoms):
+    def from_line(cls, line: str, atoms, format: str = "gromos") -> Angle:
+        """
+        Class method to construct Angle from the line of an ITP file and a
+        list of all Atom's present in the topology.
+
+        :param line: the ITP file line
+        :type line: str
+        :param atoms: list of all Atoms in the Topology 
+        :type atoms: List[Atom]
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
+        :return: the new Angle
+        :rtype: Angle
+        """
         parts = line.split()
         atom_a = atoms[int(parts[0]) - 1]
         atom_b = atoms[int(parts[1]) - 1]
         atom_c = atoms[int(parts[2]) - 1]
         angle_type = int(parts[3])
-        angle_value = float(parts[4])
-        force_constant = float(parts[5])
-        return cls(atom_a, atom_b, atom_c, angle_type, angle_value, force_constant)
+        if format=="charmm":
+            angle_value = None
+            force_constant = None
+        else:
+            angle_value = float(parts[4])
+            force_constant = float(parts[5])
+        return cls(atom_a, atom_b, atom_c, angle_type, angle_value, force_constant, format)
 
     @staticmethod
     def find_bonds(atom_a: Atom, atom_b: Atom, atom_c: Atom):
@@ -151,7 +174,10 @@ class Angle:
             self.bond_bc.angles.remove(self)
 
     def __str__(self):
-        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5} {self.angle_value:>10.4f} {self.force_constant:.4e}"
+        if self.format == "charmm":
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5}"
+        else:
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5} {self.angle_value:>10.4f} {self.force_constant:.4e}"
 
     def __repr__(self) -> str:
         return f"Angle({self.atom_a.atom_id}, {self.atom_b.atom_id}, {self.atom_c.atom_id})"
