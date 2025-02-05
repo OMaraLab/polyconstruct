@@ -31,6 +31,7 @@ class Monomer:
     @classmethod
     def monomer_from_u(cls, universe:mda.Universe) -> 'Monomer':
         """
+        Create Monomer from an MDAnalysis Universe
 
         :param universe: _description_
         :type universe: mda.Universe

@@ -28,3 +28,12 @@ def test_select_atoms(data_dir, pdb_filename: str):
     selected_atoms = monomer.select_atoms(f"name {random_atom.name}")
     assert len(selected_atoms) == 1, f"There should only be one {random_atom.name} atom in {pdb_filename}"
     assert selected_atoms[0].name == random_atom.name, f"The selected atom should be named {random_atom.name}"
+
+@pytest.mark.parametrize("pdb_filename", test_pdbs)
+def test_monomer_from_u(data_dir, pdb_filename: str):
+    """
+    Test that the monomer_from_u Monomer Class method works
+    """
+    universe = mda.Universe(data_dir / pdb_filename)
+    monomer = Monomer.monomer_from_u(universe)
+    assert len(monomer.atoms) == len(universe.atoms)
