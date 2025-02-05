@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 import pytest
-from polyconf.Polymer import Polymer
-from polyconf.Monomer import Monomer
+from polyconf.polyconf.Polymer import Polymer
+from polyconf.polyconf.Monomer import Monomer
 import MDAnalysis as mda
 from .test_data import test_pdbs
 

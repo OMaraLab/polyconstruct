@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 import random
 import pytest
-from polyconf.Monomer import Monomer
+from polyconf.polyconf.Monomer import Monomer
 import MDAnalysis as mda
 from .test_data import test_pdbs # This is a list of test pdb files that we tested for existence in the test_data.py file
 
