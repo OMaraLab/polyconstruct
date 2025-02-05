@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
-from polytop.junction import Junction, Junctions
-from polytop.monomer import Monomer
-from polytop.topology import Topology
-from polytop.visualize import Visualize
+from polytop.polytop.Junction import Junction, Junctions
+from polytop.polytop.Monomer import Monomer
+from polytop.polytop.Topology import Topology
+from polytop.polytop.Visualize import Visualize
 import os
 import py3Dmol
 
@@ -30,7 +30,7 @@ def test_2D_monomer(data_dir: Path, output_dir: Path):
     # assert image was created
     assert os.path.exists(image_path)
 
-@pytest.mark.xfail(reason="Visualize can not infer hydrogen atom types from 'HC' atoms in the glucose topology file.")
+# @pytest.mark.xfail(reason="Visualize can not infer hydrogen atom types from 'HC' atoms in the glucose topology file.")
 def test_visualize_GLU(data_dir: Path, output_dir: Path):
     glu = Topology.from_ITP(data_dir/"glucose.itp")
     

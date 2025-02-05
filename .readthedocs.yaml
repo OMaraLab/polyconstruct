@@ -1,0 +1,23 @@
+# readthedocs.yaml
+
+version: 2
+sphinx:
+  configuration: docs/source/conf.py
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "mambaforge-4.10"
+
+conda:
+  environment: docs/requirements.yaml
+
+python:
+  install:
+    - method: pip
+      path: .
+
+python:
+  install:
+    - method: pip
+      path: docs/source/polyconstruct-sphinx-theme

@@ -1,0 +1,7 @@
+include LICENSE
+recursive-include polyconstruct_sphinx_theme *
+recursive-include branding *
+include setup.cfg
+include versioneer.py
+include polyconstruct_sphinx_theme/_version.py
+include AUTHORS.md CHANGELOG.md README.md

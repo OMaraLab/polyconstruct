@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 
 import pytest
-from polytop.atoms import Atom
-from polytop.bonds import Bond
-from polytop.topology import Topology
+from polytop.polytop.Atoms import Atom
+from polytop.polytop.Bonds import Bond
+from polytop.polytop.Topology import Topology
 
 
 def test_bond_creation()->None:

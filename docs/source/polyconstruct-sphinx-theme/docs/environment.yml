@@ -1,0 +1,34 @@
+name: polyconstruct-sphinx-theme-dev
+channels:
+  - conda-forge
+dependencies:
+  - python >= 3.9
+  - pip
+  - numpy>=1.16
+  - pandas
+  - matplotlib
+  - numpydoc
+  - nbsphinx
+  - jupyter_client
+  - notebook
+  - nbconvert
+  - ipykernel
+  - autodoc-pydantic
+  - myst-parser~=1.0
+  - pandoc
+  - wheel
+  - sphinx-autobuild
+  - sphinx>=6.2.1
+  - sphinx_rtd_theme
+
+  - mdanalysis
+  - pip:
+    - readthedocs-sphinx-search
+    - beautifulsoup4
+    - python-slugify[unidecode]
+    - css_html_js_minify
+    - lxml
+    - libsass
+
+
+

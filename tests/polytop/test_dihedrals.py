@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
-from polytop.angles import Angle
-from polytop.atoms import Atom
-from polytop.dihedrals import Dihedral, Dihedral_type
-from polytop.bonds import Bond
-from polytop.topology import Topology
+from polytop.polytop.Angles import Angle
+from polytop.polytop.Atoms import Atom
+from polytop.polytop.Dihedrals import Dihedral, Dihedral_type
+from polytop.polytop.Bonds import Bond
+from polytop.polytop.Topology import Topology
 
 
 def test_proper_dihedral_creation()->None:

@@ -3,11 +3,11 @@ from pathlib import Path
 import random
 
 import pytest
-from polytop.junction import Junction
-from polytop.monomer import Monomer
-from polytop.visualize import Visualize
-from polytop.polymer import Polymer
-from polytop.topology import Topology
+from polytop.polytop.Junction import Junction
+from polytop.polytop.Monomer import Monomer
+from polytop.polytop.Visualize import Visualize
+from polytop.polytop.Polymer import Polymer
+from polytop.polytop.Topology import Topology
 
 
 

@@ -1,0 +1,31 @@
+name: polyconstruct-docs
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Base depends
+  - python
+  - pip
+
+  # MDAnalysis
+  - MDAnalysis
+
+  # Testing
+  - pytest
+  - pytest-cov
+  - pytest-xdist
+  - codecov
+
+  - IPython
+  - jupyter
+  - nbconvert
+  - nbformat
+  - pytest
+  - rdkit
+  - py3Dmol
+  - numpy
+  - mdanalysis
+  - click
+  - py3Dmol
+  - networkx
+  - tqdm
