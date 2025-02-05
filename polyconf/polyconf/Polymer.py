@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import annotations
 from .Monomer import Monomer
  
 import numpy as np
@@ -59,18 +60,17 @@ class Polymer:
         """
         return self.polymer.select_atoms(selection)
     
-    def copy(self) -> mda.Universe:
+    def copy(self) -> Polymer:
         """
-        Use MDAnalysis Merge to create a new MDAnalysis Universe that is an 
-        exact copy of this one containing the polymer. Deepcopy is not used as
-        it can be problematic with open file sockets.
+        Use MDAnalysis Universe.copy() to create a new MDAnalysis Universe that
+        is an exact copy of this one containing the polymer. Deepcopy is not
+        used as it can be problematic with open file sockets.
 
-        :return: A new MDAnalysis Universe that is an exact copy of the polymer
-        :rtype: mda.Universe
+        :return: A new Polymer that is an exact copy of this polymer
+        :rtype: Polymer
         """
-        new_u = mda.Merge(self.polymer.atoms)
-        return Polymer(Monomer.monomer_from_u(new_u), keep_resids=True)
-        # return Polymer(Monomer.monomer_from_u(new_u), keep_resids=True)
+        new = self.polymer.copy()
+        return Polymer(Monomer.monomer_from_u(new), keep_resids=True)
     
     def renamer(self, resid, namein, nameout='X'):
         """
