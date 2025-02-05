@@ -95,37 +95,42 @@ class Bond:
         return cls(atom_a, atom_b, bond_type, bond_length, force_constant, format=format)
 
     @staticmethod
-    def from_atoms(atom_a: "Atom", atom_b: "Atom") -> Bond:
+    def from_atoms(atom_a: "Atom", atom_b: "Atom", find_empty: bool = False) -> Bond:
         """
         Class method to find and return Bond from between two Atoms. 
 
         :param atom_a: The first atom involved in the angle.
         :type atom_a: Atom
-        :param atom_b: The central atom in the angle.
+        :param atom_b: The second atom in the angle.
         :type atom_b: Atom
-        :param atom_c: The third atom involved in the angle.
-        :type atom_c: Atom
-        :return: the new Angle
-        :rtype: Angle
-
-        :param atom_a: The first atom involved in the bond.
-        :type atom_a: Atom
-        :param atom_b: The second atom involved in the bond.
-        :type atom_b: Atom
+        :param find_empty: Optional argument used when de-duplicating bonds to
+                ensure the bond without angles associated is returned to delete.
+        :type find_empty: bool, defaults to False
         :return: a Bond between these Atoms, or None if either atom_a or atom_b
                 are None or there is not a bond between them.
         :rtype: Bond
         """
         if atom_a is None or atom_b is None:
             return None
-        return next(
-            (
-                bond
-                for bond in atom_a.bonds
-                if bond.atom_b == atom_b or bond.atom_a == atom_b
-            ),
-            None,
-        )
+
+        send = list(bond for bond in atom_a.bonds if bond.atom_b == atom_b or bond.atom_a == atom_b)
+        # need to prevent ambiguity in selecting bonds, so that only one duplicate
+        # bond created during polymer extension gets all of the Angles and Dihedrals,
+        # and the other is removed during bond de-duplication
+        if len(send) > 1 and find_empty==False:
+            # duplicate bond, return the bond that has angles already to give it more
+            has_angles = list(bond for bond in send if len(bond.angles)>=1 and bond.angles!=None and bond.angles!=set())[0]
+            return has_angles
+        elif len(send) > 1 and find_empty==True:
+            # duplicate bond, return the bond with no angles to delete
+            no_angles = list(bond for bond in send if len(bond.angles)==0 or bond.angles==None or bond.angles==set())[0]
+            return no_angles
+        elif len(send)==1:
+            # only 1 bond for this atom pair, return it
+            return send[0]
+        else:
+            # this atom pair does not have a shared bond
+            return None
 
     def contains_atom(self, atom: "Atom") -> bool:
         """
@@ -154,14 +159,14 @@ class Bond:
         :rtype: Bond
         """
         if self.atom_a == from_atom: # first atom is being replaced
-            new_bond = Bond(to_atom, self.atom_b, self.bond_type, self.bond_length, self.force_constant, self.order)
+            new_bond = Bond(to_atom, self.atom_b, self.bond_type, self.bond_length, self.force_constant, self.order, self.format)
         elif self.atom_b == from_atom: # second atom is being replaced
-            new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order)
+            new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order, self.format)
         else:
             raise ValueError(f"Atom {from_atom} is not in bond {self}")
         return new_bond
 
-    def other_atom(self, atom: "Atom")-> Atom:
+    def other_atom(self, atom: "Atom")-> "Atom":
         """
         Check if the given Atom is in this Angle and return a list of the other
         atoms present in this Angle (i.e. discluding 'atom').

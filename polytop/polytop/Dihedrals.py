@@ -374,7 +374,7 @@ class Dihedral:
             angle_abc = Angle.from_atoms(atom_a, atom_b, atom_c)
             angle_bcd = Angle.from_atoms(atom_b, atom_c, atom_d)
 
-            angle_bac = Angle.from_atoms(atom_b, atom_a, atom_c)
+            angle_bac = Angle.from_atoms(atom_a, atom_b, atom_c)
             angle_bad = Angle.from_atoms(atom_a, atom_b, atom_d)
         else: # format == "amber"
             angle_abc = Angle.from_atoms(atom_a, atom_b, atom_c)

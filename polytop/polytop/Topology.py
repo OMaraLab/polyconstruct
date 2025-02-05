@@ -1068,7 +1068,7 @@ class Topology:
         # change all the bonds
         for bond in old_atom.bonds:
             bond.clone_bond_changing(old_atom, new_atom)
-        
+
         # change all the angles
         for bond in old_atom.bonds:
             for angle in bond.angles:

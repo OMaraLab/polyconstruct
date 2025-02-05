@@ -60,6 +60,7 @@ class Angle:
         self.bond_ab, self.bond_bc = Angle.find_bonds(atom_a, atom_b, atom_c)
         if self.bond_ab is None or self.bond_bc is None:
             raise ValueError(f"Could not find bonds for angle: {self}")
+        
         self.bond_ab.angles.add(self)
         self.bond_bc.angles.add(self)
         self.dihedrals = set()
@@ -134,11 +135,11 @@ class Angle:
         :rtype: Angle
         """
         if self.atom_a == from_atom:  # first atom is being replaced
-            new_angle = Angle(to_atom, self.atom_b, self.atom_c, self.angle_type, self.angle_value, self.force_constant)
+            new_angle = Angle(to_atom, self.atom_b, self.atom_c, self.angle_type, self.angle_value, self.force_constant, self.format)
         elif self.atom_b == from_atom:  # second atom is being replaced
-            new_angle = Angle(self.atom_a, to_atom, self.atom_c, self.angle_type, self.angle_value, self.force_constant)
+            new_angle = Angle(self.atom_a, to_atom, self.atom_c, self.angle_type, self.angle_value, self.force_constant, self.format)
         elif self.atom_c == from_atom:  # third atom is being replaced
-            new_angle = Angle(self.atom_a, self.atom_b, to_atom, self.angle_type, self.angle_value, self.force_constant)
+            new_angle = Angle(self.atom_a, self.atom_b, to_atom, self.angle_type, self.angle_value, self.force_constant, self.format)
         else:
             raise ValueError(f"Atom {from_atom} is not in angle {self}")
         return new_angle
