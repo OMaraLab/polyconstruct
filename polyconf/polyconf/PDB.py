@@ -55,9 +55,9 @@ class PDB:
         """
         if selectionString:
             if gmx:
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.gro")
+                self.select_atoms(f"{selectionString} and not name {dummyAtoms}")._write(f"{fname}.gro")
             else:
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.pdb")
+                self.select_atoms(f"{selectionString} and not name {dummyAtoms}")._write(f"{fname}.pdb")
         else:
             if gmx:
                 self._write(f"not name {dummyAtoms}", f"{fname}.gro")
@@ -72,7 +72,7 @@ class PDB:
         :param fname: name of the output file, defaults to "polymer_crude"
         :type fname: str, optional
         """
-        self.atoms._write(f"{fname}.pdb")
+        self._write("all", f"{fname}.pdb")
 
     def select_atoms(self, selection) -> mda.AtomGroup:
         """
