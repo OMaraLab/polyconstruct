@@ -45,6 +45,7 @@ class Polymer:
         self.first = firstMonomer
         self.polymer = self.first
         self.atoms = self.polymer.atoms
+        self.dimensions = self.polymer.dimensions
 
     def select_atoms(self, selection) -> mda.AtomGroup:
         """

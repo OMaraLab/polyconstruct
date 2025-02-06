@@ -1,4 +1,5 @@
 #!/usr/bin/env python 
+from __future__ import annotations
 import MDAnalysis as mda
 from MDAnalysis import Merge
 
@@ -27,6 +28,7 @@ class Monomer:
             self.monomer = mda.Universe(monomerName)
         self.residues = self.monomer.residues
         self.atoms = self.monomer.atoms
+        self.dimensions = self.monomer.dimensions
 
     @classmethod
     def monomer_from_u(cls, universe:mda.Universe) -> 'Monomer':
@@ -55,3 +57,20 @@ class Monomer:
         :rtype: mda.AtomGroup
         """
         return self.monomer.select_atoms(selection)
+
+    def copy(self) -> Monomer:
+        """
+        Use MDAnalysis Universe.copy() to create a new MDAnalysis Universe that
+        is an exact copy of this one containing the polymer. Deepcopy is not
+        used as it can be problematic with open file sockets.
+
+        :return: A new Polymer that is an exact copy of this polymer
+        :rtype: Polymer
+        """
+        new = self.monomer.copy()
+        return Monomer.monomer_from_u(new)
+
+    # def __eq__(self, value):
+    #     new = self.atoms.subtract(value.atoms)
+    #     print(len(new))
+    #     return self.select_atoms("all") == value.select_atoms("all") # and self.residues.equals(value.residues)
