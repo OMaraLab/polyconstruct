@@ -134,7 +134,7 @@ class Atom:
             element_name = element_name[0]
         return element_name
     
-    #TO DO: deconvulute following 3 functions, and atom_name, atom_id and index properties...
+    #TODO: deconvulute following 3 functions, and atom_name, atom_id and index properties...
     @element.setter
     def element(self, value: str):
         """
@@ -266,7 +266,9 @@ class Atom:
         bonds_to_remove = [] 
         for bond in self.bonds:
             if bond.other_atom(self) in neighbours:
-                bonds_to_remove.append(bond)
+                # find duplicate bond and add the one without angles to bonds_to_remove
+                empty_bond = Bond.from_atoms(self, bond.other_atom(self), find_empty = True)
+                bonds_to_remove.append(empty_bond)
             else:
                 neighbours.append(bond.other_atom(self))
         for bond in bonds_to_remove:
