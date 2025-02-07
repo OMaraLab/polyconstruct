@@ -86,8 +86,8 @@ class Bond:
         atom_b = atoms[int(parts[1]) - 1]
         bond_type = int(parts[2])
         if format=="charmm":
-            bond_length = None
-            force_constant = None
+            bond_length = 0 # 0 instead of None enables extend to work, is not saved to output
+            force_constant = 0
         else:
             bond_length = float(parts[3])
             force_constant = float(parts[4])

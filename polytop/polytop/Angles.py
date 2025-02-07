@@ -175,7 +175,8 @@ class Angle:
             self.bond_bc.angles.remove(self)
 
     def __str__(self):
-        if self.format == "charmm":
+        # TODO: figure out why topology.to_ITP is causing Angles to write as a different format
+        if self.format == "charmm" or self.angle_value==None and self.force_constant==None:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5}"
         else:
             return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.atom_c.atom_id:>5} {self.angle_type:>5} {self.angle_value:>10.4f} {self.force_constant:.4e}"

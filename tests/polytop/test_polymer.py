@@ -265,7 +265,7 @@ def test_OPLS_polymer(data_dir: Path, output_dir: Path):
 
 def test_AMBER_polymer(data_dir: Path, output_dir: Path):
     """
-    This test is to make sure a Polymer constructed from OPLS ff monomers
+    This test is to make sure a Polymer constructed from AMBER ff monomers
     extends without error
     """
     top = Topology.from_ITP(data_dir/"AMBER_PNIPAM_extend.itp", format="amber")
@@ -289,3 +289,30 @@ def test_AMBER_polymer(data_dir: Path, output_dir: Path):
     # Save the polymer to a file and visualise the structure with RDKit for an easy visual structure check
     polymer.topology.to_ITP(output_dir/'AMBER_30mer.itp')
     Visualize.polymer(polymer,infer_bond_order=False).draw2D(output_dir/'AMBER_30mer.png',(400,300))
+
+def test_CHARMM_polymer(data_dir: Path, output_dir: Path):
+    """
+    This test is to make sure a Polymer constructed from CHARMM ff monomers
+    extends without error
+    """
+    top = Topology.from_ITP(data_dir/"CHARMM_PNIPAM_extend.itp", format="charmm")
+
+    # Create a Junction to join 'to' and another to join 'from'.
+    # Provide the bonding atom and the leaving atom, in that order, for the
+    # Junction - they must have a bond between them.
+    to_j = Junction(top.get_atom("C2"), top.get_atom("C1"), name = "to")
+    from_j = Junction(top.get_atom("C3"), top.get_atom("C4"), name = "from")
+
+    # Create a Monomer from the Topology and a list of the Junctions
+    monomer = Monomer(top, [to_j, from_j])
+
+    # Start the Polymer with one Monomer
+    polymer = Polymer(monomer)
+
+    # Extend the Polymer to the desired length (in this case 20)
+    for i in range(29):
+        polymer.extend(monomer, from_junction_name="from", to_junction_name="to")
+
+    # Save the polymer to a file and visualise the structure with RDKit for an easy visual structure check
+    polymer.topology.to_ITP(output_dir/'CHARMM_30mer.itp')
+    Visualize.polymer(polymer,infer_bond_order=False).draw2D(output_dir/'CHARMM_30mer.png',(400,300))
