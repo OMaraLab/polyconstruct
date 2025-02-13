@@ -13,7 +13,7 @@ class Dihedral_type(IntEnum):
     Enum to track Dihedral types including proper (1) and improper (2).
 
     Proper dihedrals also include: Ryckaert-Bellemans (3), Fourier (5),
-        proper (multiple) (9), tabulated (8) and restricted (10).
+    proper (multiple) (9), tabulated (8) and restricted (10).
     Improper dihedrals also include: periodic improper (4).
 
     For more information, see
