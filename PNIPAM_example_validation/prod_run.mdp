@@ -1,0 +1,79 @@
+;Production run
+
+title               =  MD simulation ;change to what you want
+constraints         =  h-bonds 
+;define              =  -DPOSRES
+
+integrator          =  md
+dt                  =  0.002      ; ps !
+nsteps              =  500000000   ; 1000 ns        
+nstcomm             =  1000      . 
+
+;; trr file outputs
+nstxout             =  0         ; this is used for a trr file, no need to include
+nstvout             =  0         ; this is used for trr files, no need to include for xtc files
+nstfout             =  0         ; this is used for trr files, no need to include for xtc files
+
+;; xtc file outputs
+nstxout-compressed  =  25000                      
+
+
+nstlist             =  20   
+; frequency to update neighbour list. Gromacs manual says that a value of 20 or 40 gives the best performance on parallel simulations and GPUs
+
+;; periodic boundary conditions
+; ns_type       =  grid         ; only used in conjunction with pbc = xy
+; pbc		= xy 		; pbc in the x and y directions only. hard wall potential in the z direction. 
+pbc             = xyz		; default for gromacs
+
+
+;coulombtype 	= reaction-field
+;rcoulomb	= 1.4           
+;rlist		= 1.4
+;rvdw 		= 1.4
+;epsilon-rf      = 61	       
+
+;; values for PME electrostatics 
+coulombtype         =  pme                   
+rlist               =  1.0 	 ; rlist should be >= rcoulomb
+rcoulomb            =  1.0                 
+pme_order           =  4        ; GPU only supports 4
+fourierspacing      =  0.16                       
+rvdw                =  1.0      ;gromacs manual suggests 1.5 is better than 1.4 for good electrostatic calcs.
+
+
+;; temperature coupling is on the same number of groups that you set in the index file
+Tcoupl              =  v-rescale
+tau_t               =  0.1   0.1 
+
+tc-grps             =  water   non-water  
+ref_t               =   300     300
+
+
+
+;; Pressure coupling is on the same number of group
+Pcoupl              =  Berendsen   ; berendsen for equilibration
+tau_p               =  0.5 
+
+Pcoupltype          = isotropic
+compressibility     =  4.5e-5
+ref_p               =  1.0 
+refcoord-scaling    = all       ;scaling of coordinates with the scaling matrix of the pressure coupling
+gen_vel             =  yes	; intial boltzmann distribution of velocities for bonds, angles, etc
+gen_temp            =  300.0
+gen_seed            =  -1
+
+;; Type of constraint algorithm
+;;settings for LINCS
+constraint-algorithm     = lincs
+lincs-order = 4 
+;  Highest order in the expansion of the constraint coupling matrix. When constraints form triangles, an additional expansion of the same order is applied on top of the normal expansion only for the couplings within such triangles. For “normal” MD simulations an order of 4 usually suffices, 6 is needed for large time-steps with virtual sites.
+
+lincs-iter = 1
+;Number of iterations to correct for rotational lengthening in LINCS. For normal runs a single step is sufficient, but for NVE runs where you want to conserve energy accurately or for accurate energy minimization in double precision you might want to increase it to 2. Note that in single precision using more than 1 iteration will often lead to worse accuracy due to amplification of rounding errors.
+
+;lincs-warnangle = 30  ;(30) [deg] maximum angle that a bond can rotate before LINCS will complain
+
+;; settings for SHAKE
+;constraint-algorithm     = shake
+;shake-tol = 0.0001

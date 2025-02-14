@@ -1,0 +1,120 @@
+; Energy minimization
+title                    = EM for shrinking 
+cpp                      = /lib/cpp
+include                  = 
+;define                   = -DPOSRES 
+
+; RUN CONTROL PARAMETERS
+integrator               = steep
+; Start time and timestep in ps
+tinit                    = 0
+dt                       = 0.002
+nsteps                   = 10000
+; For exact run continuation or redoing part of a run
+init_step                = 0
+; mode for center of mass motion removal
+comm-mode                = Linear
+; number of steps for center of mass motion removal
+nstcomm                  = 1
+; group(s) for center of mass motion removal
+comm-grps                = 
+
+
+; ENERGY MINIMIZATION OPTIONS
+; Force tolerance and initial step-size
+emtol                    = 10
+emstep                   = 0.01
+; Max number of iterations in relax_shells
+niter                    = 0
+; Step size (1/ps^2) for minimization of flexible constraints
+fcstep                   = 0
+
+
+; OUTPUT CONTROL OPTIONS
+; Output frequency for coords (x), velocities (v) and forces (f)
+nstxout                  = 100
+nstvout                  = 250
+nstfout                  = 0
+; Checkpointing helps you continue after crashes
+nstcheckpoint            = 250
+; Output frequency for energies to log file and energy file
+nstlog                   = 100
+nstenergy                = 100
+; Output frequency and precision for xtc file
+nstxtcout                = 100
+xtc-precision            = 100
+
+
+; NEIGHBORSEARCHING PARAMETERS
+; nblist update frequency
+nstlist                  = 10
+; ns algorithm (simple or grid)
+ns_type                  = grid
+; Periodic boundary conditions: xyz (default), no (vacuum)
+; or full (infinite systems only)
+pbc                      = xyz
+; nblist cut-off        
+rlist                    = 0.8
+domain-decomposition     = no
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+; Method for doing electrostatics
+coulombtype              = reaction-field
+rcoulomb-switch          = 0
+rcoulomb                 = 0.8
+; Dielectric constant (DC) for cut-off or DC of reaction field
+epsilon-rf                = 78.5
+; Method for doing Van der Waals
+vdw-type                 = Cut-off
+; cut-off lengths       
+rvdw-switch              = 0
+rvdw                     = 0.8
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                 = No
+; Extension of the potential lookup tables beyond the cut-off
+table-extension          = 1
+
+; OPTIONS FOR WEAK COUPLING ALGORITHMS
+; Temperature coupling  
+;Tcoupl                   = berendsen
+; Groups to couple separately
+;tc-grps                  = system
+; Time constant (ps) and reference temperature (K)
+;tau-t                    = 0.1 
+;ref-t                    = 310 
+
+; Pressure coupling     
+Pcoupl                   = berendsen
+Pcoupltype               = semi-isotropic
+; Time constant (ps), compressibility (1/bar) and reference P (bar)
+tau-p                    = 1
+compressibility          = 4.5e-5 4.5e-5
+ref-p                    = 1.0 1.0
+; Random seed for Andersen thermostat
+ andersen_seed            = 355616
+
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen_vel                  = yes
+gen-temp                 = 310
+gen-seed                 = -1
+
+; OPTIONS FOR BONDS    
+constraints              = all-bonds
+; Type of constraint algorithm
+constraint-algorithm     = Lincs ;Shake doesn't work for version 4.X
+; Use successive overrelaxation to reduce the number of shake iterations
+Shake-SOR                = no
+; Relative tolerance of shake
+shake-tol                = 1e-04
+; Highest order in the expansion of the constraint coupling matrix
+lincs-order              = 4
+; Number of iterations in the final step of LINCS. 1 is fine for
+; normal simulations, but use 2 to conserve energy in NVE runs.
+; For energy minimization with constraints it should be 4 to 8.
+lincs-iter               = 4
+; Lincs will write a warning to the stderr if in one step a bond
+; rotates over more degrees than
+lincs-warnangle          = 90
+; Convert harmonic bonds to morse potentials
+morse                    = no
