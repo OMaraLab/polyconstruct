@@ -55,21 +55,9 @@ class PDB:
         """
         if selectionString:
             if gmx:
-<<<<<<< HEAD
                 self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.gro")
             else:
                 self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.pdb")
-=======
-<<<<<<< HEAD
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}")._write(f"{fname}.gro")
-            else:
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}")._write(f"{fname}.pdb")
-=======
-                self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.gro")
-            else:
-                self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.pdb")
->>>>>>> d62405c (rewrote all polyconf functions to use updated atom names)
->>>>>>> 9e689d2 (Testing rebase against main worked)
         else:
             if gmx:
                 self._write(f"not name {dummies}", f"{fname}.gro")
