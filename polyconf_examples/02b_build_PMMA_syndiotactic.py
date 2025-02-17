@@ -4,6 +4,7 @@ from polyconf.Monomer import Monomer
 from polyconf.Polymer import Polymer
 from polyconf.PDB import PDB
 import random
+
 random.seed(1) 
 
 
@@ -19,7 +20,9 @@ dummies="CMA CN CP CQ"
 
 Monomer_D='MMAD_bonds.pdb'
 Monomer_L='MMAL_bonds.pdb'
-alternator=True
+alternator=True  # This is a boolean we will use to alternate between the two enantiomers.  
+# When the alternator is True, the next monomer will be Monomer_L.  
+# When the alternator is False, the next monomer will be Monomer_D. 
 
 PMMA_syndiotactic=Polymer(Monomer(Monomer_D)) # initialise
 
@@ -30,7 +33,7 @@ for i in range (0,adds):
             monomer=Monomer_L
         else:
             monomer=Monomer_D
-        alternator=not alternator
+        
         PMMA_syndiotactic.extend( # extend with one monomer, aligned along this step's linearization vector
             Monomer(monomer), # extend with this monomer
             n=PMMA_syndiotactic.maxresid(), # extend existing residue i
@@ -38,6 +41,8 @@ for i in range (0,adds):
             names=dict(Q='CA',P='CMA',S='C',R='CN'), # C1_i+1 fit to CX_i
             joins=[('C','CA')],# new connection between N1_i and C1_i+1 
             ) 
+
+        alternator=not alternator # flip the alternator after every monomer
 
 Saver = PDB(PMMA_syndiotactic)
 Saver.cleanup() # center in box
@@ -62,3 +67,9 @@ PMMA_syndiotactic.dihedral_solver(sidechains,dummies=dummies,cutoff=1.1) # this 
 Saver = PDB(PMMA_syndiotactic)
 Saver.cleanup() # center in box
 Saver.save(dummies=dummies,fname='PMMA_syndiotactic_shuffled_and_solved') # save, excluding dummies atoms
+
+
+# shuffler() will generate a random conformation by shuffling dihedrals.  
+# Some conformations generated with shuffler() cannot be easilly solved.  In this example, we have chosen a random seed that will work reliably.
+# Controlling the random seed can also be useful for replicability in your scripts.
+# After you have completed the tutorial, try varying the random seed, and comparing the resulting conformations.
