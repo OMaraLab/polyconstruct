@@ -163,7 +163,7 @@ class Polymer:
         :type beta: int, optional
 
         For example: 
-            {'P1':'CA','Q1':'C','P2':'CMA','Q2':'CN'}, with n=1 and 
+            {'P':'CMA','Q':'CA','R':'CN','S':'C'}, with n=1 and 
             nn=2 and joins=[('C','CA')] would produce a polymer of 
             '...-CA1-C1-CA2-C2-...'
 
@@ -291,13 +291,20 @@ class Polymer:
         """
         Given a pair of bonded atoms J and K within some torsion, uses _split_pol() to identify all atoms connected to J, then rotates them around vector JK by (step * int(360/mult)) degrees, rotating the dihedral centered over J-K by one step.  
 
-        Args:
-            J (atom name): the name of the first atom in the bond
-            J_resid:       the resid of the first atom in the bond
-            K (atom name): the name of the second atom in the bond
-            K_resid:       the resid of the second atom in the bond
-            mult:           the multiplicity of the dihedral centered over J-K
-            step:           how many steps around the dihedral to rotate
+        :param J: the name of the first atom in the torsion
+        :type J: str
+        :param J_resid: the resid of the first atom in the torsion
+        :type J_resid: int
+        :param K: the name of the second atom in the torsion
+        :type K: str
+        :param K_resid: the resid of the second atom in the torsion
+        :type K_resid: int
+        :param mult: the multiplicity of the dihedral centered over J-K, 
+                defaults to 3
+        :type mult: int, optional
+        :param step: how many steps to rotate around the torsion, where one step = 320/mult degrees, 
+                defaults to 3
+        :type step: int, optional
         """
 
         fore,_=self._split_pol(J,J_resid,K,K_resid)
@@ -353,13 +360,13 @@ class Polymer:
         resulting structure has overlapping atoms, and will undo the rotation
         if so.
 
-        :param J: the name of the first atom in the bond
+        :param J: the name of the first atom in the torsion
         :type J: str
-        :param J_resid: the resid of the first atom in the bond
+        :param J_resid: the resid of the first atom in the torsion
         :type J_resid: int
-        :param K: the name of the second atom in the bond
+        :param K: the name of the second atom in the torsion
         :type K: str
-        :param K_resid: the resid of the second atom in the bond
+        :param K_resid: the resid of the second atom in the torsion
         :type K_resid: int
         :param dummies: the names of dummy atoms, to be excluded from the
                 distance calculation. Passed to :func:`dist`, defaults to 'X*'
