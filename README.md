@@ -1,6 +1,8 @@
 # PolyConstruct Documentation
 
-[PolyConstruct ReadTheDocs](https://polyconstruct.readthedocs.io/en/latest/).
+Documentation for the PolyConstruct package, including the PolyBuild, PolyConf and PolyTop packages is available on ReadTheDocs.
+
+[PolyConstruct ReadTheDocs](https://polyconstruct.readthedocs.io/en/latest/)
 
 
 # Setup for PolyConstruct
