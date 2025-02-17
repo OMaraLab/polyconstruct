@@ -99,7 +99,7 @@ def test_polymer_extend(data_dir):
                 Monomer(data_dir / 'PEI_monomer.pdb'), # extend with this monomer
                 n=polymer.maxresid(), # we will allways add onto the existing monomer with the highest resid
                 nn=polymer.newresid(), # the incoming monomer needs a new resid
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
+                names=dict(Q='CX',P='C1',S='N1',R='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
                 joins=[('N1','C1')],# new connection between N1_i and C1_i+1 
                 ) 
 
@@ -107,7 +107,7 @@ def test_polymer_extend(data_dir):
                 Monomer(data_dir / 'PEI_end.pdb'),
                 n=polymer.maxresid(), 
                 nn=polymer.newresid(),
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'),
+                names=dict(Q='CX',P='C1',S='N1',R='NX'),
                 joins=[('N1','C1')],
                 )
     
@@ -126,7 +126,7 @@ def test_polymer_maxresid(data_dir):
                 Monomer(data_dir / 'PEI_monomer.pdb'), # extend with this monomer
                 n=polymer.maxresid(), # we will allways add onto the existing monomer with the highest resid
                 nn=polymer.newresid(), # the incoming monomer needs a new resid
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
+                names=dict(Q='CX',P='C1',S='N1',R='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
                 joins=[('N1','C1')],# new connection between N1_i and C1_i+1 
                 ) 
 
@@ -134,7 +134,7 @@ def test_polymer_maxresid(data_dir):
                 Monomer(data_dir / 'PEI_end.pdb'),
                 n=polymer.maxresid(), 
                 nn=polymer.newresid(),
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'),
+                names=dict(Q='CX',P='C1',S='N1',R='NX'),
                 joins=[('N1','C1')],
                 )
     
@@ -156,7 +156,7 @@ def test_polymer_newresid(data_dir):
                 Monomer(data_dir / 'PEI_monomer.pdb'), # extend with this monomer
                 n=polymer.maxresid(), # we will allways add onto the existing monomer with the highest resid
                 nn=polymer.newresid(), # the incoming monomer needs a new resid
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
+                names=dict(Q='CX',P='C1',S='N1',R='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
                 joins=[('N1','C1')],# new connection between N1_i and C1_i+1 
                 )
         assert polymer.newresid() == i+3
@@ -165,7 +165,7 @@ def test_polymer_newresid(data_dir):
                 Monomer(data_dir / 'PEI_end.pdb'),
                 n=polymer.maxresid(), 
                 nn=polymer.newresid(),
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'),
+                names=dict(Q='CX',P='C1',S='N1',R='NX'),
                 joins=[('N1','C1')],
                 )
     
@@ -183,7 +183,7 @@ def test_polymer_dihedralsolver_and_genpairlist(data_dir):
                 Monomer(data_dir / 'PEI_monomer.pdb'), # extend with this monomer
                 n=polymer.maxresid(), # we will allways add onto the existing monomer with the highest resid
                 nn=polymer.newresid(), # the incoming monomer needs a new resid
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
+                names=dict(Q='CX',P='C1',S='N1',R='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
                 joins=[('N1','C1')],# new connection between N1_i and C1_i+1 
                 ) 
 
@@ -191,19 +191,19 @@ def test_polymer_dihedralsolver_and_genpairlist(data_dir):
                 Monomer(data_dir / 'PEI_end.pdb'),
                 n=polymer.maxresid(), 
                 nn=polymer.newresid(),
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'),
+                names=dict(Q='CX',P='C1',S='N1',R='NX'),
                 joins=[('N1','C1')],
                 )
 
-    CN_dihedrals=polymer.gen_pairlist(a1='C2',a2='N1',first_resid=1,last_resid=130,mult=3)
+    CN_dihedrals=polymer.gen_pairlist(J='C2',K='N1',first_resid=1,last_resid=130,mult=3)
 
     cutoff = 0.7
 
-    polymer.dihedral_solver(CN_dihedrals,dummy='CX,NX',cutoff=cutoff)
+    polymer.dihedral_solver(CN_dihedrals,dummies='CX,NX',cutoff=cutoff)
 
     for dh in CN_dihedrals:
         # check that the dihedral_solver has removed all clashes
-        assert polymer.dist('C2',dh['a1_resid'],'N1',dh['a2_resid'],'CX,NX',backwards_only=False) >= cutoff
+        assert polymer.dist('C2',dh['J_resid'],'N1',dh['K_resid'],'CX,NX',backwards_only=False) >= cutoff
 
 def test_polymer_shuffler(data_dir):
     """
@@ -216,7 +216,7 @@ def test_polymer_shuffler(data_dir):
                 Monomer(data_dir / 'PEI_monomer.pdb'), # extend with this monomer
                 n=polymer.maxresid(), # we will allways add onto the existing monomer with the highest resid
                 nn=polymer.newresid(), # the incoming monomer needs a new resid
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
+                names=dict(Q='CX',P='C1',S='N1',R='NX'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i 
                 joins=[('N1','C1')],# new connection between N1_i and C1_i+1 
                 ) 
 
@@ -224,21 +224,21 @@ def test_polymer_shuffler(data_dir):
                 Monomer(data_dir / 'PEI_end.pdb'),
                 n=polymer.maxresid(), 
                 nn=polymer.newresid(),
-                names=dict(P1='CX',P2='C1',Q1='N1',Q2='NX'),
+                names=dict(Q='CX',P='C1',S='N1',R='NX'),
                 joins=[('N1','C1')],
                 )
 
-    CN_dihedrals=polymer.gen_pairlist(a1='C2',a2='N1',first_resid=1,last_resid=130,mult=3)
+    CN_dihedrals=polymer.gen_pairlist(J='C2',K='N1',first_resid=1,last_resid=130,mult=3)
     
     distances_before = []
 
     for dh in CN_dihedrals:
-        distances_before.append(polymer.dist('C2',dh['a1_resid'],'N1',dh['a2_resid'],'CX,NX',backwards_only=False))
+        distances_before.append(polymer.dist('C2',dh['J_resid'],'N1',dh['K_resid'],'CX,NX',backwards_only=False))
     
     polymer.shuffler(CN_dihedrals)
 
     for i, dh in enumerate(CN_dihedrals):
         # check that the shuffler has chaged all the dihedrals
-        assert polymer.dist('C2',dh['a1_resid'],'N1',dh['a2_resid'],'CX,NX',backwards_only=False) != distances_before[i]
+        assert polymer.dist('C2',dh['J_resid'],'N1',dh['K_resid'],'CX,NX',backwards_only=False) != distances_before[i]
 
 # TODO: Add more tests for other methods and functionalities of the Polymer class as needed
