@@ -3,10 +3,12 @@
 *PolyConstruct* contains three python tools for generating polymer coordinate and topolgy files for molecular dynamics simulations.  
 
 *PolyConf* is a tool for generating ensembles of polymer conformations by combining monomer coordinate files.
+
 *PolyBuild* is a tool for generating polymer topology files for simulaton from polymer coordinate files, leveraging the functionality of the gromacs tool pdb2gmx.
+
 *PolyTop* is a tool for generating polymer topology files from monomer topology files.
 
-*PolyConstruct* was published in the paper *PolyConstruct: adapting  biomolecular simulation pipelines for polymers with PolyBuild, PolyConf and PolyTop*.
+*PolyConstruct* was published in the paper *PolyConstruct: adapting biomolecular simulation pipelines for polymers with PolyBuild, PolyConf and PolyTop*.
 
 ## Getting started
 
