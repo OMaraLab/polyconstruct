@@ -6,7 +6,7 @@ polymer = Polymer(Monomer("monomers/UNK_460A12_PolyConf.pdb"))
 
 for i in range(29):
     polymer.extend(Monomer("monomers/UNK_460A12_PolyConf.pdb"), n=polymer.maxresid(), nn=polymer.newresid(),
-            names=dict(P1='C04',P2='C02',Q1='C03',Q2='C01',R='C02',S='C03'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i
+            names=dict(Q='C04',P='C02',S='C03',R='C01'), # C1_i+1 fit to CX_i, then rotate so NX_i+1 fit to N1_i
             joins=[('C02','C03')],
             )
     polymer.renamer(polymer.maxresid()-1, "C04", nameout='X')
@@ -27,4 +27,4 @@ for i in range(29):
 
 Saver = PDB(polymer)
 Saver.cleanup() # center the Polymer in the PBC box
-Saver.save(dummyAtoms='X*',fname='polymers/30mer')
+Saver.save(dummies='X*',fname='polymers/30mer')
