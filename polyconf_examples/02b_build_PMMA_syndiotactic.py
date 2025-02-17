@@ -4,6 +4,7 @@ from polyconf.Monomer import Monomer
 from polyconf.Polymer import Polymer
 from polyconf.PDB import PDB
 import random
+
 random.seed(1) 
 
 
@@ -62,3 +63,9 @@ PMMA_syndiotactic.dihedral_solver(sidechains,dummies=dummies,cutoff=1.1) # this 
 Saver = PDB(PMMA_syndiotactic)
 Saver.cleanup() # center in box
 Saver.save(dummies=dummies,fname='PMMA_syndiotactic_shuffled_and_solved') # save, excluding dummies atoms
+
+
+# shuffler() will generate a random conformation by shuffling dihedrals.  
+# Some conformations generated with shuffler() cannot be easilly solved.  In this example, we have chosen a random seed that will work reliably.
+# Controlling the random seed can also be useful for replicability in your scripts.
+# After you have completed the tutorial, try varying the random seed, and comparing the resulting conformations.
