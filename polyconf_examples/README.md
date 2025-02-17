@@ -8,6 +8,8 @@ These tutorials are not intended as a primer on polymer design or stereochemistr
 
 ## Tutorial 01:  Building a linear polyethyleneimine polymer conformation using PolyConf
 
+**TODO:** extend based on rewrite
+
 The first tutorial is an example of how to make a linear 128 unit polyethyleneimine chain using *PolyConf*. It is contained in the file `01_build_PEI_linear.py`
 
 This tutorial showcases several approaches, including:
@@ -57,8 +59,8 @@ Again, this type of approach could also be used to generate a [statistical copol
 
 ## Tutorial 03:  Building a branched polyethyleneimine polymer conformation using PolyConf
 
-To be written
+**TODO:** Ada to write description
 
-## Tutorial 04:  Building a hyperbranched polyethyleneimine polymer conformation using PolyConf
+## Tutorial 04:  Building a polyethyleneimine dendrimer conformation using PolyConf
 
 To be written
