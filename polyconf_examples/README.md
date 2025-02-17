@@ -1,10 +1,12 @@
-# PolyConf examples
+# PolyConf example scripts
 
-This folder contains several example scripts demonstrating the use of PolyConf.  All the files you need to run these examples are contained within this folder.
+This folder contains several example scripts demonstrating the use of *PolyConf*.  All the files you need to run these examples are contained within this folder.
+
+For detailed documentation of all PolyConf methods, please refer to the [PolyConstruct ReadTheDocs](https://polyconstruct.readthedocs.io/en/latest/index.html).
 
 ## Tutorial 01:  Building a linear polyethyleneimine polymer conformation using PolyConf
 
-The first tutorial is an example of how to make a linear 128 unit polyethyleneimine chain using `PolyConf`. It is contained in the file `01_build_PEI_linear.py`
+The first tutorial is an example of how to make a linear 128 unit polyethyleneimine chain using *PolyConf*. It is contained in the file `01_build_PEI_linear.py`
 
 This tutorial showcases several approaches, including:
 
@@ -39,16 +41,15 @@ This strategy could be adapted to make an [alternating copolymer](https://en.wik
 
 This approach could also be adapted to generate a [statistical copolymer](https://en.wikipedia.org/wiki/Copolymer).
 
-This tutorial will fail, intentionally!  We have chosen a specific random seed, which will reliably fail to generate a valid  starting conformation.  We made this decision to showcase some of the challenges in generating polymers wherte monomers are arranged in a random or stochastic order.  
+The script for this part of the tutorial will fail! This is intentional.  We have chosen a specific random seed, which will reliably fail to generate a valid  starting conformation.  We made this decision to showcase some of the challenges in generating polymers wherte monomers are arranged in a random or stochastic order.  
 
-There is a discussion at the end of this script, which contain several suggestions for addressing these challenges.  You should try implementing those strategies until you can successfully generate a valid starting conformation.
+There is a discussion at the end of this script, which contain several suggestions for addressing these challenges.  You should try implementing those strategies until you can successfully generate a valid starting conformation for atactic PMMA.
 
 ### Building an ensemble of starting conformations for an atactic PMMA polymer, using `extend()` with `linearise=True`
 
+`02d_build_PMMA_atactic_with_linear_extend.py` showcases one solution to generate an ensemble of starting conformations for an atactic PMMA polymer.
 
-`02d_build_PMMA_atactic_with_linear_extend.py` showcases one solution to generate an ensemble of starting conformations for an atactic PMMA polymer.  
-
-This example is one solution to resolve the difficulties showcased in `02c_build_PMMA_atactic.py`.  This strategy uses  `extend()` with `linearize=True` to produce a pseudo-linear conformation.   It then applies `shuffler()` and `dihedral_solver()` to generate an ensemble of five starting conformations for use in replicate molecular dynamics simulations.  
+This example is one solution to resolve the difficulties showcased in `02c_build_PMMA_atactic.py`.  This strategy uses  `extend()` with `linearise=True` to produce a pseudo-linear conformation.   It then applies `shuffler()` and `dihedral_solver()` to generate an ensemble of five starting conformations for use in replicate molecular dynamics simulations.  
 
 This type of approach could also be used to generate a [statistical copolymer](https://en.wikipedia.org/wiki/Copolymer).
 
