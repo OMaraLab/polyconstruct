@@ -186,6 +186,11 @@ class Polymer:
         Dihedrals are correct.
         
         For best results:
+        * Do NOT extend a Polymer of a given format (e.g. gromos), with a
+        Monomer of a different format (e.g. AMBER). This is not recommended as
+        it is not the supported functionality and has NOT been tested. PolyTop
+        may crash, produce an incorrect Polymer Topology or behave in an
+        undefined manner.
         * Provide topologies where all atoms that will be lost have a partial
         charge of 0. This will ensure the charge of each atom in the resulting
         Polymer is identical to it's charge in the provided Monomer it came from.

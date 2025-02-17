@@ -72,7 +72,7 @@ class PDB:
         :param fname: name of the output file, defaults to "polymer_crude"
         :type fname: str, optional
         """
-        self.atoms._write(f"{fname}.pdb")
+        self._write("all", f"{fname}.pdb")
 
     def select_atoms(self, selection) -> mda.AtomGroup:
         """

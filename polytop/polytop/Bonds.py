@@ -28,6 +28,7 @@ class Bond:
         bond_length: float,
         force_constant: float,
         order: int = 1,
+        format: str = "gromos"
     ) -> None:
         """
         Represents a bond between two atoms in a molecular system.
@@ -44,6 +45,9 @@ class Bond:
         :type force_constant: float
         :param order: The bond order, defaults to 1 (single bond)
         :type order: int, optional
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :raises ValueError: if either atom_a or atom_b are None
         """
         if atom_a is None or atom_b is None:
@@ -59,9 +63,10 @@ class Bond:
         atom_b.bonds.add(self)
         self.order = order
         self.angles = set()
+        self.format = format
 
     @classmethod
-    def from_line(cls, line: str, atoms: List["Atom"]) -> Bond:
+    def from_line(cls, line: str, atoms: List["Atom"], format: str = "gromos") -> Bond:
         """
         Class method to construct Bond from the line of an ITP file and a list
         of all Atom's present in the topology.
@@ -70,6 +75,9 @@ class Bond:
         :type line: str
         :param atoms: list of all Atoms in the Topology 
         :type atoms: List[Atom]
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :return: the new Bond
         :rtype: Bond
         """
@@ -77,43 +85,52 @@ class Bond:
         atom_a = atoms[int(parts[0]) - 1]
         atom_b = atoms[int(parts[1]) - 1]
         bond_type = int(parts[2])
-        bond_length = float(parts[3])
-        force_constant = float(parts[4])
+        if format=="charmm":
+            bond_length = 0 # 0 instead of None enables extend to work, is not saved to output
+            force_constant = 0
+        else:
+            bond_length = float(parts[3])
+            force_constant = float(parts[4])
 
-        return cls(atom_a, atom_b, bond_type, bond_length, force_constant)
+        return cls(atom_a, atom_b, bond_type, bond_length, force_constant, format=format)
 
     @staticmethod
-    def from_atoms(atom_a: "Atom", atom_b: "Atom") -> Bond:
+    def from_atoms(atom_a: "Atom", atom_b: "Atom", find_empty: bool = False) -> Bond:
         """
         Class method to find and return Bond from between two Atoms. 
 
         :param atom_a: The first atom involved in the angle.
         :type atom_a: Atom
-        :param atom_b: The central atom in the angle.
+        :param atom_b: The second atom in the angle.
         :type atom_b: Atom
-        :param atom_c: The third atom involved in the angle.
-        :type atom_c: Atom
-        :return: the new Angle
-        :rtype: Angle
-
-        :param atom_a: The first atom involved in the bond.
-        :type atom_a: Atom
-        :param atom_b: The second atom involved in the bond.
-        :type atom_b: Atom
+        :param find_empty: Optional argument used when de-duplicating bonds to
+                ensure the bond without angles associated is returned to delete.
+        :type find_empty: bool, defaults to False
         :return: a Bond between these Atoms, or None if either atom_a or atom_b
                 are None or there is not a bond between them.
         :rtype: Bond
         """
         if atom_a is None or atom_b is None:
             return None
-        return next(
-            (
-                bond
-                for bond in atom_a.bonds
-                if bond.atom_b == atom_b or bond.atom_a == atom_b
-            ),
-            None,
-        )
+
+        send = list(bond for bond in atom_a.bonds if bond.atom_b == atom_b or bond.atom_a == atom_b)
+        # need to prevent ambiguity in selecting bonds, so that only one duplicate
+        # bond created during polymer extension gets all of the Angles and Dihedrals,
+        # and the other is removed during bond de-duplication
+        if len(send) > 1 and find_empty==False:
+            # duplicate bond, return the bond that has angles already to give it more
+            has_angles = list(bond for bond in send if len(bond.angles)>=1 and bond.angles!=None and bond.angles!=set())[0]
+            return has_angles
+        elif len(send) > 1 and find_empty==True:
+            # duplicate bond, return the bond with no angles to delete
+            no_angles = list(bond for bond in send if len(bond.angles)==0 or bond.angles==None or bond.angles==set())[0]
+            return no_angles
+        elif len(send)==1:
+            # only 1 bond for this atom pair, return it
+            return send[0]
+        else:
+            # this atom pair does not have a shared bond
+            return None
 
     def contains_atom(self, atom: "Atom") -> bool:
         """
@@ -142,14 +159,14 @@ class Bond:
         :rtype: Bond
         """
         if self.atom_a == from_atom: # first atom is being replaced
-            new_bond = Bond(to_atom, self.atom_b, self.bond_type, self.bond_length, self.force_constant, self.order)
+            new_bond = Bond(to_atom, self.atom_b, self.bond_type, self.bond_length, self.force_constant, self.order, self.format)
         elif self.atom_b == from_atom: # second atom is being replaced
-            new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order)
+            new_bond = Bond(self.atom_a, to_atom, self.bond_type, self.bond_length, self.force_constant, self.order, self.format)
         else:
             raise ValueError(f"Atom {from_atom} is not in bond {self}")
         return new_bond
 
-    def other_atom(self, atom: "Atom")-> Atom:
+    def other_atom(self, atom: "Atom")-> "Atom":
         """
         Check if the given Atom is in this Angle and return a list of the other
         atoms present in this Angle (i.e. discluding 'atom').
@@ -218,7 +235,10 @@ class Bond:
             self.atom_b.bonds.remove(self)
                 
     def __str__(self):
-        return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5} {self.bond_length:>10.4f} {self.force_constant:.4e}"
+        if self.format == "charmm":
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5}"
+        else:
+            return f"{self.atom_a.atom_id:>5} {self.atom_b.atom_id:>5} {self.bond_type:>5} {self.bond_length:>10.4f} {self.force_constant:.4e}"
 
     def __repr__(self) -> str:
         if self.order == 1:

@@ -129,6 +129,106 @@ def test_topology_auto_rename_atoms(data_dir: Path, output_dir: Path):
     assert arg_max_atom_index["N"] == 4
     assert arg_max_atom_index["O"] == 2
 
+def test_topology_bad_format_parser(data_dir: Path, output_dir: Path):
+   with pytest.raises(ValueError):
+        check = Topology.from_ITP(data_dir/"OPLS_UNK_460A12.itp", format="pls")
+
+def test_topology_OPLS_parser(data_dir: Path, output_dir: Path):
+    opls = Topology.from_ITP(data_dir/"OPLS_UNK_460A12.itp", format="opls")
+    opls.to_ITP(output_dir/"OPLS_topology.itp")
+    opls_new = Topology.from_ITP(output_dir/"OPLS_topology.itp", format="opls")
+
+    def same_properties(atom_a, atom_b)-> bool: 
+        if atom_a.atom_type != atom_b.atom_type:
+            return False
+        if atom_a.residue_name != atom_b.residue_name:
+            return False
+        if atom_a.residue_id != atom_b.residue_id:
+            return False
+        if atom_a.partial_charge != atom_b.partial_charge:
+            return False
+        if atom_a.mass != atom_b.mass:
+            return False
+        return True
+        
+    atoms = opls.atoms
+    new_atoms = opls_new.atoms
+    assert len(atoms) == len(new_atoms)
+    for i in range(len(atoms)):
+        atom = atoms[i]
+        new_atom = new_atoms[i]
+        assert same_properties(atom, new_atom)
+        for a in atom.bond_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.bond_neighbours())
+        for a in atom.angle_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.angle_neighbours())
+        for a in atom.dihedral_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.dihedral_neighbours())
+
+def test_topology_CHARMM_parser(data_dir: Path, output_dir: Path):
+    charmm = Topology.from_ITP(data_dir/"CHARMM_pnipam_gmx.itp", format="charmm")
+    charmm.to_ITP(output_dir/"CHARMM_topology.itp")
+    charmm_new = Topology.from_ITP(output_dir/"CHARMM_topology.itp", format="charmm")
+
+    def same_properties(atom_a, atom_b)-> bool: 
+        if atom_a.atom_type != atom_b.atom_type:
+            return False
+        if atom_a.residue_name != atom_b.residue_name:
+            return False
+        if atom_a.residue_id != atom_b.residue_id:
+            return False
+        if atom_a.partial_charge != atom_b.partial_charge:
+            return False
+        if atom_a.mass != atom_b.mass:
+            return False
+        return True
+        
+    atoms = charmm.atoms
+    new_atoms = charmm_new.atoms
+    assert len(atoms) == len(new_atoms)
+    for i in range(len(atoms)):
+        atom = atoms[i]
+        new_atom = new_atoms[i]
+        assert same_properties(atom, new_atom)
+        for a in atom.bond_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.bond_neighbours())
+        for a in atom.angle_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.angle_neighbours())
+        for a in atom.dihedral_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.dihedral_neighbours())
+
+def test_topology_AMBER_parser(data_dir: Path, output_dir: Path):
+    amber = Topology.from_ITP(data_dir/"AMBER_pnipam_GMX.itp", format="amber")
+    amber.to_ITP(output_dir/"AMBER_topology.itp")
+    amber_new = Topology.from_ITP(output_dir/"AMBER_topology.itp", format="amber")
+
+    def same_properties(atom_a, atom_b)-> bool: 
+        if atom_a.atom_type != atom_b.atom_type:
+            return False
+        if atom_a.residue_name != atom_b.residue_name:
+            return False
+        if atom_a.residue_id != atom_b.residue_id:
+            return False
+        if atom_a.partial_charge != atom_b.partial_charge:
+            return False
+        if atom_a.mass != atom_b.mass:
+            return False
+        return True
+        
+    atoms = amber.atoms
+    new_atoms = amber_new.atoms
+    assert len(atoms) == len(new_atoms)
+    for i in range(len(atoms)):
+        atom = atoms[i]
+        new_atom = new_atoms[i]
+        assert same_properties(atom, new_atom)
+        for a in atom.bond_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.bond_neighbours())
+        for a in atom.angle_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.angle_neighbours())
+        for a in atom.dihedral_neighbours():
+            assert any(same_properties(a, new_a) for new_a in new_atom.dihedral_neighbours())
+
 @pytest.mark.xfail(reason="New method of separating atoms into unique charge groups and renumbering them before saving to ITP is breaking this test.")
 def test_reverse_topology(data_dir: Path, output_dir: Path):
     glu = Topology.from_ITP(data_dir/"glutamine.itp")

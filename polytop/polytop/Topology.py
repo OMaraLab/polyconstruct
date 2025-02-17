@@ -51,6 +51,7 @@ class Topology:
         atoms: Optional[List[Atom]] = None,
         preamble: Optional[List[str]] = None,
         molecule_type: Optional[MoleculeType] = None,
+        format: str = "gromos",
     ):
         """
         Represents the topology of a molecular system, including atoms, bonds,
@@ -64,6 +65,9 @@ class Topology:
         :param molecule_type: the type of molecule represented by the topology,
                 defaults to None
         :type molecule_type: Optional[MoleculeType], optional
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         """
         self.molecule_type = molecule_type
         self.atoms = atoms or []
@@ -71,6 +75,7 @@ class Topology:
         self.title = "Unknown molecule"
         if self.preamble and self.preamble[1].startswith(';'):
             self.title = self.preamble[1].lstrip('; ')
+        self.format = format
         
     def copy(self) -> Topology:
         """
@@ -94,11 +99,12 @@ class Topology:
         for angle in self.angles:
             Angle.from_dict(angle.to_dict(),new_atoms)
         for dihedral in self.dihedrals:
-            Dihedral.from_dict(dihedral.to_dict(),new_atoms)
+            Dihedral.from_dict(dihedral.to_dict(),new_atoms,format=self.format)
         new_topology = Topology(
             atoms=new_atoms,
             preamble=self.preamble.copy(),
-            molecule_type=copy.copy(self.molecule_type)
+            molecule_type=copy.copy(self.molecule_type),
+            format=self.format,
         )
         return new_topology
             
@@ -259,22 +265,28 @@ class Topology:
         return atoms
     
     @classmethod
-    def from_ITP(cls, file_path: str, preprocess=None) -> Topology:
+    def from_ITP(cls, file_path: str, preprocess=None, format: str = "gromos") -> Topology:
         """
-        Class method to create a Topology object from a GROMACS ITP file.
+        Class method to create a Topology object from an ITP file.
 
         Note: this function does not explicitly check that
         moleculetype.nrexcl = number of exclusions associated with atoms.
 
-        :param file_path: the path to the GROMACS ITP file.
+        :param file_path: the path to the GROMOS ITP file.
         :type file_path: str
         :param preprocess: function to preprocess the topology, that must
                 accept the section and line as arguments in that order,
                 defaults to None.
         :type preprocess: lambda function, optional
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :return: the created Topology object.
         :rtype: Topology
         """
+        if format not in ["gromos", "charmm", "amber", "opls"]:
+            raise ValueError("Invalid format! Provide 'gromos', 'charmm', 'amber' or 'opls'\
+                   - note 'gromos' is default if format string is not provided")
 
         with open(file_path, "r") as f:
             lines = f.readlines()
@@ -292,6 +304,9 @@ class Topology:
                 continue
             if line.startswith("["):
                 section = line.strip("[] ").lower()
+                if section.__contains__(";"): # cleanup and remove comments if present
+                    cut = section.split(";")[0]
+                    section = cut.strip("[] ")
                 continue
             if preprocess is not None:
                 line = preprocess(section, line)
@@ -304,13 +319,13 @@ class Topology:
                 atom.element
                 atoms.append(atom)
             elif section == "bonds":
-                Bond.from_line(line, atoms)
+                Bond.from_line(line, atoms, format=format)
             elif section == "angles":
-                Angle.from_line(line, atoms)
+                Angle.from_line(line, atoms, format=format)
             elif section == "pairs":
                 Pair.from_line(line, atoms)
             elif section == "dihedrals":
-                Dihedral.from_line(line, atoms)
+                Dihedral.from_line(line, atoms, format=format)
             elif section == "exclusions":
                 if len(line.split()) > 2:
                     for second_atom in range(1, len(line.split())):
@@ -320,11 +335,11 @@ class Topology:
                     Exclusion.from_line(line, atoms)
             else:
                 warnings.warn(f"Unknown section {section} in {file_path}")
-        return cls(atoms, preamble, molecule_type)
+        return cls(atoms, preamble, molecule_type, format)
 
     def to_ITP(self, file_path: str):
         """
-        Write the Topology to a GROMACS ITP file.
+        Write the Topology to a GROMACS ITP file of the desired forcefield format.
 
         :param file_path: the path to and the desired name of the GROMACS ITP
                 file.
@@ -341,9 +356,10 @@ class Topology:
                     f.write(line + "\n")
                 else:
                     f.write("; " + line + "\n")
-
-            f.write("\n[ moleculetype ]\n")
-            f.write(str(self.molecule_type) + "\n")
+            
+            if self.molecule_type is not None:
+                f.write("\n[ moleculetype ]\n")
+                f.write(str(self.molecule_type) + "\n")
 
             f.write("[ atoms ]\n")
             self.atoms = self._rearrange_atoms()
@@ -363,18 +379,18 @@ class Topology:
                 f.write(str(angle) + "\n")
 
             if any(
-                dihedral.dihedral_type.is_planar_constraint
+                dihedral.dihedral_type.is_planar_constraint or dihedral.dihedral_type.is_periodic_planar_constraint
                 for dihedral in self.dihedrals
             ):
                 f.write("\n[ dihedrals ]\n")
-                f.write("; GROMOS improper dihedrals\n")
+                f.write("; improper dihedrals\n")
                 for dihedral in self.dihedrals:
-                    if dihedral.dihedral_type.is_planar_constraint:
+                    if dihedral.dihedral_type.is_planar_constraint or dihedral.dihedral_type.is_periodic_planar_constraint:
                         f.write(str(dihedral) + "\n")
 
             f.write("\n[ dihedrals ]\n")
             for dihedral in self.dihedrals:
-                if dihedral.dihedral_type.is_rotational_constraint:
+                if dihedral.dihedral_type.is_rotational_constraint or dihedral.dihedral_type.is_rotational_constraint_with_constants:
                     f.write(str(dihedral) + "\n")
 
             f.write("\n[ exclusions ]\n")
@@ -899,7 +915,7 @@ class Topology:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> Topology:
+    def from_dict(cls, data: dict, format: str = "gromos") -> Topology:
         """
         Create a new Topology from a dictionary, such as that created with
         Topology.to_dict().
@@ -917,6 +933,9 @@ class Topology:
         :param data: dictionary containing data to make a Topology, generate
                 with 'to_dict()'.
         :type data: dict
+        :param format: The forcefield the ITP file is formatted as, options are
+                "gromos", "amber", "opls" and "charmm"
+        :type format: str, defaults to "gromos" for GROMOS forcefields.
         :return: a new Topology
         :rtype: Topology
         """
@@ -933,7 +952,7 @@ class Topology:
             Angle.from_dict(angle_data,topology.atoms)
 
         for dihedral_data in data["dihedrals"]:
-            Dihedral.from_dict(dihedral_data,topology.atoms)
+            Dihedral.from_dict(dihedral_data,topology.atoms, format=format)
 
         for pair_data in data["pairs"]:
             Pair.from_dict(pair_data,topology.atoms)
@@ -1049,7 +1068,7 @@ class Topology:
         # change all the bonds
         for bond in old_atom.bonds:
             bond.clone_bond_changing(old_atom, new_atom)
-        
+
         # change all the angles
         for bond in old_atom.bonds:
             for angle in bond.angles:
