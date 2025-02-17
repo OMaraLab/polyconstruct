@@ -75,9 +75,10 @@ class Polymer:
     
     def renamer(self, resid, namein, nameout='X'):
         """
-        Change selected atom names to a new name like X1, X2, X3. Intended to
-        flag dummy atoms for removal. Selected atoms are given a basename, 
-        e.g. 'X' defined by the nameout argument, as well as a number. 
+        Change selected atom names to a new name.
+        Intended to flag dummy atoms for removal. 
+        Selected atoms are given a basename defined by the nameout argument, 
+        e.g. 'X' , and a number. 
 
         :param resid: which residue number to select and rename atoms from
         :type resid: int
@@ -101,8 +102,8 @@ class Polymer:
         :return: the polymer's current highest resid plus one.
         :rtype: int
         """
-        n = max(self.polymer.residues.resids) + 1
-        return n
+        n = int(max(self.polymer.residues.resids) + 1)
+        return (n)
 
 
     def maxresid(self):
@@ -112,8 +113,8 @@ class Polymer:
         :return: the polymer's current highest resid
         :rtype: int
         """
-        n = max(self.polymer.residues.resids)
-        return n
+        n = int(max(self.polymer.residues.resids))
+        return (n)
 
 
     def extend(self, monomer, n, nn, names, joins, ortho=[1,1,1], 
@@ -195,8 +196,8 @@ class Polymer:
         # cool.
         # love that for me.
 
-        Q = self.polymer.select_atoms(f'resid {n} and name {names["Q"]}').positions[-1]
-        S = self.polymer.select_atoms(f'resid {n} and name {names["S"]}').positions[-1]
+        Q = self.polymer.select_atoms(f"resid {n} and name {names['Q']}").positions[-1]
+        S = self.polymer.select_atoms(f"resid {n} and name {names['S']}").positions[-1]
 
         u_ = monomer # monomer = mdict['path'][monomer]
         u_.atoms.tempfactors=float(beta) 
