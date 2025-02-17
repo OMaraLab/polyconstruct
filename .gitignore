@@ -134,3 +134,9 @@ tests/output/
 
 # virtual environments
 .venv 
+
+# Output of polyconf tutorial
+
+polyconf_examples/PEI_linear_*
+polyconf_examples/PEI_branched_*
+polyconf_examples/PMMA_*

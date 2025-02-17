@@ -8,6 +8,8 @@ These tutorials are not intended as a primer on polymer design or stereochemistr
 
 ## Tutorial 01:  Building a linear polyethyleneimine polymer conformation using PolyConf
 
+**TODO:** extend based on rewrite
+
 The first tutorial is an example of how to make a linear 128 unit polyethyleneimine chain using *PolyConf*. It is contained in the file `01_build_PEI_linear.py`
 
 This tutorial showcases several approaches, including:
@@ -21,7 +23,7 @@ This tutorial is all contained in a single script.  There are detailed comments 
 
 ## Tutorial 02:  Strategies for building conformations of polymers with different types of tacticity, or copolymers with different monomer distributions
 
-The second tutorial shows strategies for making polymers with different types of [tacticity](https://en.wikipedia.org/wiki/Tacticity).  Using poly methyl methacrylate, this lesson showcases a strategy for making an isotactic polymer, a syndiotactic polymer, and an atactic polymer.  These strategies use two monomers, `MMAD_bonds.pdb` and `MMAL_bonds.pdb`.  
+The second tutorial shows strategies for making polymers with different types of [tacticity](https://en.wikipedia.org/wiki/Tacticity).  Using [poly(methyl methacrylate)](https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)) as an example, this lesson showcases a strategy for making an isotactic polymer, a syndiotactic polymer, and an atactic polymer.  These strategies use two monomers, `MMAD_bonds.pdb` and `MMAL_bonds.pdb`.  
 
 In these examples, the two monomers are enantiomers.  However, these strategies are also applicable to the creation of [copolymers](https://en.wikipedia.org/wiki/Copolymer), where the monomers are chemically distinct.
 
@@ -29,19 +31,19 @@ This tutorial is split into four scripts.  Each script includes detailed comment
 
 ### Building an isotactic PMMA polymer
 
-`02a_build_PMMA_isotactic.py` shows a strategy for building an isotactic PMMA polymer, in which all monomers have the same tacticity.  The method is very similar to the approach used in tutorial 01.
+`02a_build_PMMA_isotactic.py` shows a strategy for building an [isotactic](https://en.wikipedia.org/wiki/Tacticity#Isotactic_polymers) PMMA polymer, in which all monomers have the same tacticity.  The method is very similar to the approach used in tutorial 01.
 
 ### Building a sydniotactic PMMA polymer
 
-`02b_build_PMMA_syndiotactic.py` shows a strategy for building a syndiotactic PMMA polymer, where monomers alternate between two different enantiomers.  
+`02b_build_PMMA_syndiotactic.py` shows a strategy for building a [syndiotactic](https://en.wikipedia.org/wiki/Tacticity#Syndiotactic_polymers) PMMA polymer, where monomers alternate between two different enantiomers.  
 
-This strategy could be adapted to make an [alternating copolymer](https://en.wikipedia.org/wiki/Copolymer).
+This strategy could be adapted to make an [alternating copolymer](https://en.wikipedia.org/wiki/Copolymer#Alternating_copolymers).
 
 ### Failing to build an atactic PMMA polymer
 
-`02c_build_PMMA_atactic.py` shows how to build an atactic PMMA polymer, with tacticity of the monomers distributed randomly along the chain.  
+`02c_build_PMMA_atactic.py` shows how to build an [atactic](https://en.wikipedia.org/wiki/Tacticity#Atactic_polymers) PMMA polymer, with tacticity of the monomers distributed randomly along the chain.  
 
-This approach could also be adapted to generate a [statistical copolymer](https://en.wikipedia.org/wiki/Copolymer).
+This approach could also be adapted to generate a [statistical copolymer](https://en.wikipedia.org/wiki/Copolymer#Statistical_copolymers).
 
 The script for this part of the tutorial **will fail!** This is intentional.  We have chosen a specific random seed that will reliably fail to generate a valid starting conformations, in order to showcase some of the challenges in generating polymers where monomers are arranged in a random or stochastic order.
 
@@ -53,12 +55,12 @@ There is a discussion at the end of this script, which contain several suggestio
 
 This example is one solution to resolve the difficulties showcased in `02c_build_PMMA_atactic.py`.  This strategy uses  `extend()` with `linearise=True` to produce a pseudo-linear conformation.   It then applies `shuffler()` and `dihedral_solver()` to generate an ensemble of five starting conformations for use in replicate molecular dynamics simulations.  
 
-This type of approach could also be used to generate a [statistical copolymer](https://en.wikipedia.org/wiki/Copolymer).
+Again, this type of approach could also be used to generate a [statistical copolymer](https://en.wikipedia.org/wiki/Copolymer#Statistical_copolymers).
 
 ## Tutorial 03:  Building a branched polyethyleneimine polymer conformation using PolyConf
 
-To be written
+**TODO:** Ada to write description
 
-## Tutorial 04:  Building a hyperbranched polyethyleneimine polymer conformation using PolyConf
+## Tutorial 04:  Building a polyethyleneimine dendrimer conformation using PolyConf
 
 To be written
