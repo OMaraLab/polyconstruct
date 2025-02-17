@@ -1,6 +1,6 @@
 # THE DOCUMENTS IN THIS FOLDER ARE NOT INTENDED TO BE HUMAN READABLE
 
-If you are looking for the PolyConstruct documentation, please go to the [PolyConstruct ReadTheDocs](https://polyconstruct.readthedocs.io/en/latest/index.html)
+If you are looking for the *PolyConstruct* documentation, please go to the [PolyConstruct ReadTheDocs](https://polyconstruct.readthedocs.io/en/latest/index.html)
 
 ## Compiling Documentation
 
