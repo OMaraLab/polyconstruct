@@ -1,3 +1,8 @@
+# PolyConstruct Documentation
+
+[PolyConstruct ReadTheDocs](https://polyconstruct.readthedocs.io/en/latest/).
+
+
 # Setup for PolyConstruct
 
 From your home directory, install PolyConstruct from Git:
@@ -16,19 +21,10 @@ cd polyconstruct
 To setup polyconstruct, run: 
 
 ```
-conda create --name polyconstruct-env
+conda create --name polyconstruct-env python=3.10
 conda activate polyconstruct-env
 
 pip install -r requirements.txt
-```
-
-If you recieve an error in the last step, it may be from the Python version on
-your computer setup, as PolyTop has a strict requirement for version 3.10. Run
-the below commands then repeat `pip install -r requirements.txt` :
-
-```
-conda uninstall python
-conda install "python=3.10"
 ```
 
 Then, build the PolyTop, PolyConf and PolyBuild packages:

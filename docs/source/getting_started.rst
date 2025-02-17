@@ -23,21 +23,10 @@ To setup an environment for polyconstruct, run:
 
 .. code-block:: python
 
-    conda create --name polyconstruct-env
+    conda create --name polyconstruct-env python=3.10
     conda activate polyconstruct-env
 
     pip install -r requirements.txt
-
-
-If you recieve an error in the last step above, it may be from the Python
-version on your computer setup, as PolyTop has a strict requirement for version
-3.10. Run the below commands then repeat `pip install -r requirements.txt` :
-
-.. code-block:: python
-
-    conda uninstall python
-    conda install "python=3.10"
-
 
 Then, build the PolyTop, PolyConf and PolyBuild packages:
 
