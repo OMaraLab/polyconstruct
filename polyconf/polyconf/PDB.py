@@ -33,15 +33,15 @@ class PDB:
         atoms = self.polymer.select_atoms(selection)
         atoms.write(name)
 
-    def save(self, dummyAtoms="X*", fname="polymer", selectionString = None, gmx = False):
+    def save(self, dummies="X*", fname="polymer", selectionString = None, gmx = False):
         """
         Save polymer as a PDB or GROMACS file with dummy atoms excluded.
         Optionally, select a subset of the polymer to save.
 
-        :param dummyAtoms: names of all the dummy atoms, for use in the 
+        :param dummies: names of all the dummy atoms, for use in the 
                     selection string (e.g. 'CN CMA CP CQ' to exclude these 
                     four dummy atom types), defaults to "X*"
-        :type dummyAtoms: str, optional
+        :type dummies: str, optional
         :param fname: name of the output file, defaults to "polymer"
         :type fname: str, optional
         :param selectionString: MDAnalysis atom selection string, for more 
@@ -55,14 +55,14 @@ class PDB:
         """
         if selectionString:
             if gmx:
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.gro")
+                self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.gro")
             else:
-                self.select_atoms(f"{selectionString} and not name {dummyAtoms}").atoms._write(f"{fname}.pdb")
+                self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.pdb")
         else:
             if gmx:
-                self._write(f"not name {dummyAtoms}", f"{fname}.gro")
+                self._write(f"not name {dummies}", f"{fname}.gro")
             else:
-                self._write(f"not name {dummyAtoms}", f"{fname}.pdb")
+                self._write(f"not name {dummies}", f"{fname}.pdb")
 
     def crudesave(self,fname="polymer_crude"):
         """

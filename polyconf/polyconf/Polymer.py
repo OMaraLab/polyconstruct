@@ -127,20 +127,26 @@ class Polymer:
         :param nn: residue (identified by its resid) to extend to 
                 (i.e. the new residue)
         :type nn: int
-        :param names: four single 'key:value' pairs with keys
-                    P1, Q1, P2 and Q2 for the four dummy atoms that are 
-                    'overlaid' during polymer extension. P1 is the real atom in
-                    the polymer while P2 is its corresponding dummy atom in the
-                    incoming monomer. Similarly, Q1 is the real atom in the 
-                    polymer while Q2 is the corresponding dummy atom in the 
-                    incoming polymer. Such that P1 and Q1 and bonded, and P2 
-                    and Q2 have an equivalent bond. The result will be a new 
-                    bond between Q1 and the next atom beside Q2 that is NOT P2.
+        :param names: a dictionary of single 'key:value' pairs with keys
+                    P, Q, R and S for the atoms that are used to define the mapping 
+                    during polymer extension.  
+                    
+                    There are two additional optional values, V1 and V2, which are only required in linear extend.
+                    
+                    The definition is as follows:
+                    
+                    * Atoms P and R are a pair of bonded atoms located in the incoming monomer.  
+                    * Atoms Q and S are a pair of bonded atoms located in residue n of the existing polymer.
+                    * Atoms P and Q are equivalent in the final polymer, and either P or Q is a dummy atom.
+                    * Atoms R and S are equivalent in the final polymer, and either R or S is a dummy atom.
+                    * Bonds PR and QS are equivalent in the final polymer.
+                    `extend()` is agnostic as to which atom in each pair is real, and which atom is a dummy
+                    after extension, you can use renamer() to explicilty set dummy atoms
+                    * Atoms V1 and V2 a pair of atoms located in the incoming monomer.  
         :type names: dict
-        :param joins: defines which two atoms of residue
-                    'n' (first value) and residue 'nn' (second value) will 
-                    be bonded
-        :type joins: list of a 2 item tuple
+        :param joins: defines a pair of atoms to connected after extension
+                    the first atom in a pair belongs to residue 'n', and the second belongs to residue 'nn'
+        :type joins: list of 2 item tuples
         :param ortho: used for linearise and defines which 
                     axis to align along (e.g. align along x with ortho=[1,0,0]), 
                     defaults to [1,1,1]
@@ -188,47 +194,47 @@ class Polymer:
         # cool.
         # love that for me.
 
-        P1 = self.polymer.select_atoms(f'resid {n} and name {names["P1"]}').positions[-1]
-        Q1 = self.polymer.select_atoms(f'resid {n} and name {names["Q1"]}').positions[-1]
+        Q = self.polymer.select_atoms(f'resid {n} and name {names["Q"]}').positions[-1]
+        S = self.polymer.select_atoms(f'resid {n} and name {names["S"]}').positions[-1]
 
         u_ = monomer # monomer = mdict['path'][monomer]
         u_.atoms.tempfactors=float(beta) 
 
         u_.residues.resids = nn
 
-        P2 = u_.select_atoms(f'resid {nn} and name {names["P2"]}').positions[0]
+        P = u_.select_atoms(f'resid {nn} and name {names["P"]}').positions[0]
 
         # first, translate u_ by vector P2->P1
-        T = P1 - P2
+        PQ = Q - P
 
-        u_.atoms.translate(T)
+        u_.atoms.translate(PQ)
 
         # next, rotate around cross product of backbone vectors to align C_n to CN_n+1
-        P2 = u_.select_atoms(f'resid {nn} and name {names["P2"]}').positions[0]
-        Q2 = u_.select_atoms(f'resid {nn} and name {names["Q2"]}').positions[0]
+        P = u_.select_atoms(f'resid {nn} and name {names["P"]}').positions[0]
+        R = u_.select_atoms(f'resid {nn} and name {names["R"]}').positions[0]
 
-        v1 = Q2 - P2
-        v1_n = np.linalg.norm(v1)
+        PR = R - P
+        PR_n = np.linalg.norm(PR)
 
-        v2 =  Q1 - P1
-        v2_n = np.linalg.norm(v2)
+        QS =  S - Q
+        QS_n = np.linalg.norm(QS)
 
-        theta = degrees(np.arccos(np.dot(v1,v2)/(v1_n * v2_n))) # TODO there are edge cases where this can fail, I think if v1 and v2 are exactly antiparallel. I need to add a checker to resolve that.
+        theta = degrees(np.arccos(np.dot(PR,QS)/(PR_n * QS_n))) # TODO there are edge cases where this can fail, I think if v1 and v2 are exactly antiparallel. I need to add a checker to resolve that.
 
-        k = np.cross(v1,v2)
-        u_r1 = u_.atoms.rotateby(theta,axis=k,point=P1)
+        k = np.cross(PR,QS)
+        u_r1 = u_.atoms.rotateby(theta,axis=k,point=P)
 
         if linearise:
-            R= u_.select_atoms('resid '+str(nn)+' and name '+names['R']).positions[0]
-            S= u_.select_atoms('resid '+str(nn)+' and name '+names['S']).positions[0]
-            RS=S-R
-            RS_n=np.linalg.norm(RS)
+            V1= u_.select_atoms('resid '+str(nn)+' and name '+names['V1']).positions[0]
+            V2= u_.select_atoms('resid '+str(nn)+' and name '+names['V2']).positions[0]
+            V=V2-V1
+            V_n=np.linalg.norm(V)
             ortho_n=np.linalg.norm(ortho)
-            theta = degrees(np.arccos(np.dot(RS,ortho)/(RS_n * ortho_n)))
+            theta = degrees(np.arccos(np.dot(V,ortho)/(V_n * ortho_n)))
 
-            k=np.cross(RS,ortho)
+            k=np.cross(V,ortho)
             
-            u_r2 = u_r1.atoms.rotateby(theta,axis=k,point=R)
+            u_r2 = u_r1.atoms.rotateby(theta,axis=k,point=V1)
 
             # R= u_.select_atoms('resid '+str(nn)+' and name '+names['R']).positions[0]
             # S= u_.select_atoms('resid '+str(nn)+' and name '+names['S']).positions[0]
@@ -252,24 +258,24 @@ class Polymer:
         new.dimensions = list(new.atoms.positions.max(axis=0) + [0.5,0.5,0.5]) + [90]*3
         self.polymer = new.copy()
     
-    def _split_pol(self,a1,a1_resid,a2,a2_resid):
+    def _split_pol(self,J,J_resid,K,K_resid):
         """
         Given a pair of bonded atoms, uses a graph representation to identify groups of connected atoms on either side of the bond returns atomgroups corresponding to all atoms on either side of the bond.
         
         Use with caution if your polymer contains rings or closed loops, the atoms on either side of the bond must not be connected through other parts of the molecule
 
         Args:
-            a1 (atom name): the name of the first atom in the bond
-            a1_resid:       the resid of the first atom in the bond
-            a2 (atom name): the name of the second atom in the bond
-            a2_resid:       the resid of the second atom in the bond
+            J (atom name): the name of the first atom in the bond
+            J_resid:       the resid of the first atom in the bond
+            K (atom name): the name of the second atom in the bond
+            K_resid:       the resid of the second atom in the bond
 
         Returns two atomgroups, fore and aft
-            fore is all atoms connected to a1
-            aft is all atoms connected to a2
+            fore is all atoms connected to J
+            aft is all atoms connected to K
         """
 
-        pair = self.polymer.select_atoms(f'(resid {a1_resid} and name {a1}) or (resid {a2_resid} and name {a2})' ) 
+        pair = self.polymer.select_atoms(f'(resid {J_resid} and name {J}) or (resid {K_resid} and name {K})' ) 
         bond = self.polymer.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
         g = nx.Graph()
         g.add_edges_from(self.polymer.atoms.bonds.to_indices()) 
@@ -280,21 +286,21 @@ class Polymer:
         return(fore,aft)
 
 
-    def _rotate(self,a1,a1_resid,a2,a2_resid,mult=3,step=1):
+    def rotate(self,J,J_resid,K,K_resid,mult=3,step=1):
         """
-        Given a pair of bonded atoms a1 and a2, uses _split_pol() to identify all atoms connected to a1, then rotates them around the bond by (step * int(360/mult)) degrees, chanding the state of the dihedral centered over a1-b1.  
+        Given a pair of bonded atoms J and K within some torsion, uses _split_pol() to identify all atoms connected to J, then rotates them around vector JK by (step * int(360/mult)) degrees, rotating the dihedral centered over J-K by one step.  
 
         Args:
-            a1 (atom name): the name of the first atom in the bond
-            a1_resid:       the resid of the first atom in the bond
-            a2 (atom name): the name of the second atom in the bond
-            a2_resid:       the resid of the second atom in the bond
-            mult:           the multiplicity of the dihedral centered over a1-b1
+            J (atom name): the name of the first atom in the bond
+            J_resid:       the resid of the first atom in the bond
+            K (atom name): the name of the second atom in the bond
+            K_resid:       the resid of the second atom in the bond
+            mult:           the multiplicity of the dihedral centered over J-K
             step:           how many steps around the dihedral to rotate
         """
 
-        fore,_=self._split_pol(a1,a1_resid,a2,a2_resid)
-        pair = self.polymer.select_atoms(f'(resid {a1_resid} and name {a1}) or (resid {a2_resid} and name {a2})' ) 
+        fore,_=self._split_pol(J,J_resid,K,K_resid)
+        pair = self.polymer.select_atoms(f'(resid {J_resid} and name {J}) or (resid {K_resid} and name {K})' ) 
         bond = self.polymer.atoms.bonds.atomgroup_intersection(pair,strict=True)[0]
         v = bond[1].position - bond[0].position
         o = (fore & bond.atoms)[0]
@@ -302,25 +308,25 @@ class Polymer:
         fore.rotateby(rot, v, point=o.position)
 
 
-    def dist(self,a1,a1_resid,a2,a2_resid,dummy='X*',backwards_only=True):
+    def dist(self,J,J_resid,K,K_resid,dummies='X*',backwards_only=True):
         """
-        Given a pair of bonded atoms a1 and a2, get minimum distance between
+        Given a pair of bonded atoms J and K, get minimum distance between
         atoms on one side of a bond, and atoms on the other side of the bond.
         This is useful for detecting overlapping atoms.
 
-        :param a1: the name of the first atom in the bond
-        :type a1: str
-        :param a1_resid: the resid of the first atom in the bond
-        :type a1_resid: int
-        :param a2: the name of the second atom in the bond
-        :type a2: str
-        :param a2_resid: the resid of the second atom in the bond
-        :type a2_resid: int
-        :param dummy: the names of dummy atoms, to be discluded from the
+        :param J: the name of the first atom in the bond
+        :type J: str
+        :param J_resid: the resid of the first atom in the bond
+        :type J_resid: int
+        :param K: the name of the second atom in the bond
+        :type K: str
+        :param K_resid: the resid of the second atom in the bond
+        :type K_resid: int
+        :param dummies: the names of dummy atoms, to be excluded from the
                 distance calculation, defaults to 'X*'
-        :type dummy: str, optional
+        :type dummies: str, optional
         :param backwards_only: only consider atoms from residues 1 to
-                max([a1_resid,a2_resid]), and do not consider atoms further
+                max([J_resid,K_resid]), and do not consider atoms further
                 along the chain. This is useful for solving dihedrals
                 algorithmically, as only clashes in the solved region of the
                 polymer are considered, defaults to True
@@ -330,34 +336,34 @@ class Polymer:
                 between atoms on both halves of the bond
         :rtype: mda.analysis.distance_array
         """
-        fore,aft=self._split_pol(a1,a1_resid,a2,a2_resid)
+        fore,aft=self._split_pol(J,J_resid,K,K_resid)
         trim=''
         if backwards_only:
-            maxres=max([a1_resid,a2_resid])
+            maxres=max([J_resid,K_resid])
             trim=f' and (resid 0 to  {maxres})'
-        fore_trim=fore.select_atoms(f'(not name {dummy}) {trim}')
-        aft_trim=aft.select_atoms(f'(not name {dummy}) {trim}')
+        fore_trim=fore.select_atoms(f'(not name {dummies}) {trim}')
+        aft_trim=aft.select_atoms(f'(not name {dummies}) {trim}')
         return(distances.distance_array(fore_trim.atoms.positions, aft_trim.atoms.positions).min()) # this is the clash detection
 
-    def shuffle(self,a1,a1_resid,a2,a2_resid,dummy='X*',mult=3,cutoff=0.5,clashcheck=False,backwards_only=False):
+    def shuffle(self,J,J_resid,K,K_resid,dummies='X*',mult=3,cutoff=0.5,clashcheck=False,backwards_only=False):
         """
-        Given a pair of bonded atoms a1 and a2, randomly rotates the dihedral
+        Given a pair of bonded atoms J and K, randomly rotates the dihedral
         between them a random amount with clashcheck=True, will check if the
         resulting structure has overlapping atoms, and will undo the rotation
         if so.
 
-        :param a1: the name of the first atom in the bond
-        :type a1: str
-        :param a1_resid: the resid of the first atom in the bond
-        :type a1_resid: int
-        :param a2: the name of the second atom in the bond
-        :type a2: str
-        :param a2_resid: the resid of the second atom in the bond
-        :type a2_resid: int
-        :param dummy: the names of dummy atoms, to be discluded from the
+        :param J: the name of the first atom in the bond
+        :type J: str
+        :param J_resid: the resid of the first atom in the bond
+        :type J_resid: int
+        :param K: the name of the second atom in the bond
+        :type K: str
+        :param K_resid: the resid of the second atom in the bond
+        :type K_resid: int
+        :param dummies: the names of dummy atoms, to be excluded from the
                 distance calculation. Passed to :func:`dist`, defaults to 'X*'
-        :type dummy: str, optional
-        :param mult: the multiplicity of the dihedral centered over a1-b1, 
+        :type dummies: str, optional
+        :param mult: the multiplicity of the dihedral centered over J-K, 
                 defaults to 3
         :type mult: int, optional
         :param cutoff: maximum interatomic distance for atoms to be considered
@@ -367,8 +373,8 @@ class Polymer:
                 so reverses the shuffle, defaults to False
         :type clashcheck: bool, optional
         :param backwards_only: passed to :func:`dist` to decide if clash
-                checking is done along the entire polymer (if True) or just
-                from residue 1 up to max([a1_resid,a2_resid]) (if False),
+                checking is done from residue 1 up to max([J_resid,K_resid]) (if True),
+                or along the entire polymer (if False)
                 defaults to False
         :type backwards_only: bool, optional
 
@@ -376,26 +382,31 @@ class Polymer:
         :rtype: bool
         """
         step = random.randrange(1,mult) # rotate fore by a random multiplicity
-        self._rotate(a1,a1_resid,a2,a2_resid,mult,step)
-        clash= (self.dist(a1,a1_resid,a2,a2_resid,dummy,backwards_only=backwards_only) <= cutoff )
+        self.rotate(J,J_resid,K,K_resid,mult,step)
+        clash= (self.dist(J,J_resid,K,K_resid,dummies,backwards_only=backwards_only) <= cutoff )
         if clash and clashcheck:
-            self._rotate(a1,a1_resid,a2,a2_resid,mult,-1 * step,)
+            self.rotate(J,J_resid,K,K_resid,mult,-1 * step,)
         return(clash)
 
-    def dihedral_solver(self,pairlist,dummy='X*',cutoff=0.7):
+    def dihedral_solver(self,pairlist,dummies='X*',cutoff=0.7,backwards_only=True):
         """
         Converts the shuffled conformation (i.e. after :func:`shuffle`) into
         one without overlapping atoms by resolving dihedrals
 
         :param pairlist: list of dicts of atom pairs, created with
-                :func:`gen_pairlist`, e.g. [{a1,a1_resid,a2,a2_resid,mult}]
+                :func:`gen_pairlist`, e.g. [{J,J_resid,K,K_resid,mult}]
         :type pairlist: list of dicts of atom pairs
-        :param dummy: the names of dummy atoms, to be discluded from the
+        :param dummies: the names of dummy atoms, to be discluded from the
                 distance calculation. Passed to :func:`dist`, defaults to 'X*'
-        :type dummy: str, optional
+        :type dummies: str, optional
         :param cutoff: maximum interatomic distance for atoms to be considered
                 overlapping, defaults to 0.7
         :type cutoff: float, optional
+        :param backwards_only: passed to :func:`dist` to decide if clash
+                checking is done from residue 1 up to max([J_resid,K_resid]) for the current dihedral (if True),
+                or along the entire polymer (if False)
+                defaults to True
+        :type backwards_only: bool, optional
 
         :return: True if unable to resolve dihedrals or False if dihedrals all
                 resolved and no clashes detected
@@ -415,7 +426,7 @@ class Polymer:
             with tqdm(total=steps) as pbar:
                 while i < steps and i >=0:
                     dh=pairlist[i]
-                    check=self.dist(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],dummy=dummy)
+                    check=self.dist(J=dh['J'],J_resid=dh['J_resid'],K=dh['K'],K_resid=dh['K_resid'],dummies=dummies,backwards_only=backwards_only)
                     if check > cutoff and not retry:
                         i+=1
                         pbar.update(1)
@@ -436,7 +447,7 @@ class Polymer:
                                 repeats += 1
                         else: # no, there are more tries
                             tries[i] += 1
-                            self._rotate(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],mult=dh['mult'])
+                            self.rotate(J=dh['J'],J_resid=dh['J_resid'],K=dh['K'],K_resid=dh['K_resid'],mult=dh['mult'])
                 done=True
         if failed or i<0: # hard coded to detect failure if you stop at i<=0 because detecting this automatically wasn't working
             print('Could not reach a valid conformation')
@@ -445,16 +456,16 @@ class Polymer:
         else:
             return False
 
-    def shuffler(self,pairlist,dummy='X*',cutoff=0.5,clashcheck=False):
+    def shuffler(self,pairlist,dummies='X*',cutoff=0.5,clashcheck=False):
         """
         Shuffles each pair of bonded atoms in the provided pairlist with :func:`shuffle`
 
         :param pairlist: list of dicts of atom pairs, created with
-                :func:`gen_pairlist`, e.g. [{a1,a1_resid,a2,a2_resid,mult}]
+                :func:`gen_pairlist`, e.g. [{J,J_resid,K,K_resid,mult}]
         :type pairlist: list of dicts of atom pairs
-        :param dummy: _the names of dummy atoms, to be discluded from the
+        :param dummies: _the names of dummy atoms, to be discluded from the
                 distance calculation. Passed to :func:`shuffle`, defaults to 'X*'
-        :type dummy: str, optional
+        :type dummies: str, optional
         :param cutoff: maximum interatomic distance for atoms to be considered
                 overlapping, defaults to 0.5
         :type cutoff: float, optional
@@ -463,17 +474,17 @@ class Polymer:
         :type clashcheck: bool, optional
         """ 
         for dh in tqdm(pairlist):
-            self.shuffle(a1=dh['a1'],a1_resid=dh['a1_resid'],a2=dh['a2'],a2_resid=dh['a2_resid'],mult=dh['mult'],dummy=dummy,clashcheck=clashcheck,cutoff=cutoff)
+            self.shuffle(J=dh['J'],J_resid=dh['J_resid'],K=dh['K'],K_resid=dh['K_resid'],mult=dh['mult'],dummies=dummies,clashcheck=clashcheck,cutoff=cutoff)
 
-    def gen_pairlist(self,a1,a2,first_resid=1,last_resid=999,resid_step=1,same_res=True,mult=3):
+    def gen_pairlist(self,J,K,first_resid=1,last_resid=999,resid_step=1,same_res=True,mult=3):
         """
         Generates a list of dicts of atom pairs for use in :func:`shuffler` or
         :func:`dihedral_solver`.
 
-        :param a1: the name of the first atom in the bond
-        :type a1: str
-        :param a2: the name of the second atom in the bond
-        :type a2: str
+        :param J: the name of the first atom in the bond
+        :type J: str
+        :param K: the name of the second atom in the bond
+        :type K: str
         :param first_resid: resid of first residue to include in pairlist,
                 defaults to 1
         :type first_resid: int, optional
@@ -485,23 +496,24 @@ class Polymer:
                 defaults to 1
         :type resid_step: int, optional
         :param same_res: if True, paired atoms are bonded within the same
-                residue, if False assumes that paired atoms a1 and a2 form a
+                residue, if False assumes that paired atoms J and K form a
                 bond between residue n and residue n+1, defaults to True
         :type same_res: bool, optional
-        :param mult: the multiplicity of the dihedral centered over a1-b1,
+        :param mult: the multiplicity of the dihedral centered over J-K,
                 defaults to 3
         :type mult: int, optional
 
         :return: a list of dicts of atom pairs
         :rtype: list of dicts
         """
-        pairlist=[{'a1':a1,'a1_resid':i,'a2':a2,'a2_resid':i+int(not same_res),'mult':mult} for i in range(first_resid,last_resid+1,resid_step)]
+        pairlist=[{'J':J,'J_resid':i,'K':K,'K_resid':i+int(not same_res),'mult':mult} for i in range(first_resid,last_resid+1,resid_step)]
         # crude, doesn't actually check if the pairs exist
         # want to extend this to cover more than one dihedral
         return(pairlist)
 
     def gencomp(mdict, length, fill, middle, count = True, frac = False):
         """
+        Deprecated and unsupported, use with caution. 
         Generate the linear conformation of a polymer from a given length, 
         specified monomer composition and a dictionary of monomers. Only used by
         'polyconf_automatic' and should not be used otherwise.
