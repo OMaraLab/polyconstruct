@@ -1,7 +1,7 @@
 # Construction of a simple linear homopolymer of PEI
 
-# This polymer will be 20 monomers long and constructed by joining Atom C51 to
-# N7, and discarding the atoms C62 and C6 (and any other atoms, such as
+# This polymer will be 20 monomers long and constructed by joining Atom N71 to
+# C5, and discarding the atoms C51 and N7 (and any other atoms, such as
 # hydrogens, connected to them but not the rest of the polymer).
 
 # Import required Classes from PolyTop
@@ -26,8 +26,8 @@ top = Topology.from_ITP("data/pei.itp", format="gromos")
 # Note that junctions are specified for extend() by their name attribute (in
 # this example 'to' and 'from', and NOT by the variable name they are assigned
 # to 'to_j' and 'from_j', which are used to pass them into a Monomer object)
-to_j = Junction(top.get_atom("N71"), top.get_atom("C51"), name = "to")
-from_j = Junction(top.get_atom("C5"), top.get_atom("N7"), name = "from")
+to_j = Junction(top.get_atom("N71"), top.get_atom("C51"), name = "from")
+from_j = Junction(top.get_atom("C5"), top.get_atom("N7"), name = "to")
 
 # ----- Create a Monomer from the Topology and a list of the Junctions -----
 
