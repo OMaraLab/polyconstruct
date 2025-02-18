@@ -1,6 +1,6 @@
 # Construction of an ethylamine dendrimer
 
-# import required Classes from PolyTop
+# Import required Classes from PolyTop
 from polytop.Junction import Junction
 from polytop.Monomer import Monomer
 from polytop.Visualize import Visualize
@@ -22,9 +22,9 @@ terminal_mono = Topology.from_ITP("data/dendrimer_terminal.itp", format="gromos"
 # Provide the bonding atom and the leaving atom, in that order, for the Junction
 # The two atoms used to create a Junction MUST have a bond between them.
 
-# Note that junctions are specified for extend() by their name attribute (in
-# this example 'to' and 'from', and NOT by the variable name they are assigned
-# to 'to_j' and 'from_j', which are used to pass them into a Monomer object).
+# Note that junctions are specified for extend() by their name attribute and
+# NOT by the variable name they are assigned to (which are instead used to pass
+# them into a Monomer object).
 
 # You will see that all of the Junctions created below have a unique name to
 # prevent randomisation or uncertainty in the extension, and thus ensure repeatability.
@@ -63,14 +63,18 @@ c2b = Junction(bifurcating_mono.get_atom("N1"), bifurcating_mono.get_atom("C3"),
 # Monomer Junctions (i.e. from12 or from22)
 t = Junction(terminal_mono.get_atom("C1"), terminal_mono.get_atom("N1"), name = "term")
 
-# create monomers from their topologies and any specified junctions
-# note that different 'levels' of monomers have different names for their junctions.
+
+# ----- Create Monomers from their Topologies and any specified Junctions -----
+
+# Note that different 'levels' of monomers have different names for their junctions.
 # This ensures that layers are added on sequentially. 
-# If all monomers have the same junction names the polymerisation will be random and often defaults to a linear shape!
+# If all monomers have the same junction names the polymerisation will be random
+# and often defaults to a linear shape!
 central = Monomer(core_mono, [central1, central2, central3, central4])
 bifur1 = Monomer(bifurcating_mono, [b1, b2a, b2b])
 bifur2 = Monomer(bifurcating_mono, [c1, c2a, c2b])
 cap = Monomer(terminal_mono, [t])
+
 
 # ----- Start the Polymer with one Monomer -----
 
@@ -143,6 +147,7 @@ polymer.extend(cap, from_junction_name="from22", to_junction_name="term")
 # Optionally (but recommended), check the netcharge of the monomers is
 # preserved (in this case, close to 0)
 print(polymer.topology.netcharge)
+
 
 # ----- Save the polymer dendrimer to an itp file -----
 

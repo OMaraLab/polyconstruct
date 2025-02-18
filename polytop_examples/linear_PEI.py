@@ -26,9 +26,8 @@ top = Topology.from_ITP("data/pei.itp", format="gromos")
 # Note that junctions are specified for extend() by their name attribute (in
 # this example 'to' and 'from', and NOT by the variable name they are assigned
 # to 'to_j' and 'from_j', which are used to pass them into a Monomer object)
-to_j = Junction(top.get_atom("C51"), top.get_atom("C62"), name = "to")
-from_j = Junction(top.get_atom("N7"), top.get_atom("C6"), name = "from")
-
+to_j = Junction(top.get_atom("N71"), top.get_atom("C51"), name = "to")
+from_j = Junction(top.get_atom("C5"), top.get_atom("N7"), name = "from")
 
 # ----- Create a Monomer from the Topology and a list of the Junctions -----
 
@@ -72,4 +71,4 @@ for i in range(19):
 polymer.topology.title = "pei polymer" # optional but good for identifying files, renames the ITP header and image
 polymer.save_to_file('data/pei_linear_polymer.json') # optional, text dump in a dictionary format
 polymer.topology.to_ITP('data/pei_linear_polymer.itp') # write the itp to be used for simulation
-Visualize.polymer(polymer,infer_bond_order=False).draw2D('data/pei_linear_polymer.png',(400,300)) # optional, visualize the structure in 2Da
+Visualize.polymer(polymer,infer_bond_order=False).draw2D('data/pei_linear_polymer.png',(400,300)) # optional, visualize the structure in 2D
