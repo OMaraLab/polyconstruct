@@ -139,4 +139,5 @@ tests/output/
 
 polyconf_examples/PEI_linear_*
 polyconf_examples/PEI_branched_*
+polyconf_examples/PEI_randombranched_*
 polyconf_examples/PMMA_*
