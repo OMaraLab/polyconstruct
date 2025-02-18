@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import warnings
 import MDAnalysis as mda
     
 class PDB:
@@ -53,6 +53,10 @@ class PDB:
                 defaults to False
         :type gmx: bool, optional
         """
+        # ignore MDAnalysis "UserWarning: Found no information for attr: 'formalcharges' Using default value of '0'"
+        warnings.simplefilter('ignore', category=UserWarning, lineno=1154)
+        # ignore MDAnalysis "UserWarning: Found missing chainIDs. Corresponding atoms will use value of 'X'"
+        warnings.simplefilter('ignore', category=UserWarning, lineno=1201)
         if selectionString:
             if gmx:
                 self.select_atoms(f"{selectionString} and not name {dummies}").atoms._write(f"{fname}.gro")

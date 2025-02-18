@@ -446,6 +446,7 @@ class Polymer:
                             if i==0: # yes, and this is the first monomer
                                 failed=True
                                 done=True
+                                i=-1 # force exit from while loops upon failure
                             else: # yes, and this is not the first monomer
                                 #print(i,tries[i])
                                 retry=True
