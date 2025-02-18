@@ -16,7 +16,9 @@ random.seed(10) # by setting the random seed we can ensure the random conformati
 
 # In this example, we will follow the process used to generate a linear PEI, 128 monomers long
 
-# but then we will add branches every 5 monomers 
+# but then we will add ten 5-mer branches to random monomers 
+
+# first, build the linear 128-mer as before
 
 PEI_branched=Polymer(Monomer('PEI_start.pdb')) 
 
