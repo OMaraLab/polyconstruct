@@ -1,0 +1,93 @@
+TITLE     MDANALYSIS FRAME 0: Created by PDBWriter
+CRYST1    3.412    4.501    1.970  90.00  90.00  90.00 P 1           1
+HETATM    1  C5  8WDYX   1       1.827  -0.768  -0.022  1.00  0.00      SYST C  
+HETATM    2  C2  8WDYX   1       0.362  -0.271  -0.012  1.00  0.00      SYST C  
+HETATM    3  C1  8WDYX   1       0.107   0.604  -1.261  1.00  0.00      SYST C  
+HETATM    4  C3  8WDYX   1       0.124   0.541   1.281  1.00  0.00      SYST C  
+HETATM    5  C4  8WDYX   1      -0.547  -1.521  -0.037  1.00  0.00      SYST C  
+HETATM    6  C3  4Y3BX   2      -2.525  -1.002  -1.878  1.00  0.00      SYST C  
+HETATM    7  C2  4Y3BX   2      -2.000   0.344  -2.376  1.00  0.00      SYST C  
+HETATM    8  O1  4Y3BX   2      -1.258   1.038  -1.383  1.00  0.00      SYST O  
+HETATM    9  C3  4Y3BX   3      -2.714  -0.760   0.910  1.00  0.00      SYST C  
+HETATM   10  C2  4Y3BX   3      -2.120   0.565   0.434  1.00  0.00      SYST C  
+HETATM   11  O1  4Y3BX   3      -1.194   1.109   1.365  1.00  0.00      SYST O  
+HETATM   12  C3  4Y3BX   4      -3.094  -3.303  -0.508  1.00  0.00      SYST C  
+HETATM   13  C2  4Y3BX   4      -2.752  -1.869  -0.911  1.00  0.00      SYST C  
+HETATM   14  O1  4Y3BX   4      -1.947  -1.211   0.057  1.00  0.00      SYST O  
+HETATM   15  C3  4Y3BX   5       1.534   2.262   0.739  1.00  0.00      SYST C  
+HETATM   16  C2  4Y3BX   5       2.318   1.546  -0.361  1.00  0.00      SYST C  
+HETATM   17  O1  4Y3BX   5       2.798   0.275   0.055  1.00  0.00      SYST O  
+HETATM   18  C3  4Y3BX   6      -3.017  -3.982  -2.726  1.00  0.00      SYST C  
+HETATM   19  C2  4Y3BX   6      -2.748  -2.711  -3.532  1.00  0.00      SYST C  
+HETATM   20  O1  4Y3BX   6      -3.315  -1.557  -2.929  1.00  0.00      SYST O  
+HETATM   21  C3  4Y3BX   7      -3.601  -3.607  -0.065  1.00  0.00      SYST C  
+HETATM   22  C2  4Y3BX   7      -3.310  -2.306  -0.812  1.00  0.00      SYST C  
+HETATM   23  O1  4Y3BX   7      -3.680  -1.156  -0.063  1.00  0.00      SYST O  
+HETATM   24  C3  4Y3BX   8      -3.677  -6.255  -1.398  1.00  0.00      SYST C  
+HETATM   25  C2  4Y3BX   8      -3.457  -4.964  -2.187  1.00  0.00      SYST C  
+HETATM   26  O1  4Y3BX   8      -3.965  -3.822  -1.511  1.00  0.00      SYST O  
+HETATM   27  C3  4Y3BX   9      -1.235   3.424  -0.168  1.00  0.00      SYST C  
+HETATM   28  C2  4Y3BX   9       0.169   3.518  -0.766  1.00  0.00      SYST C  
+HETATM   29  O1  4Y3BX   9       1.181   3.547   0.230  1.00  0.00      SYST O  
+HETATM   30  C3  4Y3BX  10      -1.731  -6.682  -1.779  1.00  0.00      SYST C  
+HETATM   31  C2  4Y3BX  10      -1.343  -5.681  -2.866  1.00  0.00      SYST C  
+HETATM   32  O1  4Y3BX  10      -2.475  -5.071  -3.471  1.00  0.00      SYST O  
+HETATM   33  C3  4Y3BX  11      -2.469  -6.474   0.521  1.00  0.00      SYST C  
+HETATM   34  C2  4Y3BX  11      -2.130  -5.428  -0.541  1.00  0.00      SYST C  
+HETATM   35  O1  4Y3BX  11      -3.266  -4.678  -0.946  1.00  0.00      SYST O  
+HETATM   36  C3  4Y3BX  12      -2.649  -9.117  -0.631  1.00  0.00      SYST C  
+HETATM   37  C2  4Y3BX  12      -2.145  -8.073  -1.627  1.00  0.00      SYST C  
+HETATM   38  O1  4Y3BX  12      -3.203  -7.326  -2.211  1.00  0.00      SYST O  
+HETATM   39  C3  4Y3BX  13      -3.059   1.214  -1.446  1.00  0.00      SYST C  
+HETATM   40  C2  4Y3BX  13      -2.189   2.313  -2.056  1.00  0.00      SYST C  
+HETATM   41  O1  4Y3BX  13      -2.157   3.486  -1.256  1.00  0.00      SYST O  
+HETATM   42  C1  45ZJX  14      -0.523  -7.280  -1.312  1.00  0.00      SYST C  
+HETATM   43  C1  45ZJX  15      -1.273  -7.208   0.780  1.00  0.00      SYST C  
+HETATM   44  C1  45ZJX  16      -1.509  -9.849  -0.181  1.00  0.00      SYST C  
+HETATM   45  C1  45ZJX  17      -3.076   0.132  -2.375  1.00  0.00      SYST C  
+CONECT    1    2   17
+CONECT    2    1    3    4    5
+CONECT    3    2    8
+CONECT    4    2   11
+CONECT    5    2   14
+CONECT    6    7   20
+CONECT    7    6    8
+CONECT    8    3    7
+CONECT    9   10   23
+CONECT   10    9   11
+CONECT   11    4   10
+CONECT   12   13   26
+CONECT   13   12   14
+CONECT   14    5   13
+CONECT   15   16   29
+CONECT   16   15   17
+CONECT   17    1   16
+CONECT   18   19   32
+CONECT   19   18   20
+CONECT   20    6   19
+CONECT   21   22   35
+CONECT   22   21   23
+CONECT   23    9   22
+CONECT   24   25   38
+CONECT   25   24   26
+CONECT   26   12   25
+CONECT   27   28   41
+CONECT   28   27   29
+CONECT   29   15   28
+CONECT   30   31   42
+CONECT   31   30   32
+CONECT   32   18   31
+CONECT   33   34   43
+CONECT   34   33   35
+CONECT   35   21   34
+CONECT   36   37   44
+CONECT   37   36   38
+CONECT   38   24   37
+CONECT   39   40   45
+CONECT   40   39   41
+CONECT   41   27   40
+CONECT   42   30
+CONECT   43   33
+CONECT   44   36
+CONECT   45   39
+END

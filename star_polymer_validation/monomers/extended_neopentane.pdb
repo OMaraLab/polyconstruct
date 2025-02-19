@@ -1,0 +1,31 @@
+HEADER    UNCLASSIFIED                            06-Feb-25
+TITLE     UNITED ATOM STRUCTURE FOR MOLECULE UNL                                
+AUTHOR    AUTOMATED TOPOLOGY BUILDER (ATB) REVISION 2025-01-17 09:57:26
+AUTHOR   2  https://atb.uq.edu.au
+HETATM    1  H12 8WDY    0       2.912   0.653  -0.831  1.00  0.00           H
+HETATM    2   O4 8WDY    0       2.798   0.275   0.055  1.00  0.00           O
+HETATM    3   C5 8WDY    0       1.827  -0.768  -0.022  1.00  0.00           C
+HETATM    4   C2 8WDY    0       0.362  -0.271  -0.012  1.00  0.00           C
+HETATM    5   C1 8WDY    0       0.107   0.604  -1.261  1.00  0.00           C
+HETATM    6   O1 8WDY    0      -1.258   1.038  -1.383  1.00  0.00           O
+HETATM    7   H1 8WDY    0      -1.455   1.479  -0.529  1.00  0.00           H
+HETATM    8   C3 8WDY    0       0.124   0.541   1.281  1.00  0.00           C
+HETATM    9   O2 8WDY    0      -1.194   1.109   1.365  1.00  0.00           O
+HETATM   10   H6 8WDY    0      -1.803   0.347   1.271  1.00  0.00           H
+HETATM   11   C4 8WDY    0      -0.547  -1.521  -0.037  1.00  0.00           C
+HETATM   12   O3 8WDY    0      -1.947  -1.211   0.057  1.00  0.00           O
+HETATM   13   H9 8WDY    0      -2.117  -0.590  -0.682  1.00  0.00           H
+CONECT    1    2
+CONECT    2    1    3
+CONECT    3    2    4
+CONECT    4    3    5    8   11
+CONECT    5    4    6
+CONECT    6    5    7
+CONECT    7    6
+CONECT    8    4    9
+CONECT    9    8   10
+CONECT   10    9
+CONECT   11    4   12
+CONECT   12   11   13
+CONECT   13   12
+END
