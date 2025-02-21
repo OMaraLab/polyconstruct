@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Construction of a 4-arm PEG star polymer from single monomeric units
 
 # Import required Classes from PolyTop
