@@ -3,9 +3,9 @@ PolyConstruct
 
 This page details how to get started with *PolyConstruct*.
 
-The design, testing, and validation of *PolyConstruct* is detailed in the manuscript "PolyConstruct: 
-adapting  biomolecular simulation pipelines for polymers with PolyBuild, PolyConf and PolyTop", by 
-**Rangika Munaweera**, **Ada Quinn**, Luna Morrow, Richard A Morris, Megan L O’Mara
+The design, testing, and validation of *PolyConstruct* is detailed in the manuscript *"PolyConstruct: 
+adapting  biomolecular simulation pipelines for polymers with PolyBuild, PolyConf and PolyTop"*, by 
+***Rangika Munaweera**, **Ada Quinn**, Luna Morrow, Richard A Morris, Megan L O’Mara*
 
 Getting Started
 ===============
@@ -87,7 +87,7 @@ For both *PolyBuild* and *PolyTop*, monomer parameters should include all monome
 in the simulation model of the final polymer, and dummy atoms correesponding to connectivity with adjacent monomers.  
 The method for preparing monomer .itp depends on the choice of force field, and a number of suitable automated tools 
 exist for small molecule parameterization such as the `Automated Topology Builder <https://atb.uq.edu.au>`_, 
-`antechamber <https://ambermd.org/antechamber/ac.html>`_, and `LigParGen <https://zarbi.chem.yale.edu/ligpargen/>_`. 
+`antechamber <https://ambermd.org/antechamber/ac.html>`_, and `LigParGen <https://zarbi.chem.yale.edu/ligpargen/>`_. 
 
 Monomer coordinates and parameters used as inputs should be designed to reflect the state of the monomer 
 in the mature polymer chain, rather than the isolated monomer molecule prior to polymerization.  For example, 
