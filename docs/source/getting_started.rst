@@ -49,7 +49,8 @@ Then, build the PolyTop, PolyConf and PolyBuild packages:
 
 
 
-**Input files and monomer design:**
+Input files and monomer design
+===============
 
 *PolyConf* assembles polymer pdb files by tiling individual monomer pdb files.  Monomer PDB files should 
 include all monomer atoms that will be present in the final polymer, dummy atoms corresponding to 
