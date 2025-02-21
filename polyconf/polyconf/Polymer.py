@@ -192,9 +192,6 @@ class Polymer:
             any dummy atoms.
 
         """
-        # TODO I renamed the atoms in the manuscript, so I guess I gotta fix that here
-        # cool.
-        # love that for me.
 
         Q = self.polymer.select_atoms(f"resid {n} and name {names['Q']}").positions[-1]
         S = self.polymer.select_atoms(f"resid {n} and name {names['S']}").positions[-1]
@@ -237,14 +234,6 @@ class Polymer:
             k=np.cross(V,ortho)
             
             u_r2 = u_r1.atoms.rotateby(theta,axis=k,point=V1)
-
-            # R= u_.select_atoms('resid '+str(nn)+' and name '+names['R']).positions[0]
-            # S= u_.select_atoms('resid '+str(nn)+' and name '+names['S']).positions[0]
-            # RS=S-R
-            # RS_n=np.linalg.norm(RS)
-            # ortho_n=np.linalg.norm(ortho)
-            # check = degrees(np.arccos(np.dot(RS,ortho)/(RS_n * ortho_n)))
-            # if abs(check)>1: print('linear check =' ,check)
 
             u_r1=u_r2
 
@@ -421,7 +410,6 @@ class Polymer:
                 resolved and no clashes detected
         :rtype: bool
         """
-        # TODO stepback isn't working right, it's not stepping back far enough
         steps=len(pairlist)
         tries={x:0 for x in range(0,steps)} # how many steps around the dihedral have we tried? resets to zero if you step backwards
         fails={x:0 for x in range(0,steps)} # how many times have we had to step backwards at this monomer?  the more times, the further back we step 
@@ -461,7 +449,7 @@ class Polymer:
                 done=True
         if failed or i<0: # hard coded to detect failure if you stop at i<=0 because detecting this automatically wasn't working
             print('Could not reach a valid conformation')
-            print('Perhaps you should try building a pseudolinear geometry with .extend(linearize=True) or randomising all dihedrals with shuffler(), and then try solving a conformation again')
+            print('Perhaps you should try building a pseudolinear geometry with .extend(linearise=True) or randomising a subset of the dihedrals with shuffler(), and then try solving a conformation again')
             return True
         else:
             return False
