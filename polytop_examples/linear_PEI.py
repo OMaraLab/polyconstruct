@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+ 
 # Construction of a simple linear homopolymer of PEI
 
 # This polymer will be 20 monomers long and constructed by joining Atom N71 to
