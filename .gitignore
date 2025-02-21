@@ -141,3 +141,8 @@ polyconf_examples/PEI_linear_*
 polyconf_examples/PEI_branched_*
 polyconf_examples/PEI_randombranched_*
 polyconf_examples/PMMA_*
+
+# Output of polytop tutorial
+polytop_examples/data/ethylamine_dendrimer.*
+polytop_examples/data/four_arm_star.*
+polytop_examples/data/pei_linear_polymer.*
