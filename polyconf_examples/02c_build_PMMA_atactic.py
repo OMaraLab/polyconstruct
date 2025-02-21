@@ -51,6 +51,8 @@ for i in range(0,50):
     dh += [sidechains[i]]
 
 print('attempting to solve initial conformation')
+print('the random seed in this example script has been chosen specifically so that this process fails')
+print('this is expected and is part of the tutorial')
 
 PMMA_atactic.dihedral_solver(dh,dummies=dummies,cutoff=1.1) 
 
