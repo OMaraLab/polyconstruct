@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Construction of an ethylamine dendrimer
 
 # Import required Classes from PolyTop
