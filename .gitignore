@@ -146,3 +146,7 @@ polyconf_examples/PMMA_*
 polytop_examples/data/ethylamine_dendrimer.*
 polytop_examples/data/four_arm_star.*
 polytop_examples/data/pei_linear_polymer.*
+
+# OS X nonsense
+
+.DS_store
