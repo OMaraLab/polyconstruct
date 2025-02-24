@@ -73,4 +73,4 @@ for i in range(19):
 polymer.topology.title = "pei polymer" # optional but good for identifying files, renames the ITP header and image
 polymer.save_to_file('data/pei_linear_polymer.json') # optional, text dump in a dictionary format
 polymer.topology.to_ITP('data/pei_linear_polymer.itp') # write the itp to be used for simulation
-Visualize.polymer(polymer,infer_bond_order=False).draw2D('data/pei_linear_polymer.png',(400,300)) # optional, visualize the structure in 2D
+Visualize.polymer(polymer,infer_bond_order=False).draw2D('data/pei_linear_polymer.png',(800,600)) # optional, visualize the structure in 2D

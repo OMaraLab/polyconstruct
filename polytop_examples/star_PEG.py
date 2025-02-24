@@ -145,4 +145,4 @@ four_polymer.topology.title = "four arm star polymer" # rename your ITP header a
 # for an easy visual structure check
 four_polymer.save_to_file('data/four_arm_star.json') # optional, text dump in a dictionary format
 four_polymer.topology.to_ITP('data/four_arm_star.itp') # write the itp to be used for simulation
-Visualize.polymer(four_polymer,infer_bond_order=False).draw2D('data/four_arm_star.png',(400,300)) # optional, visualize the structure in 2D
+Visualize.polymer(four_polymer,infer_bond_order=False).draw2D('data/four_arm_star.png',(800,600)) # optional, visualize the structure in 2D

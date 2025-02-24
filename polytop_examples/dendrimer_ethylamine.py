@@ -157,4 +157,4 @@ print(polymer.topology.netcharge)
 # for an easy visual structure check
 polymer.save_to_file('data/ethylamine_dendrimer.json') # optional, text dump in a dictionary format
 polymer.topology.to_ITP('data/ethylamine_dendrimer.itp') # write the itp to be used for simulation
-Visualize.polymer(polymer,infer_bond_order=False).draw2D('data/ethylamine_dendrimer.png',(400,300)) # optional, visualize the structure in 2D
+Visualize.polymer(polymer,infer_bond_order=False).draw2D('data/ethylamine_dendrimer.png',(800,600)) # optional, visualize the structure in 2D
