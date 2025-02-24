@@ -3,8 +3,8 @@
 * @lunamorrow @khiron @recombinatrix @RangikaM
 
 /polyconf/ @lunamorrow @recombinatrix
-/polytop/ @lunamorrow @khiron
-/polybuild/ @lunamorrow @RangikaM
+/polytop/ @lunamorrow @khiron @recombinatrix
+/polybuild/ @lunamorrow @RangikaM @recombinatrix
 
 # information on how to adjust the code owners can be found here:
-# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners

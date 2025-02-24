@@ -24,12 +24,12 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # -- Project information -----------------------------------------------------
 
-project = "polyconstruct"
+project = "PolyConstruct"
 copyright = (
-    "2024, Luna Morrow. "
+    "2024, Rangika Munaweera, Ada Quinn, Luna Morrow, Megan O'Mara. "
     "A Python library for constructing polymer topologies and coordinates"
 )
-author = "Luna Morrow"
+author = "Rangika Munaweera, Ada Quinn, Luna Morrow, Megan O'Mara"
 add_module_names = False
 
 # The short X.Y version
@@ -195,7 +195,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, "polyconstruct", "PolyConstruct Documentation",
-     author, "polyconstruct", "A group of packages to construct polymer topologies and coordinates for molecular dynamics simulation with GROMACS",
+     author, "polyconstruct", "A python library to generate polymer topology and coordinate files for molecular dynamics simulation with GROMACS",
      "Miscellaneous"),
 ]
 

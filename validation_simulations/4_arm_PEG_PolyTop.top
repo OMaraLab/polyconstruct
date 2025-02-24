@@ -1,0 +1,32 @@
+#define HEAVY_H
+
+; Include forcefield parameters
+#include "./gromos54a7_atb.ff/forcefield.itp"
+#include "./4_arm_PEG_PolyTop.top"
+
+; Include Position restraint file
+#ifdef POSRES
+#include "posre.itp"
+#endif
+
+; Include water topology
+#include "./gromos54a7_atb.ff/spc.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "./gromos54a7_atb.ff/ions.itp"
+
+[ system ]
+; Name
+Star in waterbox
+
+[ molecules ]
+; Compound        #mols
+8WDY		1
+SOL              1209
