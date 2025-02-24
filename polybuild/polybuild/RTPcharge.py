@@ -86,25 +86,22 @@ def _remove_unwanted_atoms(atom_section, atoms_to_keep):
     return [atom for atom in atom_section if atom[0] in atoms_to_keep]
 
 def _neutralize_charges(atom_section, tolerance):
-    """Attempts to neutralize the charges by adjusting within the given tolerance."""
+    """Adjusts charges to neutralize the system within the specified tolerance."""
     charges = np.array([float(atom[2]) for atom in atom_section])
     total_charge = np.sum(charges)
-    
     if abs(total_charge) < 1e-6:
         return charges  # Already neutral
-    
     adjustment_needed = -total_charge
-    
-    # Try adjusting each charge within the tolerance to achieve neutrality
-    for i, charge in enumerate(charges):
-        possible_adjustment = charge * tolerance
-        if abs(possible_adjustment) >= abs(adjustment_needed):
-            new_charges = charges.copy()
-            new_charges[i] += adjustment_needed
-            if abs(np.sum(new_charges)) < 1e-6:
-                return new_charges
-
-    return None  # Unable to neutralize within the given tolerance
+    # Calculate the maximum allowed adjustment for each atom
+    max_adjustments = np.abs(charges) * tolerance
+    # Try to distribute the adjustment proportionally
+    adjustment_factors = max_adjustments / np.sum(max_adjustments)
+    adjustments = adjustment_needed * adjustment_factors
+    new_charges = charges + adjustments
+    if abs(np.sum(new_charges)) < 1e-6:
+        return new_charges
+    else:
+        return None  # Unable to neutralize within the given tolerance
 
 def _write_modified_rtp_file(file, lines, atom_section):
     """Writes the modified content back to the .rtp file."""
