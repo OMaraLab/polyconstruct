@@ -8,7 +8,12 @@
 
 * *PolyTop* is a tool for generating polymer topology files from monomer topology files.
 
-*PolyConstruct* was published in the paper *PolyConstruct: adapting biomolecular simulation pipelines for polymers with PolyBuild, PolyConf and PolyTop*.
+*PolyConstruct* was published in the paper [*PolyConstruct: adapting biomolecular simulation pipelines for polymers with PolyBuild, PolyConf and PolyTop*](https://doi.org/10.1021/acs.jcim.4c02375).
+
+If you use *PolyConstruct*, please cite the following paper:
+
+> Munaweera, R.; Quinn, A.; Morrow, L.; Morris, R. A.; O’Mara, M. L. ***PolyConstruct* : Adapting Biomolecular Simulation Pipelines for Polymers with *PolyBuild* , *PolyConf* , and *PolyTop*.** *J. Chem. Inf. Model.* **2025**, acs.jcim.4c02375. https://doi.org/10.1021/acs.jcim.4c02375.
+
 
 ## Getting started
 
