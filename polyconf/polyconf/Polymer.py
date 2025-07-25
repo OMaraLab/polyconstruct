@@ -170,7 +170,7 @@ class Polymer:
 
         Further notes:
             * n and nn enable branching by specifying from and to connections between monomers and beta is analogous to segments 
-            * extend a polymer 'u' by a monomer 'u\_', by fitting the backbone atoms (P2, Q2) from the new monomer to (P1,Q1) from the existing residue n, 
+            * extend a polymer 'u' by a monomer 'u_', by fitting the backbone atoms (P2, Q2) from the new monomer to (P1,Q1) from the existing residue n, 
                 then joins the monomer nn to the existing universe with a bond between each pair of atoms in joins
 
             ATOM NOMENCLATURE:
