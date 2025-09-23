@@ -36,27 +36,16 @@ Then navigate to `~/polyconstruct`
 cd polyconstruct
 ```
 
-Create a python environment and setup *PolyConstruct*:
+Create and activate a new python environment:
 
 ```bash
 conda create --name polyconstruct python=3.10
 conda activate polyconstruct
-
-pip install -r requirements.txt
 ```
 
-Then, build the *PolyTop*, *PolyConf* and *PolyBuild* packages:
+Install dependencies and *PolyConstruct*:
 
 ```bash
-cd polytop
-
-pip install -e .
-
-cd ../polyconf
-
-pip install -e .
-
-cd ../polybuild
-
-pip install -e .
+pip install -r installation.txt
 ```
+
