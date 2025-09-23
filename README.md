@@ -23,40 +23,16 @@ There is a series of detailed tutorials for *PolyConf* in the folder [polyconf_e
 
 ## Quick and dirty installation
 
-From your home directory, clone *PolyConstruct* from this repository:
-
-```bash
-cd ~
-git clone https://github.com/OMaraLab/polyconstruct.git
-```
-
-Then navigate to `~/polyconstruct`
-
-```bash
-cd polyconstruct
-```
-
-Create a python environment and setup *PolyConstruct*:
+Create and activate a new python environment:
 
 ```bash
 conda create --name polyconstruct python=3.10
 conda activate polyconstruct
-
-pip install -r requirements.txt
 ```
 
-Then, build the *PolyTop*, *PolyConf* and *PolyBuild* packages:
+Install dependencies and *PolyConstruct*:
 
 ```bash
-cd polytop
-
-pip install -e .
-
-cd ../polyconf
-
-pip install -e .
-
-cd ../polybuild
-
-pip install -e .
+pip install "polyconstruct@git+https://github.com/OMaraLab/polyconstruct.git"
 ```
+

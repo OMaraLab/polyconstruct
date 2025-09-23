@@ -13,13 +13,20 @@ license = { text = "MIT License" }
 
 # Dependencies required for your project
 dependencies = [
-    "numpy",
-    "mdanalysis",
-    "click",
-    "py3Dmol",
-    "rdkit",
+    "numpy==2.2.6",
+    "MDAnalysis==2.9.0",
+    "click==8.3.0",
+    "py3Dmol==2.5.2",
+    "rdkit==2025.3.6",
+    "networkx==3.4.2",
+    "pandas==2.3.2",
+    "tqdm==4.67.1"
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["*"]
+[tool.setuptools]
+packages = ["polybuild", "polybuild.polybuild", "polyconf", "polyconf.polyconf", "polytop", "polytop.polytop"]
+
+[tool.setuptools.package-dir]
+polybuild.polybuild = "polybuild"
+polyconf.polyconf = "polyconf"
+polytop.polytop = "polytop"
