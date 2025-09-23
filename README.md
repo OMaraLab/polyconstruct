@@ -23,19 +23,6 @@ There is a series of detailed tutorials for *PolyConf* in the folder [polyconf_e
 
 ## Quick and dirty installation
 
-From your home directory, clone *PolyConstruct* from this repository:
-
-```bash
-cd ~
-git clone https://github.com/OMaraLab/polyconstruct.git
-```
-
-Then navigate to `~/polyconstruct`
-
-```bash
-cd polyconstruct
-```
-
 Create and activate a new python environment:
 
 ```bash
@@ -46,6 +33,6 @@ conda activate polyconstruct
 Install dependencies and *PolyConstruct*:
 
 ```bash
-pip install -r installation.txt
+pip install "polyconstruct@git+https://github.com/OMaraLab/polyconstruct.git"
 ```
 
